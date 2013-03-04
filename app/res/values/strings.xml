@@ -15,6 +15,10 @@
 -->
 <resources>
 
-    <string name="app_name">app</string>
+    <string name="app_name">OpenMIDaas App</string>
+    <string name="registering_text">Registering...</string>
+    <string name="registration_success_text">Registration Success!</string>
+    <string name="registration_already_present_text">Device is already registered!</string>
+    <string name="registration_error_text">Registration Error!</string>
 
 </resources>
