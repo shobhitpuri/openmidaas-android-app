@@ -61,7 +61,7 @@ public class RegistrationActivity extends AbstractActivity {
 			tvRegistrationStatus.setText(getString(R.string.registration_already_present_text));
 		} else {
 			tvRegistrationStatus.setText(getString(R.string.registering_text));
-			registerReceiver();
+			registerOnDeviceRegistrationReceiver();
 			App.getInstance().register();
 			
 		}	
@@ -71,7 +71,7 @@ public class RegistrationActivity extends AbstractActivity {
 	 * Helper method to register the broadcast receiver to handle the registration complete
 	 * intent.
 	 */
-	private void registerReceiver() {
+	private void registerOnDeviceRegistrationReceiver() {
 		IntentFilter registrationCompleteIntentFilter = new IntentFilter( Intents.DEVICE_REGISTRATION_COMPLETE );
 		this.registerReceiver( mRegistrationCompleteReceiver , registrationCompleteIntentFilter );
 	}
@@ -84,7 +84,7 @@ public class RegistrationActivity extends AbstractActivity {
 	
 	@Override
 	public void onResume() {
-		registerReceiver();
+		registerOnDeviceRegistrationReceiver();
 		super.onResume();
 	}
 
