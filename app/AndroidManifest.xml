@@ -20,7 +20,7 @@
 
     <uses-sdk
         android:minSdkVersion="15"
-        android:targetSdkVersion="15" />
+         />
 
     <application
         android:name="App"
