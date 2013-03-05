@@ -32,19 +32,4 @@ public class DeviceRegistrationActivityTest extends ActivityUnitTestCase<DeviceR
 		DeviceRegistrationActivity activity = getActivity();
 		assertNotNull(activity.findViewById(org.openmidaas.app.R.id.tvRegistrationStatus));
 	}
-	
-	public void testFirstTimeRegistrationLabel() {
-		App app = new App();
-		DeviceRegistrationActivity activity = getActivity();
-		TextView view = (TextView) activity.findViewById(org.openmidaas.app.R.id.tvRegistrationStatus);
-		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this.getInstrumentation().getTargetContext().getApplicationContext()).edit();
-		Logger.info(getClass(), editor.toString());
-		editor.putBoolean(app.REGISTERED_KEY_NAME, true);
-		editor.commit();
-		assertEquals(this.getInstrumentation().getTargetContext().getApplicationContext().getString(org.openmidaas.app.R.string.registration_already_present_text), view.getText());
-	}
-	
-	
-	
-	
 }
