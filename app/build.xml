@@ -27,7 +27,6 @@
 
          -->
     <property file="ant.properties" />
-    <property file="/opt/android-keystore/secure.properties" />
 
     <!-- if sdk.dir was not set from one of the property file, then
          get it from the ANDROID_HOME env var.
