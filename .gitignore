@@ -13,6 +13,7 @@ app/bin/
 app/gen/
 tests/bin/
 tests/gen/
+tests/junit-results/junit-report.xml
 
 # Local configuration file (sdk path, etc)
 app/local.properties
