@@ -33,7 +33,7 @@ public abstract class AbstractActivity extends Activity{
 	 * of the view. 
 	 * @return
 	 */
-	public abstract int getLayoutResourceId();
+	protected abstract int getLayoutResourceId();
 	
 	@Override
 	public void onPause() {
