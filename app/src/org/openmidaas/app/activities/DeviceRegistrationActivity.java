@@ -23,12 +23,12 @@ import org.openmidaas.app.App;
 import org.openmidaas.app.Intents;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 public class DeviceRegistrationActivity extends AbstractActivity {
@@ -46,6 +46,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 				Logger.debug(DeviceRegistrationActivity.class, "Registration successful!");
 				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
 			}
+			
 		}
 	};
 	
@@ -59,6 +60,8 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 			// show registration done!
 			// TODO: Navigate to home screen after this.
 			tvRegistrationStatus.setText(getString(R.string.registration_already_present_text));
+			startActivity(new Intent(this, EmailRegistrationActivity.class));
+			
 		} else {
 			tvRegistrationStatus.setText(getString(R.string.registering_text));
 			registerOnDeviceRegistrationReceiver();

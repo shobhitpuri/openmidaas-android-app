@@ -20,5 +20,13 @@
     <string name="registration_success_text">Registration Success!</string>
     <string name="registration_already_present_text">Device is already registered!</string>
     <string name="registration_error_text">Registration Error!</string>
-
+    <string name="tvEmailAddress">Email Address: </string>
+	<string name="tvVerificationPin">Verification Code: </string>
+	<string name="btnStartVerification">Verify</string>
+	<string name="resendVerificationText">Resend Code</string>
+	<string name="btnCompleteVerification">Send Code</string>
+	<string name="tvStartVerificationInfoText">Enter your email address and tap verify to being the registration process.</string>
+	<string name="tvCompleteVerificationInfoText">Enter the verification code you received.</string>
+	<string name="tvStep1Text">Step 1</string>
+	<string name="tvStep2Text">Step 2</string>
 </resources>
