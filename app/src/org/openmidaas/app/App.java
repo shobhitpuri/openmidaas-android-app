@@ -17,17 +17,9 @@
 package org.openmidaas.app;
 
 import android.app.Application;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 public class App extends Application {
-	public static final String	REGISTERED_KEY_NAME = "org.openmidaas.app.REGISTERED";
-	public static final String REGISTRATION_STATUS = "org.openmidaas.app.REGISTRATION_STATUS";
 	private static App mInstance;
-	
-	public static final int REGISTRATION_SUCCESS = 1;
-	public static final int REGISTRATION_ERROR = 0;
 	
 	
 	@Override
@@ -42,31 +34,5 @@ public class App extends Application {
 	 */
 	public static synchronized App getInstance() {
 		return mInstance;
-	}
-	
-	/**
-	 * Check to see if app is registered
-	 * @return
-	 */
-	public boolean isRegistered() {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean isRegistered = true;
-		if (prefs.contains(REGISTERED_KEY_NAME)) {
-			isRegistered = true;
-		}
-		else {
-			isRegistered = false;
-		}
-		return isRegistered;
-	}
-	
-	/**
-	 * Register's the app and sends a broadcast intent to denote completion
-	 */
-	public void register() {
-		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-		editor.putBoolean(REGISTERED_KEY_NAME, true);
-		editor.commit();
-		this.getApplicationContext().sendBroadcast(new Intent().setAction(Intents.DEVICE_REGISTRATION_COMPLETE).putExtra(REGISTRATION_STATUS, REGISTRATION_SUCCESS));
 	}
 }
