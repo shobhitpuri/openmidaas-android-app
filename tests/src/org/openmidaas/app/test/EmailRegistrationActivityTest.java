@@ -61,37 +61,6 @@ public class EmailRegistrationActivityTest extends ActivityUnitTestCase<EmailReg
 				getInstrumentation().getContext().getString(org.openmidaas.app.test.R.string.btnStartVerification));
 	}
 	
-	//seems like there is a bug in android with the runOnUiThread being called from the 
-	// unit test: https://code.google.com/p/android/issues/detail?id=14616
-	
-	public void testEmptyEmailAttribute() {
-
-//		mActivity.runOnUiThread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				
-//				startVerification.performClick();
-//			}
-//		
-//		});
-		
-	}
-	
-	public void testStartAttributeVerificationButtonTextAfterClick() {
-//		mActivity.runOnUiThread(new Runnable() {
-//
-//			@Override
-//			public void run() {
-//				
-//				startVerification.performClick();
-//			}
-//		
-//		});
-//		assertEquals(startVerification.getText().toString(), 
-//				getInstrumentation().getContext().getString(org.openmidaas.app.test.R.string.resendVerificationText));
-//		
-	}
 	
 	protected Resources getResources(String packageName) throws NameNotFoundException {
 	    PackageManager pm = getInstrumentation().getTargetContext().getPackageManager();
