@@ -17,15 +17,13 @@ package org.openmidaas.app.activities;
 
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.UINotificationUtils;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public abstract class AbstractAttributeRegistrationActivity extends AbstractActivity {
 	
@@ -37,73 +35,77 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	
 	protected Button mBtnCompleteAttributeVerification;
 	
-	/**
-	 * 
-	 */
+	private TextView mInitVerificationHelperText;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAttributeValue = (EditText)findViewById(getUIElementForAttributeValue());
-		mAttributeVerificationCode = (EditText)findViewById(getUIElementForAttributeVerification());
-		mBtnStartAttributeVerification = (Button)findViewById(getUIElementForStartAttributeVerification());
-		mBtnCompleteAttributeVerification = (Button)findViewById(R.id.btnCompleteEmailVerification);
+		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue);
+		mAttributeVerificationCode = (EditText)findViewById(R.id.etVerificationCode);
+		mBtnStartAttributeVerification = (Button)findViewById(R.id.btnStartAttributeVerification);
+		mBtnCompleteAttributeVerification = (Button)findViewById(R.id.btnCompleteAttributeVerification);
+		mInitVerificationHelperText = (TextView)findViewById(R.id.tvStartVerificationInfo);
+		mInitVerificationHelperText.setText(getInitVerificationHelpText());
 		mBtnCompleteAttributeVerification.setEnabled(false);
+		mBtnStartAttributeVerification.setOnClickListener(new View.OnClickListener() {
+			
+			@Override	
+			public void onClick(View v) {
+				if(isAttributeValid()) {
+					startAttributeVerification();
+				} else {
+					UINotificationUtils.showNeutralButtonDialog(AbstractAttributeRegistrationActivity.this, "Error", getString(R.string.missing_attribute_value_text));
+				}
+			}
+		});
+		
+		mBtnCompleteAttributeVerification.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				completeAttributeVerification();
+			}
+		});
 	} 
 	
-	/***
-	 * Returns the UI element that is responsible for 
-	 * collecting the attribute value.
-	 * Override this method to return the EditText resource ID. 
-	 * @return - The resource ID for the UI element. 
-	 */
-	protected abstract int getUIElementForAttributeValue();
-	
-	/**
-	 * Returns the UI element that is responsible for
-	 * collecting the verification code for the attribute value.
-	 * Override this method to return the EditText resource ID.
-	 * @return - The resource ID for the UI element.
-	 */
-	protected abstract int getUIElementForAttributeVerification();
-	
-	/**
-	 * Returns the UI element that is responsible for starting
-	 * the attribute verification.
-	 * Override this method to return the Button resource ID. 
-	 * @return - The resource ID for the UI element.
-	 */
-	protected abstract int getUIElementForStartAttributeVerification();
-	
-	/**
-	 * Starts the attribute verification process by getting the value
-	 * from the EditText UI element and sending it to the server via the
-	 * MIDaaS library.
-	 * @param object -  the attribute to verify
-	 */
-	protected void startAttributeVerification(Object object) {
-		if(!(isAttributeValid())) {
-			DialogUtils.showErrorDialog(this, "Attribute value is incorrect.");
-		} else {
-			mBtnStartAttributeVerification.setText(getString(R.string.resendVerificationText));
-			mBtnCompleteAttributeVerification.setEnabled(true);
-			//TODO: Get the attribute value and send it to the server using the library.
-		}
+	@Override
+	protected int getLayoutResourceId() {
+		return (R.layout.attribute_registration_view);
 	}
 	
 	/**
-	 * Validates the attribute. E.g., whether an email address matches 
-	 * a valid email address format. 
-	 * Override this method to validate the attribute value collected via
-	 * the EditText UI element. 
+	 * Override this to return your custom help text to display in the initialize
+	 * attribute verification stage. 
+	 * @return custom help text
+	 */
+	protected String getInitVerificationHelpText() {
+		return (getString(R.string.tvDefaultStartVerificationInfoText));
+	}
+	
+	/**
+	 * Override this to return a custom label displayed to the user telling them what
+	 * attribute they need to enter. e.g, email, phone number. 
 	 * @return
+	 */
+	protected String getInitVerificationAttributeLabelText() {
+		return (getString(R.string.tvDefaultAttributeName));
+	}
+	
+	/**
+	 * Returns true if the attribute is valid. For example, an email 
+	 * should be of the format; foo@bar.com
+	 * @return - true if the attribute is valid, false otherwise. 
 	 */
 	protected abstract boolean isAttributeValid();
 	
 	/**
-	 * Completes the attribute verification process.
-	 * Override this method to implement the process. 
+	 * Method that creates the attribute and starts the attribute 
+	 * verification process.
 	 */
-	protected void completAttributeVerification(Object object) {
-		throw new UnsupportedOperationException();
-	}
+	protected abstract void startAttributeVerification();
+	
+	/**
+	 * Method that completes the attribute verification.
+	 */
+	protected abstract void completeAttributeVerification();
 }

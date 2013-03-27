@@ -15,24 +15,40 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.Toast;
 
-public class DialogUtils {
+public final class UINotificationUtils {
 	
-	public static void showErrorDialog(Context context, String message) {
-		new AlertDialog.Builder(context)
-	    .setTitle("Error")
-	    .setMessage(message)
-	    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
+	public static void showNeutralButtonDialog(final Activity activity, final String title, final String message) {
+		activity.runOnUiThread(new Runnable() {
 
 			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				
-			}
-	    })
-	     .show();
-	}
+			public void run() {
+				new AlertDialog.Builder(activity)
+			    .setTitle(title)
+			    .setMessage(message)
+			    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
 
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						
+					}
+			    })
+			     .show();
+			}
+		});
+	}
+	
+	public static void showToast(final Activity activity, final String message) {
+		activity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+			}
+			
+		});
+	}
 }

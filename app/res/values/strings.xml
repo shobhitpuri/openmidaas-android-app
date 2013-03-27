@@ -15,18 +15,22 @@
 -->
 <resources>
 
-    <string name="app_name">OpenMIDaas App</string>
-    <string name="registering_text">Registering...</string>
+    <string name="app_name">MIDaas App</string>
+    <string name="registering_text">Registering&#8230;</string>
     <string name="registration_success_text">Registration Success!</string>
+    <string name="checking_registration">Checking registration&#8230;</string>
     <string name="registration_already_present_text">Device is already registered!</string>
     <string name="registration_error_text">Registration Error!</string>
-    <string name="tvEmailAddress">Email Address: </string>
+    <string name="tvDefaultAttributeName">Name: </string>
 	<string name="tvVerificationPin">Verification Code: </string>
 	<string name="btnStartVerification">Verify</string>
 	<string name="resendVerificationText">Resend Code</string>
 	<string name="btnCompleteVerification">Send Code</string>
-	<string name="tvStartVerificationInfoText">Enter your email address and tap verify to being the registration process.</string>
+	<string name="tvDefaultStartVerificationInfoText">Enter the value and tap verify to being the registration process.</string>
 	<string name="tvCompleteVerificationInfoText">Enter the verification code you received.</string>
+	<string name="attribute_verification_start_success">Attribute verification started&#8230;</string>
+	<string name="verification_success_tag">has been successfully verified</string>
+	<string name="missing_attribute_value_text">Attribute value appears to be incorrect. Please re-enter it.</string>
 	<string name="tvStep1Text">Step 1</string>
 	<string name="tvStep2Text">Step 2</string>
 </resources>

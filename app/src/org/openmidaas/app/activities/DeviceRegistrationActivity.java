@@ -19,36 +19,22 @@ package org.openmidaas.app.activities;
  * This activity handles device registration
  */
 
-import org.openmidaas.app.App;
-import org.openmidaas.app.Intents;
+
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import org.openmidaas.library.MIDaaS;
+import org.openmidaas.library.model.core.InitializationCallback;
+import org.openmidaas.library.model.core.MIDaaSException;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 public class DeviceRegistrationActivity extends AbstractActivity {
 	
 	private TextView tvRegistrationStatus;
 	
-	private BroadcastReceiver mRegistrationCompleteReceiver =  new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context content, Intent intent) {
-			if(intent.getIntExtra(App.REGISTRATION_STATUS, App.REGISTRATION_ERROR) == App.REGISTRATION_ERROR) {
-				Logger.debug(DeviceRegistrationActivity.class, "Registration unsuccessful!");
-				tvRegistrationStatus.setText(getString(R.string.registration_error_text));
-			} else {
-				Logger.debug(DeviceRegistrationActivity.class, "Registration successful!");
-				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
-			}
-			
-		}
-	};
+	private ProgressDialog registeringDialog = null;
 	
 	
 	@Override
@@ -56,43 +42,62 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		super.onCreate(savedState);
 		Logger.info(this.getClass(), "activity created");
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
-		if(App.getInstance().isRegistered()) {
-			// show registration done!
-			// TODO: Navigate to home screen after this.
-			tvRegistrationStatus.setText(getString(R.string.registration_already_present_text));
-			startActivity(new Intent(this, EmailRegistrationActivity.class));
-			
-		} else {
-			tvRegistrationStatus.setText(getString(R.string.registering_text));
-			registerOnDeviceRegistrationReceiver();
-			App.getInstance().register();
-			
-		}	
-	}
-	
-	/**
-	 * Helper method to register the broadcast receiver to handle the registration complete
-	 * intent.
-	 */
-	private void registerOnDeviceRegistrationReceiver() {
-		IntentFilter registrationCompleteIntentFilter = new IntentFilter( Intents.DEVICE_REGISTRATION_COMPLETE );
-		this.registerReceiver( mRegistrationCompleteReceiver , registrationCompleteIntentFilter );
-	}
-	
-	@Override
-	public void onPause() {
-		this.unregisterReceiver(mRegistrationCompleteReceiver);
-		super.onPause();
-	}
-	
-	@Override
-	public void onResume() {
-		registerOnDeviceRegistrationReceiver();
-		super.onResume();
+		registeringDialog = new ProgressDialog(this);
+		// register the app or check to see if already registered. 
+		MIDaaS.initialize(this, new InitializationCallback() {
+
+			@Override
+			public void onError(MIDaaSException arg0) {
+				showError();
+			}
+
+			@Override
+			public void onSuccess() {
+				performTransition();
+			}
+
+			@Override
+			public void onRegistering() {
+				showRegistrationDialog();
+			}
+		
+		});
 	}
 
+	private void performTransition() {
+		this.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if(registeringDialog.isShowing()) {
+					registeringDialog.dismiss();
+				}
+				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
+				startActivity(new Intent(DeviceRegistrationActivity.this, EmailRegistrationActivity.class));
+				DeviceRegistrationActivity.this.finish();
+			}
+		});
+		
+	}
+	
+	private void showError() {
+		this.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				tvRegistrationStatus.setText(getString(R.string.registration_error_text));
+			}
+			
+		});
+	}
+	
 	@Override
 	public int getLayoutResourceId() {
-		return (R.layout.registration_view);
+		return (R.layout.device_registration_view);
+	}
+	
+	private void showRegistrationDialog() {
+		registeringDialog.setMessage(getString(R.string.registering_text));
+		registeringDialog.show();
 	}
 }
