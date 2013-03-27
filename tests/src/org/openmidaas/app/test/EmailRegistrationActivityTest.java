@@ -42,7 +42,7 @@ public class EmailRegistrationActivityTest extends ActivityUnitTestCase<EmailReg
 		 startActivity(new Intent(getInstrumentation().getTargetContext(),
 		    		DeviceRegistrationActivity.class), null, null);
 		 mActivity = getActivity();
-		 startVerification = (Button) mActivity.findViewById(org.openmidaas.app.R.id.btnStartEmailVerification);
+		 startVerification = (Button) mActivity.findViewById(org.openmidaas.app.R.id.btnStartAttributeVerification);
 	}
 	
 	public void tearDown() throws Exception {
@@ -50,8 +50,8 @@ public class EmailRegistrationActivityTest extends ActivityUnitTestCase<EmailReg
 	}
 	
 	public void testLayout() {
-		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnStartEmailVerification));
-		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnCompleteEmailVerification));
+		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnStartAttributeVerification));
+		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnCompleteAttributeVerification));
 		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.tvStartVerificationInfo));
 		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.tvVerificationPin));
 	}
