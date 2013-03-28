@@ -36,7 +36,6 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	
 	private ProgressDialog registeringDialog = null;
 	
-	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
@@ -53,7 +52,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void onSuccess() {
-				performTransition();
+				registrationComplete();
 			}
 
 			@Override
@@ -64,7 +63,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		});
 	}
 
-	private void performTransition() {
+	private void registrationComplete() {
 		this.runOnUiThread(new Runnable() {
 
 			@Override
@@ -98,6 +97,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	
 	private void showRegistrationDialog() {
 		registeringDialog.setMessage(getString(R.string.registering_text));
+		registeringDialog.setCanceledOnTouchOutside(false);
 		registeringDialog.show();
 	}
 }
