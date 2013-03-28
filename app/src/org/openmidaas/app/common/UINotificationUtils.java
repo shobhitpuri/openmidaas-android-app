@@ -20,8 +20,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
+/**
+ * 
+ * Helper class to display UI notifications. 
+ *
+ */
 public final class UINotificationUtils {
 	
+	/**
+	 * Displays a "OK" dialog box.
+	 * @param activity the activity displaying the notification
+	 * @param title the dialog box title
+	 * @param message the message
+	 */
 	public static void showNeutralButtonDialog(final Activity activity, final String title, final String message) {
 		activity.runOnUiThread(new Runnable() {
 
@@ -42,6 +53,11 @@ public final class UINotificationUtils {
 		});
 	}
 	
+	/**
+	 * Displays a toast notification. 
+	 * @param activity the activity displaying the notification 
+	 * @param message the message to be displayed
+	 */
 	public static void showToast(final Activity activity, final String message) {
 		activity.runOnUiThread(new Runnable() {
 			@Override

@@ -19,7 +19,12 @@ package org.openmidaas.app.activities;
 import android.app.Activity;
 import android.os.Bundle;
 
-
+/**
+ * 
+ * Abstract Activity class that sets the layout. All
+ * activities must inherit from this class. 
+ *
+ */
 public abstract class AbstractActivity extends Activity{
 	
 	@Override
