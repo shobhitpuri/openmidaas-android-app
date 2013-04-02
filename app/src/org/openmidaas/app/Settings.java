@@ -18,5 +18,6 @@ package org.openmidaas.app;
 public class Settings {
 	
 	public static boolean SHOULD_LOG = true;
+	public static boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
 
 }

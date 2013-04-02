@@ -25,6 +25,7 @@ import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 
@@ -37,20 +38,28 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mActivity = this;	
+		mActivity = this;
 	}
 
 	@Override
 	protected void startAttributeVerification() {
 		Logger.info(getClass(), "starting email verification");
 			try {
-				emailAttribute = AttributeFactory.createEmailAttributeFactory().createAttribute(mAttributeValue.getText().toString());
+				emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttributeWithValue(mAttributeValue.getText().toString());
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
 					@Override
 					public void onSuccess() {
 						Logger.info(getClass(), "email verification started successfully");
 						UINotificationUtils.showToast(mActivity, mActivity.getString(R.string.attribute_verification_start_success));
+						mActivity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								mBtnCompleteAttributeVerification.setEnabled(true);
+							}
+							
+						});
 					}
 
 					@Override
@@ -78,6 +87,8 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			@Override
 			public void onSuccess() {
 				UINotificationUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				startActivity(new Intent(EmailRegistrationActivity.this, AttributeListActivity.class));
+				EmailRegistrationActivity.this.finish();
 			}
 
 			@Override

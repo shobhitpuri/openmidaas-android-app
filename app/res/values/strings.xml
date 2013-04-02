@@ -33,4 +33,5 @@
 	<string name="missing_attribute_value_text">Attribute value appears to be incorrect. Please re-enter it.</string>
 	<string name="tvStep1Text">Step 1</string>
 	<string name="tvStep2Text">Step 2</string>
+	<string name="btnDelete">Delete</string>
 </resources>
