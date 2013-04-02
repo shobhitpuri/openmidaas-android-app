@@ -42,7 +42,8 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		Logger.info(this.getClass(), "activity created");
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
 		registeringDialog = new ProgressDialog(this);
-		// register the app or check to see if already registered. 
+		// register the app or check to see if already registered.
+		MIDaaS.setLoggingLevel(MIDaaS.LOG_LEVEL_DEBUG);
 		MIDaaS.initialize(this, new InitializationCallback() {
 
 			@Override
@@ -72,7 +73,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 					registeringDialog.dismiss();
 				}
 				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
-				startActivity(new Intent(DeviceRegistrationActivity.this, EmailRegistrationActivity.class));
+				startActivity(new Intent(DeviceRegistrationActivity.this, AttributeListActivity.class));
 				DeviceRegistrationActivity.this.finish();
 			}
 		});

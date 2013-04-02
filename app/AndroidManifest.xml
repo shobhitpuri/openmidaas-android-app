@@ -31,7 +31,7 @@
         android:screenOrientation="portrait"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:debuggable="false">
+        android:theme="@style/AppTheme" android:debuggable="true">
         <activity android:name=".activities.DeviceRegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,6 +40,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.EmailRegistrationActivity"></activity>
+        <activity android:name=".activities.AttributeListActivity"></activity>
     </application>
 
 </manifest>
