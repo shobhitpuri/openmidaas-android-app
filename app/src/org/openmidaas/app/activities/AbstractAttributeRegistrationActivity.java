@@ -45,6 +45,7 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 		mBtnStartAttributeVerification = (Button)findViewById(R.id.btnStartAttributeVerification);
 		mBtnCompleteAttributeVerification = (Button)findViewById(R.id.btnCompleteAttributeVerification);
 		mInitVerificationHelperText = (TextView)findViewById(R.id.tvStartVerificationInfo);
+		mAttributeValue.setInputType(getAttributeInputType());
 		mInitVerificationHelperText.setText(getInitVerificationHelpText());
 		mBtnCompleteAttributeVerification.setEnabled(false);
 		mBtnStartAttributeVerification.setOnClickListener(new View.OnClickListener() {
@@ -72,6 +73,8 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	protected int getLayoutResourceId() {
 		return (R.layout.attribute_registration_view);
 	}
+	
+	public abstract int getAttributeInputType();
 	
 	/**
 	 * Override this to return your custom help text to display in the initialize

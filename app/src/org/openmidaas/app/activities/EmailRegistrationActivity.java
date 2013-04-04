@@ -27,6 +27,7 @@ import org.openmidaas.library.model.core.MIDaaSException;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 
 
 public class EmailRegistrationActivity extends AbstractAttributeRegistrationActivity {
@@ -71,9 +72,13 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				
 				});
 			} catch (final InvalidAttributeValueException e) {
-				Logger.info(getClass(), e.getMessage());
+				Logger.error(getClass(), e.getMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
+			} catch(MIDaaSException ex) {
+				Logger.error(getClass(), ex.getError().getErrorMessage());
+				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getError().getErrorMessage());
 			}
+			
 	}
 
 
@@ -104,5 +109,12 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public int getAttributeInputType() {
+		// set the attribute value collection UI element to type email so that
+		// a keyboard with email-specific characters is displayed. 
+		return (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 	}
 }
