@@ -17,20 +17,21 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <ExpandableListView
-        android:id="@+id/listViewAttributes"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-    </ExpandableListView>
-
-    <Button
-        android:id="@+id/button1"
+    <TextView
+        android:id="@+id/tvAttributeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:focusable="false"
-        android:text="Button" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvAttributeValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="86dp"
+        android:layout_toRightOf="@+id/tvAttributeName"
+        android:text="TextView" />
 
 </RelativeLayout>

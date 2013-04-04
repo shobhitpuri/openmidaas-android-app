@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -35,6 +36,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.util.Base64;
 import android.view.View;
@@ -44,39 +47,62 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 
 public class AttributeListActivity extends AbstractActivity{
 
-	private ListView mAttributeListView;
+	private ExpandableListView mAttributeListView;
 	
 	private Button addEmail;
 	
 	private AttributeListActivity mActivity;
 	
+	private AttributeExpandableListAdapter mAdapter;
+	
 	private List<AbstractAttribute<?>> mAttributeList;
+	
+	private Handler mHandler = new Handler() {
+		 @Override
+         public void handleMessage(Message msg)
+         {
+             mAdapter.notifyDataSetChanged();
+             for(int i=0; i<mAdapter.getGroupCount(); i++) {
+            	 mAttributeListView.expandGroup(i);
+             }
+             UINotificationUtils.dismissIndeterministicProgressDialog();
+             super.handleMessage(msg);
+         }
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
-		mAttributeListView = (ListView)findViewById(R.id.listViewAttributes);
+		mAttributeListView = (ExpandableListView)findViewById(R.id.listViewAttributes);
 		mAttributeListView.setClickable(true);
 		mAttributeListView.setItemsCanFocus(true);
-		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		addEmail = (Button)findViewById(R.id.button1);
 		mActivity = this;
+		mAttributeListView.setGroupIndicator(null);
+		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		mAdapter = new AttributeExpandableListAdapter(mActivity, new ArrayList<ATTRIBUTE_STATE>(), new ArrayList<ArrayList<AbstractAttribute<?>>>());
+		mAttributeListView.setAdapter(mAdapter);
+		addEmail = (Button)findViewById(R.id.button1);
+		UINotificationUtils.showIndeterministicProgressDialog(mActivity, "Loading...");
 		refreshAttributeList();
 		
-		mAttributeListView.setOnItemClickListener(new OnItemClickListener() {
+		
+		
+		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				Logger.info(getClass(), "list clicked...");
+			 @Override
+	            public boolean onChildClick(ExpandableListView arg0, View arg1, int arg2, int arg3, long arg4) {
 				// when the cell is clicked, check to see if the attribute state is pending verification. 
 				if(mAttributeList.get(arg2).getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-					showPinCollectionDialog(mAttributeList.get(arg2));
+					showCodeCollectionDialog(mAttributeList.get(arg2));
 				}
+				return false;
 			}
 		});
 		
@@ -84,35 +110,36 @@ public class AttributeListActivity extends AbstractActivity{
 		mAttributeListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
-					showAttributeDetails(arg2);
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+					if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
+						showAttributeDetails((AbstractAttribute<?>) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id)));
+					}
+					return true;
 				}
-				return true;
+				return false;
 			}
 		});
 	}
 	
 	
-	private void showAttributeDetails(int pos) {
-		AbstractAttribute<?> attribute = mAttributeList.get(pos);
+	private void showAttributeDetails(AbstractAttribute<?> attribute) {
 		String message = "Name: " + attribute.getName() + "\n" +
 				 "Value: " + attribute.getValue() + "\n"; 
-		String str = null;
 		String[] jwsParams = null;
 		JSONObject object = null;
 		if(attribute.getSignedToken() != null) {
 			jwsParams = attribute.getSignedToken().split("\\."); 
 			try {
-				str = new String(Base64.decode(jwsParams[1], Base64.NO_WRAP), "UTF-8");
-				object = new JSONObject(str);
+				object = new JSONObject(new String(Base64.decode(jwsParams[1], Base64.NO_WRAP), "UTF-8"));
 				if(object != null) {
-					message += "Subject ID: " + object.getString("subjectID");
+					message += "Audience: " + object.getString("aud") + "\n";
+					message += "Issuer: " + object.getString("iss") + "\n";
+					message += "Subject: " + object.getString("sub") + "\n";
 					message += "Signature: " + jwsParams[2];
 				}
 			} catch(Exception e) {
-				str = null;
 			}
 		}
 		new AlertDialog.Builder(mActivity)
@@ -128,7 +155,7 @@ public class AttributeListActivity extends AbstractActivity{
 	     .show();
 	}
 
-	private void showPinCollectionDialog(final AbstractAttribute<?> attribute) {
+	private void showCodeCollectionDialog(final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 		alert.setTitle("Verify " + attribute.getName());
@@ -182,6 +209,21 @@ public class AttributeListActivity extends AbstractActivity{
 	protected int getLayoutResourceId() {
 		return (R.layout.list_view);
 	}
+	
+	private void addItemsToList() {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				mAdapter.clearExistingAttributeEntries();
+				for(AbstractAttribute<?> attribute:mAttributeList) {
+					mAdapter.addItem(attribute);
+				}
+				mHandler.sendEmptyMessage(1);
+			}
+			
+		}).start();
+	}
 
 	/**
 	 * Helper method that gets/refreshes the attribute list 
@@ -196,15 +238,7 @@ public class AttributeListActivity extends AbstractActivity{
 					startActivity(new Intent(AttributeListActivity.this, EmailRegistrationActivity.class));
 					AttributeListActivity.this.finish();
 				} else {
-					mActivity.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							mAttributeListView.setAdapter(new AttributeListAdapter(AttributeListActivity.this, list));
-							
-						}
-						
-					});
+					addItemsToList();
 					
 				}
 			}

@@ -15,8 +15,11 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import org.openmidaas.library.model.core.AbstractAttribute;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
@@ -26,6 +29,8 @@ import android.widget.Toast;
  *
  */
 public final class UINotificationUtils {
+	
+	private static ProgressDialog mProgressDialog;
 	
 	/**
 	 * Displays a "OK" dialog box.
@@ -64,7 +69,48 @@ public final class UINotificationUtils {
 			public void run() {
 				Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
 			}
+		});
+	}
+	
+	public static void showDeleteAttributeDialog(final Activity activity, final AbstractAttribute<?> attribute, final String message) {
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				new AlertDialog.Builder(activity)
+			    .setTitle("Delete")
+			    .setMessage(message)
+			    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						
+					}
+			    })
+			     .show();
+			}
 			
 		});
+	}
+	
+	public static void showIndeterministicProgressDialog(final Activity activity, final String message) {
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				mProgressDialog = new ProgressDialog(activity);
+				mProgressDialog.setMessage(message);
+				mProgressDialog.setCanceledOnTouchOutside(false);
+				mProgressDialog.show();
+			}
+		});
+	}
+	
+	public static void dismissIndeterministicProgressDialog() {
+		if(mProgressDialog != null) {
+			if(mProgressDialog.isShowing()) {
+				mProgressDialog.dismiss();
+			}
+		}
 	}
 }

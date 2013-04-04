@@ -22,6 +22,7 @@ package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
@@ -58,7 +59,8 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void onRegistering() {
-				showRegistrationDialog();
+				UINotificationUtils.showIndeterministicProgressDialog(DeviceRegistrationActivity.this, getString(R.string.registering_text));
+				//showRegistrationDialog();
 			}
 		
 		});
@@ -69,10 +71,11 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
-				if(registeringDialog.isShowing()) {
-					registeringDialog.dismiss();
-				}
-				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
+//				if(registeringDialog.isShowing()) {
+//					registeringDialog.dismiss();
+//				}
+				UINotificationUtils.dismissIndeterministicProgressDialog();
+				//tvRegistrationStatus.setText(getString(R.string.registration_success_text));
 				startActivity(new Intent(DeviceRegistrationActivity.this, AttributeListActivity.class));
 				DeviceRegistrationActivity.this.finish();
 			}
@@ -97,8 +100,16 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	}
 	
 	private void showRegistrationDialog() {
-		registeringDialog.setMessage(getString(R.string.registering_text));
-		registeringDialog.setCanceledOnTouchOutside(false);
-		registeringDialog.show();
+		this.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				registeringDialog.setMessage(getString(R.string.registering_text));
+				registeringDialog.setCanceledOnTouchOutside(false);
+				registeringDialog.show();
+			}
+			
+		});
+		
 	}
 }
