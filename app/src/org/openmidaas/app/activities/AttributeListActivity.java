@@ -21,6 +21,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
+import org.openmidaas.app.common.AttributeRegistrationHelper;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
@@ -32,6 +33,7 @@ import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.AttributeDataCallback;
 import org.openmidaas.library.persistence.core.EmailDataCallback;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,14 +50,16 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class AttributeListActivity extends AbstractActivity{
 
 	private ExpandableListView mAttributeListView;
 	
-	private Button addEmail;
+	private TextView mAttributeInfoText;
 	
 	private AttributeListActivity mActivity;
 	
@@ -71,7 +75,7 @@ public class AttributeListActivity extends AbstractActivity{
              for(int i=0; i<mAdapter.getGroupCount(); i++) {
             	 mAttributeListView.expandGroup(i);
              }
-             UINotificationUtils.dismissIndeterministicProgressDialog();
+             //UINotificationUtils.dismissIndeterministicProgressDialog(mActivity);
              super.handleMessage(msg);
          }
 		
@@ -81,6 +85,7 @@ public class AttributeListActivity extends AbstractActivity{
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		mAttributeListView = (ExpandableListView)findViewById(R.id.listViewAttributes);
+		mAttributeInfoText = (TextView)findViewById(R.id.tvAttributeListInfo);
 		mAttributeListView.setClickable(true);
 		mAttributeListView.setItemsCanFocus(true);
 		mActivity = this;
@@ -88,8 +93,8 @@ public class AttributeListActivity extends AbstractActivity{
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		mAdapter = new AttributeExpandableListAdapter(mActivity, new ArrayList<ATTRIBUTE_STATE>(), new ArrayList<ArrayList<AbstractAttribute<?>>>());
 		mAttributeListView.setAdapter(mAdapter);
-		addEmail = (Button)findViewById(R.id.button1);
-		UINotificationUtils.showIndeterministicProgressDialog(mActivity, "Loading...");
+		//addEmail = (Button)findViewById(R.id.button1);
+		
 		refreshAttributeList();
 		
 		
@@ -124,6 +129,43 @@ public class AttributeListActivity extends AbstractActivity{
 	}
 	
 	
+	private void showDeleteAttributeDialog(final AbstractAttribute<?> attribute, final String message) {
+		mActivity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				new AlertDialog.Builder(mActivity)
+			    .setTitle("Delete")
+			    .setMessage(message)
+			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
+							AttributeRegistrationHelper.verifyAttribute(mActivity, "sending email", "email sent", attribute);
+						} else {
+							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
+						}
+					}
+				})
+			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						try {
+							attribute.delete();
+							refreshAttributeList();
+						} catch (MIDaaSException e) {
+							
+						}
+					}
+			    })
+			     .show();
+			}
+			
+		});
+	}
+	
 	private void showAttributeDetails(AbstractAttribute<?> attribute) {
 		String message = "Name: " + attribute.getName() + "\n" +
 				 "Value: " + attribute.getValue() + "\n"; 
@@ -142,17 +184,7 @@ public class AttributeListActivity extends AbstractActivity{
 			} catch(Exception e) {
 			}
 		}
-		new AlertDialog.Builder(mActivity)
-	    .setTitle("Attribute Diagnostics")
-	    .setMessage(message)
-	    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				
-			}
-	    })
-	     .show();
+		showDeleteAttributeDialog(attribute, message);
 	}
 
 	private void showCodeCollectionDialog(final AbstractAttribute<?> attribute) {
@@ -235,8 +267,17 @@ public class AttributeListActivity extends AbstractActivity{
 			public void onSuccess(final List<AbstractAttribute<?>> list) {
 				mAttributeList = list;
 				if(list.isEmpty()) {
-					startActivity(new Intent(AttributeListActivity.this, EmailRegistrationActivity.class));
-					AttributeListActivity.this.finish();
+					addItemsToList();
+					mActivity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							
+							mAttributeInfoText.setText(mActivity.getString(R.string.noAttributesPresentText));
+							
+						}
+						
+					});
 				} else {
 					addItemsToList();
 					
@@ -250,10 +291,7 @@ public class AttributeListActivity extends AbstractActivity{
 			
 		});
 		
-		
-		
-		
-		addEmail.setOnClickListener(new View.OnClickListener() {
+		mBtnTitlebar.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -261,5 +299,15 @@ public class AttributeListActivity extends AbstractActivity{
 				AttributeListActivity.this.finish();
 			}
 		});
+	}
+
+
+	@Override
+	protected String getTitlebarText() {
+		return ("Your Info");
+	}
+	
+	protected boolean hasTitlebarButtonVisible() { 
+		return true;
 	}
 }

@@ -31,7 +31,8 @@
         android:screenOrientation="portrait"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:debuggable="false">
+        android:theme="@style/customTheme"
+        android:debuggable="false">
         <activity android:name=".activities.DeviceRegistrationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

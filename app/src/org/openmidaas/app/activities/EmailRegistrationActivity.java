@@ -36,6 +36,8 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	
 	private EmailAttribute emailAttribute;
 	
+	private boolean isInitVerificationSuccess = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,18 +48,24 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	protected void startAttributeVerification() {
 		Logger.info(getClass(), "starting email verification");
 			try {
-				emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttributeWithValue(mAttributeValue.getText().toString());
+				if(!isInitVerificationSuccess) {
+					emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttributeWithValue(mAttributeValue.getText().toString());
+				}
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
 					@Override
 					public void onSuccess() {
 						Logger.info(getClass(), "email verification started successfully");
-						UINotificationUtils.showToast(mActivity, mActivity.getString(R.string.attribute_verification_start_success));
+						UINotificationUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
+						isInitVerificationSuccess = true;
 						mActivity.runOnUiThread(new Runnable() {
 
 							@Override
 							public void run() {
+								mProgressDialog.cancel();
 								mBtnCompleteAttributeVerification.setEnabled(true);
+								mBtnStartAttributeVerification.setText("Re-send email");
+								mAttributeVerificationCode.requestFocus();
 							}
 							
 						});
@@ -65,6 +73,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 
 					@Override
 					public void onError(MIDaaSException exception) {
+						cancelCurrentProgressDialog();
 						Logger.info(getClass(), "error in start email verification");
 						Logger.info(getClass(), exception.getError().getErrorMessage());
 						UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
@@ -72,9 +81,11 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				
 				});
 			} catch (final InvalidAttributeValueException e) {
+				cancelCurrentProgressDialog();
 				Logger.error(getClass(), e.getMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
 			} catch(MIDaaSException ex) {
+				cancelCurrentProgressDialog();
 				Logger.error(getClass(), ex.getError().getErrorMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getError().getErrorMessage());
 			}
@@ -98,9 +109,15 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 
 			@Override
 			public void onError(MIDaaSException exception) {
+				cancelCurrentProgressDialog();
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
 			}
 		});
+	}
+	
+	@Override
+	protected String getProgressDialogMessage() {
+		return (getString(R.string.sendingEmailText));
 	}
 
 	@Override
@@ -117,4 +134,15 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 		// a keyboard with email-specific characters is displayed. 
 		return (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 	}
+
+	@Override
+	protected String getTitlebarText() {
+		return ("Add an email");
+	}
+	
+	protected boolean hasTitlebarButtonVisible() { 
+		return false;
+	}
+	
+	
 }

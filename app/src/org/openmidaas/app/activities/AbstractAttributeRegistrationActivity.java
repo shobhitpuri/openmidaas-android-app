@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.UINotificationUtils;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -48,11 +48,13 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 		mAttributeValue.setInputType(getAttributeInputType());
 		mInitVerificationHelperText.setText(getInitVerificationHelpText());
 		mBtnCompleteAttributeVerification.setEnabled(false);
+		mAttributeValue.requestFocus();
 		mBtnStartAttributeVerification.setOnClickListener(new View.OnClickListener() {
 			
 			@Override	
 			public void onClick(View v) {
 				if(isAttributeValid()) {
+					mProgressDialog.show();
 					startAttributeVerification();
 				} else {
 					UINotificationUtils.showNeutralButtonDialog(AbstractAttributeRegistrationActivity.this, "Error", getString(R.string.missing_attribute_value_text));
@@ -64,10 +66,43 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 			
 			@Override
 			public void onClick(View v) {
+				mProgressDialog.show();
 				completeAttributeVerification();
 			}
 		});
 	} 
+	
+	/**
+	 * Override if you want the titlebar to have a 
+	 * button on the top right side. 
+	 */
+	protected boolean hasTitlebarButtonVisible() { 
+		return true;
+	}
+	
+	protected void cancelCurrentProgressDialog() {
+		this.runOnUiThread(new Runnable() {
+			
+
+			@Override
+			public void run() {
+				if (mProgressDialog != null) {
+					if (mProgressDialog.isShowing()) {
+						mProgressDialog.dismiss();
+					}
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Override to return your custom progress dialog 
+	 * message
+	 * @return - custom progress dialog message
+	 */
+	protected String getProgressDialogMessage() {
+		return (getString(R.string.loadingText));
+	}
 	
 	@Override
 	protected int getLayoutResourceId() {
@@ -111,4 +146,10 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	 * Method that completes the attribute verification.
 	 */
 	protected abstract void completeAttributeVerification();
+	
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(this, AttributeListActivity.class));
+		this.finish();
+	}
 }

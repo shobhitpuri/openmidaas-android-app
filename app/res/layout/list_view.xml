@@ -15,22 +15,24 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
+    android:background="@drawable/default_bg"
     android:layout_height="fill_parent" >
 
     <ExpandableListView
         android:id="@+id/listViewAttributes"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
+        android:layout_height="wrap_content" 
+		 >
     </ExpandableListView>
 
-    <Button
-        android:id="@+id/button1"
+    <TextView
+        android:id="@+id/tvAttributeListInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:focusable="false"
-        android:text="Button" />
+        android:textColor="#000000"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

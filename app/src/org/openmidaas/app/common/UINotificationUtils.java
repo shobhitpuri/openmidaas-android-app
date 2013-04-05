@@ -16,6 +16,7 @@
 package org.openmidaas.app.common;
 
 import org.openmidaas.library.model.core.AbstractAttribute;
+import org.openmidaas.library.model.core.MIDaaSException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,7 +31,7 @@ import android.widget.Toast;
  */
 public final class UINotificationUtils {
 	
-	private static ProgressDialog mProgressDialog;
+	private static ProgressDialog mProgressDialog = null;
 	
 	/**
 	 * Displays a "OK" dialog box.
@@ -80,11 +81,15 @@ public final class UINotificationUtils {
 				new AlertDialog.Builder(activity)
 			    .setTitle("Delete")
 			    .setMessage(message)
-			    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
+			    .setNeutralButton("Delete",  new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
-						
+						try {
+							attribute.delete();
+						} catch (MIDaaSException e) {
+							
+						}
 					}
 			    })
 			     .show();
@@ -106,11 +111,20 @@ public final class UINotificationUtils {
 		});
 	}
 	
-	public static void dismissIndeterministicProgressDialog() {
-		if(mProgressDialog != null) {
-			if(mProgressDialog.isShowing()) {
-				mProgressDialog.dismiss();
+	public static void dismissIndeterministicProgressDialog(final Activity activity) {
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if(mProgressDialog != null) {
+					if(mProgressDialog.isShowing()) {
+						mProgressDialog.dismiss();
+						mProgressDialog = null;
+					}
+				}
 			}
-		}
+			
+		});
+		
 	}
 }
