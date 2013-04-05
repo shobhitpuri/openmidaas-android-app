@@ -34,4 +34,20 @@
 	<string name="tvStep1Text">Step 1</string>
 	<string name="tvStep2Text">Step 2</string>
 	<string name="btnDelete">Delete</string>
+	<string name="loadingText">Loading&#8230;</string>
+	<string name="sendingEmailText">Sending email&#8230;</string>
+	<string name="init_attribute_verification">Initializing verification</string>
+	<string name="noAttributesPresentText">You do not have any information.\nTry adding some by tapping the button on the top right corner.</string>
+	<style name="buttonText">
+   		<item name="android:layout_width">fill_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:textColor">#ffffff</item>
+    	<item name="android:gravity">center</item>
+	    <item name="android:textSize">20sp</item>
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:shadowColor">#000000</item>
+	    <item name="android:shadowDx">1</item>
+	    <item name="android:shadowDy">1</item>
+	    <item name="android:shadowRadius">2</item>
+	</style>
 </resources>

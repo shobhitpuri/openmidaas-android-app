@@ -14,29 +14,30 @@
   limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/titlebar_bg_color"
     android:layout_width="fill_parent"
-    android:padding="7dp"
     android:layout_height="fill_parent" >
+    
+      <Button
+        android:id="@+id/btnTitlebarButton"
+      	android:textColor="#FFFFFF"
+        android:layout_width="35dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/add_button"
+        android:focusable="false"
+        android:layout_marginRight="3dp"
+        android:text="+" />
+    
 
     <TextView
-        android:id="@+id/tvAttributeName"
+        android:id="@+id/tvTitlebarText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textColor="#000000"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-         />
-
-    <TextView
-        android:id="@+id/tvAttributeValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="86dp"
-        android:textColor="#000000"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_toRightOf="@+id/tvAttributeName"
-         />
-
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Your Info"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp" />
 </RelativeLayout>

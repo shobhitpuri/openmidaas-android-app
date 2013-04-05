@@ -16,8 +16,15 @@
 
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.R;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 
 /**
  * 
@@ -27,11 +34,52 @@ import android.os.Bundle;
  */
 public abstract class AbstractActivity extends Activity{
 	
+	private boolean isCustomTitleSupported;
+	
+	protected Button mBtnTitlebar;
+	
+	protected TextView mTitlebarText;
+	
+	protected ProgressDialog mProgressDialog;
+	
 	@Override
 	public void onCreate(Bundle savedState) {
+		isCustomTitleSupported = requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		super.onCreate(savedState);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(getLayoutResourceId());
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Please wait...");
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		if(isCustomTitleSupported) {
+			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
+			mBtnTitlebar = (Button)findViewById(R.id.btnTitlebarButton);
+			mTitlebarText = (TextView)findViewById(R.id.tvTitlebarText);
+			mBtnTitlebar.setVisibility(View.GONE);
+			mTitlebarText.setText(getTitlebarText());
+		}
+		if(hasTitlebarButtonVisible()) {
+			mBtnTitlebar.setVisibility(View.VISIBLE);
+		}
 	}
+	
+	protected boolean hasTitlebarButtonVisible() { 
+		return false;
+	}
+	
+	/**
+	 * Override to return your custom titlebar button text. 
+	 * @return - custom titlebar button text
+	 */
+	protected String getTitlebarButtonText() {
+		return ("+");
+	}
+	
+	/**
+	 * Override to return your custom titlebar test.
+	 * @return - custom titlebar text
+	 */
+	protected abstract String getTitlebarText();
 	
 	/**
 	 * Override in inheriting class to set the resource ID

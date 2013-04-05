@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2013 SecureKey Technologies Inc.
   
@@ -13,18 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/list_cell_bg_default"
-    android:orientation="vertical" >
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+	
+	<style name="customTheme" parent="android:Theme"> 
+        <item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>   
+        <item name="android:windowTitleSize">42dp</item>
+    </style> 
 
-    <TextView
-        android:id="@+id/tvGroupName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Medium Text"
-        android:textColor="#000000"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-</LinearLayout>
+</resources>
