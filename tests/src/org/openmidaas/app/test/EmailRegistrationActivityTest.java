@@ -53,7 +53,6 @@ public class EmailRegistrationActivityTest extends ActivityUnitTestCase<EmailReg
 		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnStartAttributeVerification));
 		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.btnCompleteAttributeVerification));
 		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.tvStartVerificationInfo));
-		assertNotNull(mActivity.findViewById(org.openmidaas.app.R.id.tvVerificationPin));
 	}
 	
 	public void testStartAttributeVerificationButtonText() {

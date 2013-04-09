@@ -16,6 +16,8 @@
 package org.openmidaas.app.activities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.AttributeRegistrationHelper;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.common.CategoryLookupMap;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.EmailAttribute;
@@ -67,6 +70,10 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private List<AbstractAttribute<?>> mAttributeList;
 	
+	private LinkedHashMap<String, ListHeader> mCategoriesWithChildren = new LinkedHashMap<String, ListHeader>();
+	
+	private ArrayList<ListHeader> mCategoriesList = new ArrayList<ListHeader>(); 
+	
 	private Handler mHandler = new Handler() {
 		 @Override
          public void handleMessage(Message msg)
@@ -81,6 +88,15 @@ public class AttributeListActivity extends AbstractActivity{
 		
 	};
 	
+	private void initAttributeCategories() {
+		for(String s:CategoryLookupMap.getCategories()) {
+			ListHeader header = new ListHeader();
+			header.setGroupName(s);
+			mCategoriesWithChildren.put(s, header);
+			mCategoriesList.add(header);
+		}
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
@@ -91,12 +107,11 @@ public class AttributeListActivity extends AbstractActivity{
 		mActivity = this;
 		mAttributeListView.setGroupIndicator(null);
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		mAdapter = new AttributeExpandableListAdapter(mActivity, new ArrayList<ATTRIBUTE_STATE>(), new ArrayList<ArrayList<AbstractAttribute<?>>>());
+		
+		mAdapter = new AttributeExpandableListAdapter(mActivity, mCategoriesList);
 		mAttributeListView.setAdapter(mAdapter);
-		//addEmail = (Button)findViewById(R.id.button1);
 		
 		refreshAttributeList();
-		
 		
 		
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
@@ -164,6 +179,25 @@ public class AttributeListActivity extends AbstractActivity{
 			}
 			
 		});
+	}
+	
+	private int addAttributeToCategory(AbstractAttribute<?> attribute) {
+		Logger.debug(getClass(), CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
+		ListHeader header = mCategoriesWithChildren.get(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
+		if(header == null) {
+			header = new ListHeader();
+			header.setGroupName(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
+			
+			mCategoriesWithChildren.put(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel(), header);
+			mCategoriesList.add(header);
+		}
+		
+		ArrayList<AbstractAttribute<?>> attributeChildrenList = header.getList();
+		attributeChildrenList.add(attribute);
+		header.setList(attributeChildrenList);
+		
+		
+		return (mCategoriesList.indexOf(header));
 	}
 	
 	private void showAttributeDetails(AbstractAttribute<?> attribute) {
@@ -248,8 +282,12 @@ public class AttributeListActivity extends AbstractActivity{
 			@Override
 			public void run() {
 				mAdapter.clearExistingAttributeEntries();
+				
+				mCategoriesWithChildren.clear();
+				initAttributeCategories();
 				for(AbstractAttribute<?> attribute:mAttributeList) {
-					mAdapter.addItem(attribute);
+					
+					addAttributeToCategory(attribute);
 				}
 				mHandler.sendEmptyMessage(1);
 			}
@@ -291,14 +329,6 @@ public class AttributeListActivity extends AbstractActivity{
 			
 		});
 		
-		mBtnTitlebar.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(AttributeListActivity.this, EmailRegistrationActivity.class));
-				AttributeListActivity.this.finish();
-			}
-		});
 	}
 
 

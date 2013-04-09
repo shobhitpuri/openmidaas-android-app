@@ -36,8 +36,6 @@ public abstract class AbstractActivity extends Activity{
 	
 	private boolean isCustomTitleSupported;
 	
-	protected Button mBtnTitlebar;
-	
 	protected TextView mTitlebarText;
 	
 	protected ProgressDialog mProgressDialog;
@@ -53,18 +51,9 @@ public abstract class AbstractActivity extends Activity{
 		mProgressDialog.setCanceledOnTouchOutside(false);
 		if(isCustomTitleSupported) {
 			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-			mBtnTitlebar = (Button)findViewById(R.id.btnTitlebarButton);
-			mTitlebarText = (TextView)findViewById(R.id.tvTitlebarText);
-			mBtnTitlebar.setVisibility(View.GONE);
+			mTitlebarText = (TextView)findViewById(R.id.tvTitlebarText);	
 			mTitlebarText.setText(getTitlebarText());
 		}
-		if(hasTitlebarButtonVisible()) {
-			mBtnTitlebar.setVisibility(View.VISIBLE);
-		}
-	}
-	
-	protected boolean hasTitlebarButtonVisible() { 
-		return false;
 	}
 	
 	/**

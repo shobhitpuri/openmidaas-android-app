@@ -38,7 +38,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		Logger.info(this.getClass(), "activity created");
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
 		// register the app or check to see if already registered.
-		MIDaaS.setLoggingLevel(MIDaaS.LOG_LEVEL_ERROR);
+		MIDaaS.setLoggingLevel(MIDaaS.LOG_LEVEL_DEBUG);
 		mProgressDialog.show();
 		MIDaaS.initialize(this, new InitializationCallback() {
 
