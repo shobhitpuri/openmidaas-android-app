@@ -15,6 +15,11 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ListHeader;
+import org.openmidaas.library.model.AttributeFactory;
+import org.openmidaas.library.model.GenericAttribute;
+import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 
@@ -22,6 +27,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.text.Editable;
+import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -127,4 +134,63 @@ public final class UINotificationUtils {
 		});
 		
 	}
+	
+	public static void showAttributeChoiceDialog(final ListHeader header, final Activity activity) {
+		if (header.getGroupName().equalsIgnoreCase("Personal")) {
+			final CharSequence[] items = {"First Name", "Last Name"};
+			new AlertDialog.Builder(activity)
+			.setTitle("Please select the value you wish to enter")
+	        .setSingleChoiceItems(items, 0, null)
+	        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int whichButton) {
+	                dialog.dismiss();
+	                int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
+	                if(selectedPosition == 0) {
+	                	showAttributeValueCollectionDialog(activity, "first_name", items[selectedPosition].toString());
+	                } else {
+	                	showAttributeValueCollectionDialog(activity, "last_name", items[selectedPosition].toString());
+	                }
+	            }
+	        })
+	        .show();
+		}
+	}
+	
+	public static void showAttributeValueCollectionDialog( final Activity activity, final String attributeName, String label) {
+		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+
+		alert.setTitle("Adding " + label);
+		alert.setMessage("Enter your " + label);
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(activity);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int whichButton) {
+			Editable value = input.getText();
+			try {
+				GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidAttributeValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MIDaaSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		  }
+		});
+
+		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		  public void onClick(DialogInterface dialog, int whichButton) {
+		    	
+		  }
+		});
+
+		alert.show();
+	}
+	
 }

@@ -28,8 +28,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
          />
 
-    <TextView
-        android:id="@+id/tvAttributeValue"
+    <EditText
+        android:id="@+id/etAttributeValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

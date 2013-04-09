@@ -50,4 +50,9 @@
 	    <item name="android:shadowDy">1</item>
 	    <item name="android:shadowRadius">2</item>
 	</style>
+	<string-array name="attribute_category">
+		<item >Personal</item>
+		<item >email</item>
+		<item >address</item>
+	</string-array>
 </resources>
