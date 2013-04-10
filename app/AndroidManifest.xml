@@ -42,6 +42,7 @@
         </activity>
         <activity android:name=".activities.EmailRegistrationActivity"></activity>
         <activity android:name=".activities.AttributeListActivity"></activity>
+        <activity android:name=".activities.GenericAttributeCollectionActivity"></activity>
     </application>
 
 </manifest>

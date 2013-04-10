@@ -69,11 +69,21 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		}
 		
 		TextView tvAttributeName = (TextView)convertView.findViewById(R.id.tvAttributeName);
-		EditText tvAttributeValue = (EditText)convertView.findViewById(R.id.etAttributeValue);
-		// 0 is personal information
+		TextView tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
 		
-			tvAttributeName.setText(attribute.getName());
-			tvAttributeValue.setText(attribute.getValue().toString());
+		tvAttributeName.setText(attribute.getName());
+		tvAttributeValue.setText(attribute.getValue().toString());
+		tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+		switch (attribute.getState()) {
+			case PENDING_VERIFICATION:
+				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.warning, 0);
+				break;
+			case VERIFIED:
+				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
+				break;
+			default:
+				break;
+		}
 		
 		return convertView;
 	}
