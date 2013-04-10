@@ -18,6 +18,7 @@ package org.openmidaas.app.activities;
 import java.util.ArrayList;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.CategoryLookupMap;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.core.AbstractAttribute;
@@ -71,7 +72,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		TextView tvAttributeName = (TextView)convertView.findViewById(R.id.tvAttributeName);
 		TextView tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
 		
-		tvAttributeName.setText(attribute.getName());
+		tvAttributeName.setText(CategoryLookupMap.get(attribute.getName()).getAttributeDisplayLabel());
 		tvAttributeValue.setText(attribute.getValue().toString());
 		tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		switch (attribute.getState()) {

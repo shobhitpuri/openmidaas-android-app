@@ -24,11 +24,15 @@ import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.AttributeRegistrationHelper;
+import org.openmidaas.app.common.GenericAttributeParcel;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.CategoryLookupMap;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
+import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.EmailAttribute;
+import org.openmidaas.library.model.GenericAttribute;
+import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
@@ -38,12 +42,16 @@ import org.openmidaas.library.persistence.core.EmailDataCallback;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Base64;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -64,7 +72,7 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private TextView mAttributeInfoText;
 	
-	private AttributeListActivity mActivity;
+	private static AttributeListActivity mActivity;
 	
 	private AttributeExpandableListAdapter mAdapter;
 	
@@ -72,7 +80,17 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private LinkedHashMap<String, ListHeader> mCategoriesWithChildren = new LinkedHashMap<String, ListHeader>();
 	
-	private ArrayList<ListHeader> mCategoriesList = new ArrayList<ListHeader>(); 
+	private ArrayList<ListHeader> mCategoriesList = new ArrayList<ListHeader>();
+	
+	private BroadcastReceiver attributeEvent = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			refreshAttributeList();
+		}
+		
+	};
+	
 	
 	private Handler mHandler = new Handler() {
 		 @Override
@@ -119,12 +137,21 @@ public class AttributeListActivity extends AbstractActivity{
 			 @Override
 	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
 				// when the cell is clicked, check to see if the attribute state is pending verification.
-			//	if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 					AbstractAttribute<?> attribute = (AbstractAttribute<?>) mAdapter.getChild(groupPosition, childPosition);
 					if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
 						showCodeCollectionDialog(attribute);
+					} else {
+						UINotificationUtils.showAttributeModificationDialog(mActivity, attribute);
+//						GenericAttributeParcel parcel = new GenericAttributeParcel(attribute.getName());
+//						parcel.set
+//		                plarcel.setHelperText("Please provide the following information ");
+//		                parcel.addToList(CategoryLookupMap.get(attribute.getName()).getAttributeDisplayLabel(), InputType.TYPE_CLASS_TEXT);
+//		                parcel.setAttributeValue(attribute.getValue().toString());
+//		                Intent intent = new Intent(mActivity, GenericAttributeCollectionActivity.class);
+//		                intent.putExtra("uiparcel", parcel);
+//		                mActivity.startActivity(intent);
+//		                mActivity.finish();
 					}
-				//}
 				
 				return false;
 			}
@@ -173,10 +200,10 @@ public class AttributeListActivity extends AbstractActivity{
 					public void onClick(DialogInterface arg0, int arg1) {
 						try {
 							attribute.delete();
-							//refreshAttributeList();
+							refreshAttributeList();
 							
 							
-							mHandler.sendEmptyMessage(1);
+							//mHandler.sendEmptyMessage(1);
 						} catch (MIDaaSException e) {
 							
 						}
@@ -279,6 +306,18 @@ public class AttributeListActivity extends AbstractActivity{
 	}
 	
 	@Override
+	public void onResume() {
+		super.onResume();
+		registerReceiver(attributeEvent, new IntentFilter("attribute_event"));
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		unregisterReceiver(attributeEvent);
+	}
+	
+	@Override
 	protected int getLayoutResourceId() {
 		return (R.layout.list_view);
 	}
@@ -289,7 +328,7 @@ public class AttributeListActivity extends AbstractActivity{
 			@Override
 			public void run() {
 				mAdapter.clearExistingAttributeEntries();
-				
+				mCategoriesList.clear();
 				mCategoriesWithChildren.clear();
 				initAttributeCategories();
 				for(AbstractAttribute<?> attribute:mAttributeList) {
@@ -313,16 +352,7 @@ public class AttributeListActivity extends AbstractActivity{
 				mAttributeList = list;
 				if(list.isEmpty()) {
 					addItemsToList();
-					mActivity.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							
-							mAttributeInfoText.setText(mActivity.getString(R.string.noAttributesPresentText));
-							
-						}
-						
-					});
+					
 				} else {
 					addItemsToList();
 					

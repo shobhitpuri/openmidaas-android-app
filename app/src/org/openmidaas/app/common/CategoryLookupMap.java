@@ -32,14 +32,11 @@ public enum CategoryLookupMap {
 				list.add(map.getCategoryDisplayLabel());
 			}
 		}
-	}
 	
-	static {
 		for(CategoryLookupMap map: CategoryLookupMap.values())
 			lookup.put(map.getAttributeName(), map);
-	}
 	
-	static {
+	
 		for(CategoryLookupMap map: CategoryLookupMap.values()) {
 			ArrayList<CategoryLookupMap> list = enumForCateory.get(map.getCategoryDisplayLabel());
 			if(list ==  null) {

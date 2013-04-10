@@ -3,6 +3,7 @@ package org.openmidaas.app.activities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
@@ -86,7 +87,9 @@ public class GenericAttributeCollectionActivity extends AbstractActivity {
 		mHelperText.setText(mParcel.getHelperText());
 		Map<String, Integer> map = mParcel.getLabelToInputTypeMap();
 		mAttributeValuesList.clear();
+		mAttributeValue = mParcel.getAttributeValue();
 		mAttributeName = mParcel.getAttributeName();
+		
 		for(Map.Entry<String, Integer> entry:map.entrySet()) {
 			TableRow row = new TableRow(mActivity);
 			TextView label = new TextView(mActivity);
@@ -100,7 +103,12 @@ public class GenericAttributeCollectionActivity extends AbstractActivity {
 			row.addView(attributeValue);
 			mAttributesTableLayout.addView(row, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		}
-		
+		if(!(mAttributeValue.isEmpty())) {
+			String[] array = mAttributeValue.split("\\;");
+			for(int i=0; i<array.length; i++) {
+				mAttributeValuesList.get(i).setText(array[i]);
+			}
+		}
 	}
 
 	@Override
