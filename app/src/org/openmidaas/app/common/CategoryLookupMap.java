@@ -9,19 +9,23 @@ public enum CategoryLookupMap {
 	
 	/**
 	 * Map of UI label -> attribute name
+	 * category_label, attribute_name, attribute_label
 	 */
-	FIRST_NAME("Personal", "first_name"),
-	LAST_NAME("Personal", "last_name"),
-	DOB("Personal", "date_of_birth"),
-	EMAIL("Email", "email");
+	FIRST_NAME("Personal", "first_name", "First Name"),
+	LAST_NAME("Personal", "last_name", "Last Name"),
+	DOB("Personal", "dob", "Date of Birth"),
+	EMAIL("Email", "email", "Personal Email");
 	
 	private final String mCategoryDisplayLabel;
 	
 	private final String mAttributeName;
 	
+	private final String mAttributeDisplayLabel;
+	
 	private static final Map<String, CategoryLookupMap> lookup = new HashMap<String, CategoryLookupMap>();
 	private static final List<String> list = new ArrayList<String>();
-	
+	private static Map<String, ArrayList<CategoryLookupMap>> enumForCateory = new HashMap<String, ArrayList<CategoryLookupMap>>();
+	private static final List<String> attributeLabels = new ArrayList<String>();
 	static {
 		for(CategoryLookupMap map: CategoryLookupMap.values()) {
 			if(!(list.contains(map.getCategoryDisplayLabel()))) {
@@ -35,9 +39,24 @@ public enum CategoryLookupMap {
 			lookup.put(map.getAttributeName(), map);
 	}
 	
-	private CategoryLookupMap(String label, String name) {
+	static {
+		for(CategoryLookupMap map: CategoryLookupMap.values()) {
+			ArrayList<CategoryLookupMap> list = enumForCateory.get(map.getCategoryDisplayLabel());
+			if(list ==  null) {
+				list = new ArrayList<CategoryLookupMap>();
+				list.add(map);
+			} else {
+				list.add(map);
+			}
+			enumForCateory.put(map.getCategoryDisplayLabel(),list);
+		}
+	}
+	
+	
+	private CategoryLookupMap(String label, String name, String attributeLabel) {
 		this.mCategoryDisplayLabel = label;
 		this.mAttributeName = name;
+		this.mAttributeDisplayLabel = attributeLabel;
 	}
 	
 	public String getAttributeName() {
@@ -46,6 +65,10 @@ public enum CategoryLookupMap {
 	
 	public String getCategoryDisplayLabel() {
 		return mCategoryDisplayLabel;
+	}
+	
+	public String getAttributeDisplayLabel() {
+		return mAttributeDisplayLabel;
 	}
 	
 	/**
@@ -59,6 +82,19 @@ public enum CategoryLookupMap {
 	
 	public static List<String> getCategories() {
 		return list;
+	}
+	
+	public static ArrayList<CategoryLookupMap> getEnumsForCategory(String category) {
+		return enumForCateory.get(category);
+	}
+	
+	public static ArrayList<String> getLabelsForCategory(String category) {
+		ArrayList<CategoryLookupMap> list = enumForCateory.get(category);
+		ArrayList<String> labelsList = new ArrayList<String>();
+		for(int i=0; i<list.size(); i++) {
+			labelsList.add(list.get(i).getAttributeDisplayLabel());
+		}
+		return labelsList;
 	}
 
 }

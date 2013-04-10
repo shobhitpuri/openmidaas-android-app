@@ -117,11 +117,15 @@ public class AttributeListActivity extends AbstractActivity{
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
 
 			 @Override
-	            public boolean onChildClick(ExpandableListView arg0, View arg1, int arg2, int arg3, long arg4) {
-				// when the cell is clicked, check to see if the attribute state is pending verification. 
-				if(mAttributeList.get(arg2).getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-					showCodeCollectionDialog(mAttributeList.get(arg2));
-				}
+	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
+				// when the cell is clicked, check to see if the attribute state is pending verification.
+			//	if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+					AbstractAttribute<?> attribute = (AbstractAttribute<?>) mAdapter.getChild(groupPosition, childPosition);
+					if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
+						showCodeCollectionDialog(attribute);
+					}
+				//}
+				
 				return false;
 			}
 		});
@@ -134,7 +138,7 @@ public class AttributeListActivity extends AbstractActivity{
 					int position, long id) {
 				if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 					if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
-						showAttributeDetails((AbstractAttribute<?>) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id)));
+						showAttributeDetails(position, (AbstractAttribute<?>) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id)));
 					}
 					return true;
 				}
@@ -144,7 +148,7 @@ public class AttributeListActivity extends AbstractActivity{
 	}
 	
 	
-	private void showDeleteAttributeDialog(final AbstractAttribute<?> attribute, final String message) {
+	private void showDeleteAttributeDialog(final int position, final AbstractAttribute<?> attribute, final String message) {
 		mActivity.runOnUiThread(new Runnable() {
 
 			@Override
@@ -169,7 +173,10 @@ public class AttributeListActivity extends AbstractActivity{
 					public void onClick(DialogInterface arg0, int arg1) {
 						try {
 							attribute.delete();
-							refreshAttributeList();
+							//refreshAttributeList();
+							
+							
+							mHandler.sendEmptyMessage(1);
 						} catch (MIDaaSException e) {
 							
 						}
@@ -200,7 +207,7 @@ public class AttributeListActivity extends AbstractActivity{
 		return (mCategoriesList.indexOf(header));
 	}
 	
-	private void showAttributeDetails(AbstractAttribute<?> attribute) {
+	private void showAttributeDetails(int position, AbstractAttribute<?> attribute) {
 		String message = "Name: " + attribute.getName() + "\n" +
 				 "Value: " + attribute.getValue() + "\n"; 
 		String[] jwsParams = null;
@@ -218,7 +225,7 @@ public class AttributeListActivity extends AbstractActivity{
 			} catch(Exception e) {
 			}
 		}
-		showDeleteAttributeDialog(attribute, message);
+		showDeleteAttributeDialog(position, attribute, message);
 	}
 
 	private void showCodeCollectionDialog(final AbstractAttribute<?> attribute) {
