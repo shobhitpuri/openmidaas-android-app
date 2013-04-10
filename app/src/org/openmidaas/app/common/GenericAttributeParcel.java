@@ -12,6 +12,10 @@ public class GenericAttributeParcel implements Parcelable {
 	
 	private String mAttributeName;
 	
+	private String mAttributeValue = "";
+	
+	private long mAttributeId;
+	
 	private Map<String, Integer> mLabelToInputTypeMap; 
 	
 	private final String DEFAULT_HELPER_TEXT = "Please provide the following information";
@@ -40,6 +44,7 @@ public class GenericAttributeParcel implements Parcelable {
 		}
 		dest.writeString(mHelperText);
 		dest.writeString(mAttributeName);
+		dest.writeString(mAttributeValue);
 	}
 	
 	public static final Parcelable.Creator<GenericAttributeParcel> CREATOR = new Parcelable.Creator<GenericAttributeParcel>() {
@@ -65,6 +70,7 @@ public class GenericAttributeParcel implements Parcelable {
 		}
 		mHelperText = source.readString();
 		mAttributeName = source.readString();
+		mAttributeValue = source.readString();
 	}
 
 	public void addToList(String labelText, Integer intputType) {
@@ -89,5 +95,21 @@ public class GenericAttributeParcel implements Parcelable {
 	
 	public String getAttributeName() {
 		return mAttributeName;
+	}
+	
+	public void setAttributeValue(String value) {
+		this.mAttributeValue = value;
+	}
+	
+	public String getAttributeValue() {
+		return mAttributeValue;
+	}
+	
+	public void setAttributeId(long id) {
+		this.mAttributeId = id;
+	}
+	
+	public long getAttributeId() {
+		return mAttributeId;
 	}
 }

@@ -26,6 +26,7 @@ import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
+import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -153,14 +154,7 @@ public final class UINotificationUtils {
 	            public void onClick(DialogInterface dialog, int whichButton) {
 	                dialog.dismiss();
 	                int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-	                GenericAttributeParcel parcel = new GenericAttributeParcel(CategoryLookupMap.getEnumsForCategory("Personal").get(selectedPosition).getAttributeName());
-	                parcel.setHelperText("Please provide the following information ");
-	                parcel.addToList(items[selectedPosition].toString(), InputType.TYPE_CLASS_TEXT);
-	                //parcel.setAttributeName(CategoryLookupMap.getForCategory("Personal").get(selectedPosition));
-	                Intent intent = new Intent(activity, GenericAttributeCollectionActivity.class);
-	                intent.putExtra("uiparcel", parcel);
-	                activity.startActivity(intent);
-	                activity.finish();
+	                showAttributeValueCollectionDialog(activity, CategoryLookupMap.getEnumsForCategory("Personal").get(selectedPosition).getAttributeName(), items[selectedPosition].toString());
 	            }
 	        })
 	        .show();
@@ -168,6 +162,46 @@ public final class UINotificationUtils {
 			activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
 			activity.finish();
 		}
+	}
+	
+	public static void showAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
+		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+
+		alert.setTitle("Modifying " + attribute.getName());
+		alert.setMessage("Enter a new value and tap save");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(activity);
+		alert.setView(input);
+
+		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int whichButton) {
+			Editable value = input.getText();
+			try {
+				GenericAttribute generic = (GenericAttribute) attribute;
+				generic.setValue(value.toString());
+				AttributePersistenceCoordinator.saveAttribute(attribute);
+				activity.sendBroadcast(new Intent().setAction("attribute_event"));
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidAttributeValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MIDaaSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		  }
+		});
+
+		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		  public void onClick(DialogInterface dialog, int whichButton) {
+		    	
+		  }
+		});
+
+		alert.show();
 	}
 	
 	public static void showAttributeValueCollectionDialog( final Activity activity, final String attributeName, String label) {
@@ -183,18 +217,19 @@ public final class UINotificationUtils {
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
-//			try {
-//				GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
-//			} catch (IllegalArgumentException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (InvalidAttributeValueException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (MIDaaSException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			try {
+				GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
+				activity.sendBroadcast(new Intent().setAction("attribute_event"));
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidAttributeValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MIDaaSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		  }
 		});
 
