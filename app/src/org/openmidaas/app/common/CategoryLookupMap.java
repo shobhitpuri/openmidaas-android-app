@@ -13,8 +13,8 @@ public enum CategoryLookupMap {
 	 */
 	FIRST_NAME("Personal", "first_name", "First Name"),
 	LAST_NAME("Personal", "last_name", "Last Name"),
-	DOB("Personal", "dob", "Date of Birth"),
-	EMAIL("Email", "email", "Personal Email");
+	
+	EMAIL("Email", "email", "Personal");
 	
 	private final String mCategoryDisplayLabel;
 	
