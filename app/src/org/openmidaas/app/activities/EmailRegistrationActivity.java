@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.widget.EditText;
 
 
 public class EmailRegistrationActivity extends AbstractAttributeRegistrationActivity {
@@ -36,12 +37,17 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	
 	private EmailAttribute emailAttribute;
 	
+	private EditText mAttributeValue;
+	
 	private boolean isInitVerificationSuccess = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mActivity = this;
+		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue); 
+		mAttributeValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+		mAttributeValue.requestFocus();
 	}
 
 	@Override
@@ -49,7 +55,8 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 		Logger.info(getClass(), "starting email verification");
 			try {
 				if(!isInitVerificationSuccess) {
-					emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttributeWithValue(mAttributeValue.getText().toString());
+					emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttribute();
+					emailAttribute.setValue(mAttributeValue.getText().toString());
 				}
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
@@ -84,10 +91,6 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				cancelCurrentProgressDialog();
 				Logger.error(getClass(), e.getMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
-			} catch(MIDaaSException ex) {
-				cancelCurrentProgressDialog();
-				Logger.error(getClass(), ex.getError().getErrorMessage());
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getError().getErrorMessage());
 			}
 			
 	}
@@ -129,20 +132,12 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	}
 
 	@Override
-	public int getAttributeInputType() {
-		// set the attribute value collection UI element to type email so that
-		// a keyboard with email-specific characters is displayed. 
-		return (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-	}
-
-	@Override
 	protected String getTitlebarText() {
 		return ("Add an email");
 	}
-	
-	protected boolean hasTitlebarButtonVisible() { 
-		return false;
+
+	@Override
+	protected int getLayoutResourceId() {
+		return (R.layout.attribute_registration_view);
 	}
-	
-	
 }

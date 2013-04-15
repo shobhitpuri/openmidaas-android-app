@@ -13,14 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.common;
+package org.openmidaas.app.activities;
 
-import java.util.EnumMap;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class Constants {
-	public enum NAME { first_name, last_name, email, address };
-	public static final class AttributeNames {
-		public static final String FIRST_NAME = "first_name";
-		public static final String LAST_NAME = "last_name";
+import org.openmidaas.library.model.core.AbstractAttribute;
+
+public class AttributeCategory {
+	
+	private String mCategoryName;
+	
+	private List<AbstractAttribute<?>> mAttributeList;
+	
+	public AttributeCategory(String categoryName) {
+		this.mCategoryName = categoryName;
+		this.mAttributeList = new ArrayList<AbstractAttribute<?>>();
 	}
+	
+	public List<AbstractAttribute<?>> getAttributesInCategory(){
+		return mAttributeList;
+	}
+	
+	public String getCategory() {
+		return mCategoryName;
+	}
+
 }

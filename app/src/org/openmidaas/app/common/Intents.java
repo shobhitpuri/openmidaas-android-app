@@ -15,12 +15,6 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
-import java.util.EnumMap;
-
-public final class Constants {
-	public enum NAME { first_name, last_name, email, address };
-	public static final class AttributeNames {
-		public static final String FIRST_NAME = "first_name";
-		public static final String LAST_NAME = "last_name";
-	}
+public final class Intents {
+	public static final String ATTRIBUTE_LIST_CHANGE_EVENT = "org.openmidaas.app.ATTRIBUTE_LIST_CHANGE_EVENT";
 }
