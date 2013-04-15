@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.common;
+package org.openmidaas.app.activities;
 
-import java.util.EnumMap;
+import android.app.Activity;
 
-public final class Constants {
-	public enum NAME { first_name, last_name, email, address };
-	public static final class AttributeNames {
-		public static final String FIRST_NAME = "first_name";
-		public static final String LAST_NAME = "last_name";
-	}
+public interface AddButtonClickDelegate {
+	
+	public void onButtonClick(Activity activity);
+
 }

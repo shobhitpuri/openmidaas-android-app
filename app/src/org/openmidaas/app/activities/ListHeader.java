@@ -25,6 +25,8 @@ public class ListHeader {
 	private ArrayList<AbstractAttribute<?>> mList = new ArrayList<AbstractAttribute<?>>();
 	
 	private String mGroupLabel;
+
+	private AddButtonClickDelegate mTransition;
 	
 	public ListHeader(){}
 	
@@ -60,4 +62,13 @@ public class ListHeader {
 	public ArrayList<AbstractAttribute<?>> getList() {
 		return mList;
 	}
+	
+	public void setAddButtonHandler(AddButtonClickDelegate transition) {
+		mTransition = transition;
+	}
+	
+	public AddButtonClickDelegate getAddButtonHandler() {
+		return mTransition;
+	}
+	
 }

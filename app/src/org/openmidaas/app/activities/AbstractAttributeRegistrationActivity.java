@@ -27,8 +27,6 @@ import android.widget.TextView;
 
 public abstract class AbstractAttributeRegistrationActivity extends AbstractActivity {
 	
-	protected EditText mAttributeValue;
-	
 	protected EditText mAttributeVerificationCode;
 	
 	protected Button mBtnStartAttributeVerification;
@@ -40,15 +38,12 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue);
 		mAttributeVerificationCode = (EditText)findViewById(R.id.etVerificationCode);
 		mBtnStartAttributeVerification = (Button)findViewById(R.id.btnStartAttributeVerification);
 		mBtnCompleteAttributeVerification = (Button)findViewById(R.id.btnCompleteAttributeVerification);
 		mInitVerificationHelperText = (TextView)findViewById(R.id.tvStartVerificationInfo);
-		mAttributeValue.setInputType(getAttributeInputType());
 		mInitVerificationHelperText.setText(getInitVerificationHelpText());
 		mBtnCompleteAttributeVerification.setEnabled(false);
-		mAttributeValue.requestFocus();
 		mBtnStartAttributeVerification.setOnClickListener(new View.OnClickListener() {
 			
 			@Override	
@@ -71,14 +66,6 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 			}
 		});
 	} 
-	
-	/**
-	 * Override if you want the titlebar to have a 
-	 * button on the top right side. 
-	 */
-	protected boolean hasTitlebarButtonVisible() { 
-		return true;
-	}
 	
 	protected void cancelCurrentProgressDialog() {
 		this.runOnUiThread(new Runnable() {
@@ -103,13 +90,6 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	protected String getProgressDialogMessage() {
 		return (getString(R.string.loadingText));
 	}
-	
-	@Override
-	protected int getLayoutResourceId() {
-		return (R.layout.attribute_registration_view);
-	}
-	
-	public abstract int getAttributeInputType();
 	
 	/**
 	 * Override this to return your custom help text to display in the initialize

@@ -24,9 +24,11 @@ import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.AttributeRegistrationHelper;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.GenericAttributeParcel;
+import org.openmidaas.app.common.Intents;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.common.CategoryLookupMap;
+import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.AttributeFactory;
@@ -82,6 +84,8 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private ArrayList<ListHeader> mCategoriesList = new ArrayList<ListHeader>();
 	
+	private List<AttributeCategory> mCategoryList = new ArrayList<AttributeCategory>();
+	
 	private BroadcastReceiver attributeEvent = new BroadcastReceiver() {
 
 		@Override
@@ -91,7 +95,6 @@ public class AttributeListActivity extends AbstractActivity{
 		
 	};
 	
-	
 	private Handler mHandler = new Handler() {
 		 @Override
          public void handleMessage(Message msg)
@@ -100,16 +103,38 @@ public class AttributeListActivity extends AbstractActivity{
              for(int i=0; i<mAdapter.getGroupCount(); i++) {
             	 mAttributeListView.expandGroup(i);
              }
-             //UINotificationUtils.dismissIndeterministicProgressDialog(mActivity);
              super.handleMessage(msg);
          }
 		
 	};
 	
 	private void initAttributeCategories() {
-		for(String s:CategoryLookupMap.getCategories()) {
+		for(String s:CategoryMap.getCategories()) {
 			ListHeader header = new ListHeader();
+			
 			header.setGroupName(s);
+			if(s.equalsIgnoreCase("Personal")) {
+				header.setAddButtonHandler(new AddButtonClickDelegate() {
+
+					@Override
+					public void onButtonClick(Activity activity) {
+						Logger.debug(getClass(), "nothing to implement");
+					}
+					
+				});
+				header.getList().add(AttributeFactory.getGenericAttributeFactory().setAttributeName(Constants.AttributeNames.FIRST_NAME).createAttribute());
+				header.getList().add(AttributeFactory.getGenericAttributeFactory().setAttributeName(Constants.AttributeNames.LAST_NAME).createAttribute());
+			} else if(s.equalsIgnoreCase("Email")) {
+				header.setAddButtonHandler(new AddButtonClickDelegate() {
+
+					@Override
+					public void onButtonClick(Activity activity) {
+						activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
+						activity.finish();
+					}
+				
+				});
+			}
 			mCategoriesWithChildren.put(s, header);
 			mCategoriesList.add(header);
 		}
@@ -127,6 +152,7 @@ public class AttributeListActivity extends AbstractActivity{
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		
 		mAdapter = new AttributeExpandableListAdapter(mActivity, mCategoriesList);
+		//mAdapter = new AttributeExpandableListAdapter(mActivity, mCategoryList);
 		mAttributeListView.setAdapter(mAdapter);
 		
 		refreshAttributeList();
@@ -142,15 +168,6 @@ public class AttributeListActivity extends AbstractActivity{
 						showCodeCollectionDialog(attribute);
 					} else {
 						UINotificationUtils.showAttributeModificationDialog(mActivity, attribute);
-//						GenericAttributeParcel parcel = new GenericAttributeParcel(attribute.getName());
-//						parcel.set
-//		                plarcel.setHelperText("Please provide the following information ");
-//		                parcel.addToList(CategoryLookupMap.get(attribute.getName()).getAttributeDisplayLabel(), InputType.TYPE_CLASS_TEXT);
-//		                parcel.setAttributeValue(attribute.getValue().toString());
-//		                Intent intent = new Intent(mActivity, GenericAttributeCollectionActivity.class);
-//		                intent.putExtra("uiparcel", parcel);
-//		                mActivity.startActivity(intent);
-//		                mActivity.finish();
 					}
 				
 				return false;
@@ -164,7 +181,7 @@ public class AttributeListActivity extends AbstractActivity{
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-					if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
+					if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) { 
 						showAttributeDetails(position, (AbstractAttribute<?>) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id)));
 					}
 					return true;
@@ -175,64 +192,38 @@ public class AttributeListActivity extends AbstractActivity{
 	}
 	
 	
-	private void showDeleteAttributeDialog(final int position, final AbstractAttribute<?> attribute, final String message) {
-		mActivity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				new AlertDialog.Builder(mActivity)
-			    .setTitle("Delete")
-			    .setMessage(message)
-			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-							AttributeRegistrationHelper.verifyAttribute(mActivity, "sending email", "email sent", attribute);
-						} else {
-							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
-						}
-					}
-				})
-			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						try {
-							attribute.delete();
-							refreshAttributeList();
-							
-							
-							//mHandler.sendEmptyMessage(1);
-						} catch (MIDaaSException e) {
-							
-						}
-					}
-			    })
-			     .show();
-			}
-			
-		});
-	}
+	
 	
 	private int addAttributeToCategory(AbstractAttribute<?> attribute) {
-		Logger.debug(getClass(), CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
-		ListHeader header = mCategoriesWithChildren.get(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
+		Logger.debug(getClass(), CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
+		ListHeader header = mCategoriesWithChildren.get(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
 		if(header == null) {
 			header = new ListHeader();
-			header.setGroupName(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel());
+			header.setGroupName(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
 			
-			mCategoriesWithChildren.put(CategoryLookupMap.get(attribute.getName()).getCategoryDisplayLabel(), header);
+			mCategoriesWithChildren.put(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel(), header);
 			mCategoriesList.add(header);
 		}
 		
 		ArrayList<AbstractAttribute<?>> attributeChildrenList = header.getList();
-		attributeChildrenList.add(attribute);
+		if(attributeChildrenList.isEmpty()) {
+			attributeChildrenList.add(attribute);
+		} else {
+			int i=0;
+			for(AbstractAttribute<?> a:attributeChildrenList) {
+				if(a.getName().equalsIgnoreCase(attribute.getName())) {
+					attributeChildrenList.set(i, attribute);	
+				} 
+				i++;
+			}
+		}
+		//attributeChildrenList.add(attribute);
 		header.setList(attributeChildrenList);
 		
 		
 		return (mCategoriesList.indexOf(header));
 	}
+	
 	
 	private void showAttributeDetails(int position, AbstractAttribute<?> attribute) {
 		String message = "Name: " + attribute.getName() + "\n" +
@@ -252,7 +243,7 @@ public class AttributeListActivity extends AbstractActivity{
 			} catch(Exception e) {
 			}
 		}
-		showDeleteAttributeDialog(position, attribute, message);
+		UINotificationUtils.showDeleteAttributeDialog(mActivity,attribute, message);
 	}
 
 	private void showCodeCollectionDialog(final AbstractAttribute<?> attribute) {
@@ -308,7 +299,7 @@ public class AttributeListActivity extends AbstractActivity{
 	@Override
 	public void onResume() {
 		super.onResume();
-		registerReceiver(attributeEvent, new IntentFilter("attribute_event"));
+		registerReceiver(attributeEvent, new IntentFilter(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 	}
 	
 	@Override
@@ -331,8 +322,9 @@ public class AttributeListActivity extends AbstractActivity{
 				mCategoriesList.clear();
 				mCategoriesWithChildren.clear();
 				initAttributeCategories();
+//				initAttributes();
 				for(AbstractAttribute<?> attribute:mAttributeList) {
-					
+					//addAttributes(attribute);
 					addAttributeToCategory(attribute);
 				}
 				mHandler.sendEmptyMessage(1);
@@ -350,13 +342,7 @@ public class AttributeListActivity extends AbstractActivity{
 			@Override
 			public void onSuccess(final List<AbstractAttribute<?>> list) {
 				mAttributeList = list;
-				if(list.isEmpty()) {
-					addItemsToList();
-					
-				} else {
-					addItemsToList();
-					
-				}
+				addItemsToList();
 			}
 
 			@Override

@@ -21,6 +21,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.activities.EmailRegistrationActivity;
 import org.openmidaas.app.activities.GenericAttributeCollectionActivity;
 import org.openmidaas.app.activities.ListHeader;
+import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.InvalidAttributeValueException;
@@ -87,30 +88,6 @@ public final class UINotificationUtils {
 		});
 	}
 	
-	public static void showDeleteAttributeDialog(final Activity activity, final AbstractAttribute<?> attribute, final String message) {
-		activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				new AlertDialog.Builder(activity)
-			    .setTitle("Delete")
-			    .setMessage(message)
-			    .setNeutralButton("Delete",  new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						try {
-							attribute.delete();
-						} catch (MIDaaSException e) {
-							
-						}
-					}
-			    })
-			     .show();
-			}
-			
-		});
-	}
 	
 	public static void showIndeterministicProgressDialog(final Activity activity, final String message) {
 		activity.runOnUiThread(new Runnable() {
@@ -142,32 +119,10 @@ public final class UINotificationUtils {
 		
 	}
 	
-	public static void showAttributeChoiceDialog(final ListHeader header, final Activity activity) {
-		if (header.getGroupName().equalsIgnoreCase("Personal")) {
-			//final CharSequence[] items = {"First Name", "Last Name"};
-			ArrayList<String> list = CategoryLookupMap.getLabelsForCategory("Personal");
-			final CharSequence[] items = list.toArray(new CharSequence[list.size()]);
-			new AlertDialog.Builder(activity)
-			.setTitle("Please select the value you wish to enter")
-	        .setSingleChoiceItems(items, 0, null)
-	        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int whichButton) {
-	                dialog.dismiss();
-	                int selectedPosition = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
-	                showAttributeValueCollectionDialog(activity, CategoryLookupMap.getEnumsForCategory("Personal").get(selectedPosition).getAttributeName(), items[selectedPosition].toString());
-	            }
-	        })
-	        .show();
-		} else {
-			activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-			activity.finish();
-		}
-	}
-	
 	public static void showAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-		alert.setTitle("Modifying " + attribute.getName());
+		alert.setTitle("Enter " + attribute.getName());
 		alert.setMessage("Enter a new value and tap save");
 
 		// Set an EditText view to get user input 
@@ -180,8 +135,8 @@ public final class UINotificationUtils {
 			try {
 				GenericAttribute generic = (GenericAttribute) attribute;
 				generic.setValue(value.toString());
-				AttributePersistenceCoordinator.saveAttribute(attribute);
-				activity.sendBroadcast(new Intent().setAction("attribute_event"));
+				generic.save();
+				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -204,6 +159,44 @@ public final class UINotificationUtils {
 		alert.show();
 	}
 	
+	public static void showDeleteAttributeDialog(final Activity mActivity, final AbstractAttribute<?> attribute, final String message) {
+		mActivity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				new AlertDialog.Builder(mActivity)
+			    .setTitle("Delete")
+			    .setMessage(message)
+			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
+							AttributeRegistrationHelper.verifyAttribute(mActivity, "sending email", "email sent", attribute);
+						} else {
+							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
+						}
+					} 
+				})
+			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						try {
+							attribute.delete();
+							mActivity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+						} catch (MIDaaSException e) {
+							
+						}
+					}
+			    })
+			     .show();
+			}
+			
+		});
+	}
+	
+	
 	public static void showAttributeValueCollectionDialog( final Activity activity, final String attributeName, String label) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
@@ -219,7 +212,7 @@ public final class UINotificationUtils {
 			Editable value = input.getText();
 			try {
 				GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
-				activity.sendBroadcast(new Intent().setAction("attribute_event"));
+				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
