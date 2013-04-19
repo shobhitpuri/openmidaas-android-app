@@ -22,7 +22,7 @@ public class ListHeader {
 	
 	private String mGroupName;
 	
-	private ArrayList<AbstractAttribute<?>> mList = new ArrayList<AbstractAttribute<?>>();
+	private ArrayList<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
 	
 	private String mGroupLabel;
 
@@ -55,11 +55,11 @@ public class ListHeader {
 		return mGroupName;
 	}
 	
-	public void setList(ArrayList<AbstractAttribute<?>> list) {
+	public void setList(ArrayList<AbstractAttributeListElement> list) {
 		this.mList = list;
 	}
 	
-	public ArrayList<AbstractAttribute<?>> getList() {
+	public ArrayList<AbstractAttributeListElement> getList() {
 		return mList;
 	}
 	

@@ -26,6 +26,8 @@ import org.openmidaas.app.common.GenericAttributeParcel;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
+import org.openmidaas.library.model.GenericAttributeFactory;
+import org.openmidaas.library.model.InvalidAttributeNameException;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.MIDaaSException;
 
@@ -80,13 +82,19 @@ public class GenericAttributeCollectionActivity extends AbstractActivity {
 					
 				}
 				try {
-					GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(mAttributeName, mAttributeValue);
+					//GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(mAttributeName, mAttributeValue);
+					GenericAttribute attribute = GenericAttributeFactory.createAttribute(mAttributeName);
+					attribute.setValue(mAttributeValue);
+					attribute.save();
 				} catch (IllegalArgumentException e) {
 					
 				} catch (InvalidAttributeValueException e) {
 					
 				} catch (MIDaaSException e) {
 					UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+				} catch (InvalidAttributeNameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				startActivity(new Intent(mActivity, AttributeListActivity.class));
 				mActivity.finish();
