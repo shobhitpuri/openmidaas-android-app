@@ -20,30 +20,25 @@ import java.util.List;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.CategoryMap;
-import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.core.AbstractAttribute;
-
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	private Activity mActivity;
 
-	private ArrayList<ListHeader> mGroupHeaders;
+	private List<ListHeader> mGroupHeaders;
 	
 	//private List<AttributeCategory> mCategories;
 	
-	public AttributeExpandableListAdapter(Activity activity, ArrayList<ListHeader> groupHeaders) {
+	public AttributeExpandableListAdapter(Activity activity, List<ListHeader> groupHeaders) {
 		this.mActivity = activity;
 		this.mGroupHeaders = groupHeaders;
 	}
@@ -72,32 +67,33 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
 			ViewGroup parent) {
-		AbstractAttribute<?> attribute = (AbstractAttribute<?>)getChild(groupPosition, childPosition);
+		AbstractAttributeListElement listElement = (AbstractAttributeListElement)getChild(groupPosition, childPosition);
+		AbstractAttribute<?> attribute = listElement.getAttribute();
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_child_layout, null);
 		}
-		
-		TextView tvAttributeName = (TextView)convertView.findViewById(R.id.tvAttributeName);
-		TextView tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
-		tvAttributeName.setText("");
-		tvAttributeValue.setText("");
-		tvAttributeName.setText(CategoryMap.get(attribute.getName()).getAttributeDisplayLabel());
-		if(attribute.getValue() != null) {
-			tvAttributeValue.setText(attribute.getValue().toString());
-		}
-		tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-		switch (attribute.getState()) {
-			case PENDING_VERIFICATION:
-				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.warning, 0);
-				break;
-			case VERIFIED:
-				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
-				break;
-			default:
-				break;
-		}
+			TextView tvAttributeName = (TextView)convertView.findViewById(R.id.tvAttributeName);
+			TextView tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
+			tvAttributeName.setText("");
+			tvAttributeValue.setText("");
+			
+				tvAttributeName.setText(CategoryMap.get(attribute.getName()).getAttributeDisplayLabel());
+				if(attribute.getValue() != null) {
+					tvAttributeValue.setText(attribute.getValue().toString());
+				}
+				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				switch (attribute.getState()) {
+					case PENDING_VERIFICATION:
+						tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.warning, 0);
+						break;
+					case VERIFIED:
+						tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
+						break;
+					default:
+						break;
+				}
 		
 		return convertView;
 	}

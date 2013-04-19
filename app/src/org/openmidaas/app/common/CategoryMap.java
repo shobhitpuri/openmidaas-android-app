@@ -28,7 +28,7 @@ public enum CategoryMap {
 	 */
 	FIRST_NAME("Personal", "first_name", "First Name"),
 	LAST_NAME("Personal", "last_name", "Last Name"),
-	EMAIL("Email", "email", "Personal");
+	EMAIL("Email", "email", "Email");
 	
 	private final String mCategoryDisplayLabel;
 	

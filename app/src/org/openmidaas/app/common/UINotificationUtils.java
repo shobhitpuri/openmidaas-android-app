@@ -24,8 +24,11 @@ import org.openmidaas.app.activities.ListHeader;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
+import org.openmidaas.library.model.GenericAttributeFactory;
+import org.openmidaas.library.model.InvalidAttributeNameException;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
+import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 
@@ -159,6 +162,52 @@ public final class UINotificationUtils {
 		alert.show();
 	}
 	
+	public static void showCodeCollectionDialog(final Activity activity, final AbstractAttribute<?> attribute) {
+		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+
+		alert.setTitle("Verify " + attribute.getName());
+		alert.setMessage("Enter the PIN you received below ");
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(activity);
+		alert.setView(input);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int whichButton) {
+			Editable value = input.getText();
+			attribute.completeVerification(value.toString(), new CompleteVerificationCallback() {
+
+				@Override
+				public void onSuccess() {
+					activity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+						}
+						
+					});
+					
+				}
+
+				@Override
+				public void onError(MIDaaSException exception) {
+					UINotificationUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
+				}
+				
+			});
+		  }
+		});
+
+		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		  public void onClick(DialogInterface dialog, int whichButton) {
+		    	
+		  }
+		});
+
+		alert.show();
+	}
+	
 	public static void showDeleteAttributeDialog(final Activity mActivity, final AbstractAttribute<?> attribute, final String message) {
 		mActivity.runOnUiThread(new Runnable() {
 
@@ -211,7 +260,10 @@ public final class UINotificationUtils {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			try {
-				GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
+				//GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
+				GenericAttribute attribute = GenericAttributeFactory.createAttribute(attributeName);
+				attribute.setValue(value.toString());
+				attribute.save();
 				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -220,6 +272,9 @@ public final class UINotificationUtils {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (MIDaaSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidAttributeNameException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

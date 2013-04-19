@@ -20,6 +20,7 @@ import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.EmailAttribute;
+import org.openmidaas.library.model.EmailAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
@@ -55,8 +56,10 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 		Logger.info(getClass(), "starting email verification");
 			try {
 				if(!isInitVerificationSuccess) {
-					emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttribute();
+					//emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttribute();
+					emailAttribute = EmailAttributeFactory.createAttribute();
 					emailAttribute.setValue(mAttributeValue.getText().toString());
+					
 				}
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
@@ -65,6 +68,19 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						Logger.info(getClass(), "email verification started successfully");
 						UINotificationUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
 						isInitVerificationSuccess = true;
+						try {
+							emailAttribute.save();
+						} catch (MIDaaSException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidAttributeValueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						EmailAttributeListElement emailElement = new EmailAttributeListElement();
+						emailElement.setAttribute(emailAttribute);
+						CategoryManager.getInstance().getMap().get("Email").getList().add(emailElement);
+						
 						mActivity.runOnUiThread(new Runnable() {
 
 							@Override
@@ -91,11 +107,12 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				cancelCurrentProgressDialog();
 				Logger.error(getClass(), e.getMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
-			}
+			} 
 			
 	}
 
 
+	
 	
 	
 	@Override
