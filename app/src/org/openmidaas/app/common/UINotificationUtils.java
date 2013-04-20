@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import org.openmidaas.app.R;
 import org.openmidaas.app.activities.EmailRegistrationActivity;
 import org.openmidaas.app.activities.GenericAttributeCollectionActivity;
-import org.openmidaas.app.activities.ListHeader;
+import org.openmidaas.app.activities.AbstractListHeader;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
