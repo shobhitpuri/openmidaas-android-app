@@ -34,11 +34,11 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	private Activity mActivity;
 
-	private List<ListHeader> mGroupHeaders;
+	private List<AbstractListHeader> mGroupHeaders;
 	
 	//private List<AttributeCategory> mCategories;
 	
-	public AttributeExpandableListAdapter(Activity activity, List<ListHeader> groupHeaders) {
+	public AttributeExpandableListAdapter(Activity activity, List<AbstractListHeader> groupHeaders) {
 		this.mActivity = activity;
 		this.mGroupHeaders = groupHeaders;
 	}
@@ -124,7 +124,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView,
             ViewGroup parent) {
-		final ListHeader header = (ListHeader)getGroup(groupPosition);
+		final AbstractListHeader header = (AbstractListHeader)getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_group_layout, null);
