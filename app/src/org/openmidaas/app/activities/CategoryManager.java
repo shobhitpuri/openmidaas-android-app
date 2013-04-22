@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 SecureKey Technologies Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package org.openmidaas.app.activities;
 
 import java.util.ArrayList;
@@ -11,13 +26,13 @@ public class CategoryManager {
 	
 	private static CategoryManager mInstance = null;
 	
-	private List<ListHeader> mCategoriesList;
+	private List<AbstractListHeader> mCategoriesList;
 	
-	private Map<String, ListHeader> mListMap;
+	private Map<String, AbstractListHeader> mListMap;
 	
 	private CategoryManager() {
-		mCategoriesList = new ArrayList<ListHeader>();
-		mListMap = new HashMap<String, ListHeader>();
+		mCategoriesList = new ArrayList<AbstractListHeader>();
+		mListMap = new HashMap<String, AbstractListHeader>();
 	}
 	
 	public static synchronized CategoryManager getInstance() {
@@ -27,11 +42,11 @@ public class CategoryManager {
 		return mInstance;
 	}
 	
-	public List<ListHeader> getCategoriesList() {
+	public List<AbstractListHeader> getCategoriesList() {
 		return mCategoriesList;
 	}
 	
-	public Map<String, ListHeader> getMap() {
+	public Map<String, AbstractListHeader> getMap() {
 		return mListMap;
 	}
 
