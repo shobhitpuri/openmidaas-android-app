@@ -87,6 +87,9 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
+				if(mProgressDialog.isShowing()) {
+					mProgressDialog.dismiss();
+				}
 				tvRegistrationStatus.setText(getString(R.string.registration_error_text));
 			}
 			
