@@ -13,48 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui;
 
 import java.util.ArrayList;
-import org.openmidaas.library.model.core.AbstractAttribute;
 
-public abstract class AbstractListHeader {
+/**
+ * 
+ * ADT for a list header. 
+ *
+ */
+public abstract class AbstractListHeader implements AddButtonTouchDelegate{
 	
 	protected String mGroupName;
 	
 	protected ArrayList<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
-	
-	protected String mGroupLabel;
 
-	protected AddButtonClickDelegate mTransition;
+	protected AddButtonTouchDelegate addButtonDelegate;
 	
-	public void setGroupName(String name) {
-		this.mGroupName = name;
-	}
-	
-	public void setGroupLabel(String label) {
-		this.mGroupLabel = label;
-	}
-	
-	public String getGroupLabel() {
-		return mGroupLabel;
-	}
-	
+	/**
+	 * Returns the group name
+	 * @return the group name 
+	 */
 	public String getGroupName() {
 		return mGroupName;
 	}
 	
-	public void setList(ArrayList<AbstractAttributeListElement> list) {
-		this.mList = list;
-	}
-	
+	/**
+	 * Returns attribute list element array
+	 * @return attribute list element array
+	 */
 	public ArrayList<AbstractAttributeListElement> getList() {
 		return mList;
 	}
 	
-	protected abstract void setOnAddButtonClick();
-	
-	public AddButtonClickDelegate getAddButtonHandler() {
-		return mTransition;
+	/**
+	 * Returns the delegate for the add button
+	 * @return delegate for the add button 
+	 */
+	public AddButtonTouchDelegate getAddButtonHandler() {
+		return addButtonDelegate;
 	}
 }

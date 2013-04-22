@@ -15,23 +15,20 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.activities.ui.AbstractListHeader;
+import org.openmidaas.app.common.Constants;
+
 import android.app.Activity;
 
-public class PersonalListHeader extends AbstractListHeader implements AddButtonClickDelegate {
+public class PersonalListHeader extends AbstractListHeader {
 	
 	public PersonalListHeader() {
-		mGroupName = "Personal";
-		mTransition = this;
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_PERSONAL;
+		addButtonDelegate = this;
 	}
 
 	@Override
-	protected void setOnAddButtonClick() {
-		
-	}
-
-	@Override
-	public void onButtonClick(Activity activity) {
-		// TODO Auto-generated method stub
+	public void onAddButtonClick(Activity activity) {
 		
 	}
 

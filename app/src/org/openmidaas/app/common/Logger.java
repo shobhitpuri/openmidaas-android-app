@@ -26,7 +26,6 @@ import android.util.Log;
 public class Logger{
 	
 	private static final int VERBOSE = 2; 	
-	private static final int ASSERT = 7; 	
 	private static final int ERROR = 4; 		
 	private static final int WARNING = 8; 	
 	private static final int INFO = 16; 		

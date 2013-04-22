@@ -18,13 +18,10 @@ package org.openmidaas.app.activities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.GenericAttributeParcel;
 import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;

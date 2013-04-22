@@ -15,67 +15,40 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-
 import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.common.AttributeRegistrationHelper;
+import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
+import org.openmidaas.app.activities.ui.AbstractListHeader;
 import org.openmidaas.app.common.Constants;
-import org.openmidaas.app.common.GenericAttributeParcel;
 import org.openmidaas.app.common.Intents;
-import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
-import org.openmidaas.library.model.AttributeFactory;
-import org.openmidaas.library.model.EmailAttribute;
-import org.openmidaas.library.model.EmailAttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
-import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
-import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.AttributeDataCallback;
-import org.openmidaas.library.persistence.core.EmailDataCallback;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.InputType;
 import android.util.Base64;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class AttributeListActivity extends AbstractActivity{
 
 	private ExpandableListView mAttributeListView;
-	
-	private TextView mAttributeInfoText;
 	
 	private static AttributeListActivity mActivity;
 	
@@ -83,10 +56,9 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private List<AbstractAttribute<?>> mAttributeList;
 	
-	private LinkedHashMap<String, AbstractListHeader> mCategoryToListMap = new LinkedHashMap<String, AbstractListHeader>();
-	
-	private ArrayList<AbstractListHeader> mCategoriesList = new ArrayList<AbstractListHeader>();
-	
+	/**
+	 * Broadcast receiver that will refresh the attribute list. 
+	 */
 	private BroadcastReceiver attributeEvent = new BroadcastReceiver() {
 
 		@Override
@@ -95,6 +67,7 @@ public class AttributeListActivity extends AbstractActivity{
 		}
 		
 	};
+	
 	
 	private Handler mHandler = new Handler() {
 		 @Override
@@ -109,56 +82,47 @@ public class AttributeListActivity extends AbstractActivity{
 		
 	};
 	
+	/**
+	 * Creates an empty list of attributes in the order specified below. 
+	 * E.g., Personal Info (firstname, lastname), Email
+	 * Add your category to the end of the list. 
+	 */
 	private void createEmptyAttributeList() {
 		CategoryManager.getInstance().getCategoriesList().clear();
-		CategoryManager.getInstance().getMap().clear();
-		PersonalListHeader header = new PersonalListHeader();
 		try {
-			GenericAttribute firstName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME);
-			GenericAttribute lastName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME);
-			header.getList().add(new GenericAttributeListElement(firstName));
-			header.getList().add(new GenericAttributeListElement(lastName));
-			CategoryManager.getInstance().getCategoriesList().add(header);
-			CategoryManager.getInstance().getMap().put("Personal", header);
+			PersonalListHeader personalHeader = new PersonalListHeader();
+			personalHeader.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME)));
+			personalHeader.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME)));
+			CategoryManager.getInstance().getCategoriesList().add(personalHeader);
 			EmailListHeader emailHeader = new EmailListHeader();
-			
-			CategoryManager.getInstance().getMap().put("Email", emailHeader);
 			CategoryManager.getInstance().getCategoriesList().add(emailHeader);
 			
 		}catch (InvalidAttributeNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}
 	}
-	
-	
-	
 	
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		mAttributeListView = (ExpandableListView)findViewById(R.id.listViewAttributes);
-		mAttributeInfoText = (TextView)findViewById(R.id.tvAttributeListInfo);
 		mAttributeListView.setClickable(true);
 		mAttributeListView.setItemsCanFocus(true);
 		mActivity = this;
 		mAttributeListView.setGroupIndicator(null);
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		
 		mAdapter = new AttributeExpandableListAdapter(mActivity, CategoryManager.getInstance().getCategoriesList());
-		//mAdapter = new AttributeExpandableListAdapter(mActivity, mCategoryList);
 		mAttributeListView.setAdapter(mAdapter);
-		
 		refreshAttributeList();
-		
-		
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
 
 			 @Override
 	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
 				// when the cell is clicked, check to see if the attribute state is pending verification.
 				 AbstractAttributeListElement listElement = (AbstractAttributeListElement) mAdapter.getChild(groupPosition, childPosition);
-				 listElement.getOnTouchDelegate().onTouch(mActivity);
+				 if(listElement != null) {
+					 listElement.getOnTouchDelegate().onTouch(mActivity);
+				 }
 				
 				return false;
 			}
@@ -186,8 +150,6 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	
 	private void addAttributeToCategory(AbstractAttribute<?> attribute) {
-		
-		//AbstractListHeader header = CategoryManager.getInstance().getMap().get(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
 		AbstractListHeader header;
 		if(attribute.getName().equalsIgnoreCase("first_name")) {
 			header = CategoryManager.getInstance().getCategoriesList().get(0);
@@ -248,19 +210,11 @@ public class AttributeListActivity extends AbstractActivity{
 			@Override
 			public void run() {
 				mAdapter.clearExistingAttributeEntries();
-//				mCategoriesList.clear();
-//				mCategoryToListMap.clear();
+				createEmptyAttributeList();
+				for(AbstractAttribute<?> attribute:mAttributeList) {
+					addAttributeToCategory(attribute);
+				}  
 				
-//				initAttributes();
-				if(mAttributeList.size() == 0) {
-					createEmptyAttributeList();
-				} else {
-					createEmptyAttributeList();
-					for(AbstractAttribute<?> attribute:mAttributeList) {
-						//addAttributes(attribute);
-						addAttributeToCategory(attribute);
-					}  
-				}
 				mHandler.sendEmptyMessage(1);
 			}
 			
@@ -291,10 +245,6 @@ public class AttributeListActivity extends AbstractActivity{
 
 	@Override
 	protected String getTitlebarText() {
-		return ("Your Info");
-	}
-	
-	protected boolean hasTitlebarButtonVisible() { 
-		return true;
+		return ("Your Information");
 	}
 }

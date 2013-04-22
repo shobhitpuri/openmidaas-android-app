@@ -15,14 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
-import java.util.ArrayList;
-
-import org.openmidaas.app.R;
-import org.openmidaas.app.activities.EmailRegistrationActivity;
-import org.openmidaas.app.activities.GenericAttributeCollectionActivity;
-import org.openmidaas.app.activities.AbstractListHeader;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
-import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
@@ -30,15 +23,11 @@ import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
-import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
-import android.text.InputType;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -49,7 +38,6 @@ import android.widget.Toast;
  */
 public final class UINotificationUtils {
 	
-	private static ProgressDialog mProgressDialog = null;
 	
 	/**
 	 * Displays a "OK" dialog box.
@@ -92,37 +80,7 @@ public final class UINotificationUtils {
 	}
 	
 	
-	public static void showIndeterministicProgressDialog(final Activity activity, final String message) {
-		activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				mProgressDialog = new ProgressDialog(activity);
-				mProgressDialog.setMessage(message);
-				mProgressDialog.setCanceledOnTouchOutside(false);
-				mProgressDialog.show();
-			}
-		});
-	}
-	
-	public static void dismissIndeterministicProgressDialog(final Activity activity) {
-		activity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				if(mProgressDialog != null) {
-					if(mProgressDialog.isShowing()) {
-						mProgressDialog.dismiss();
-						mProgressDialog = null;
-					}
-				}
-			}
-			
-		});
-		
-	}
-	
-	public static void showAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
+	public static void showGenericAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
 		alert.setTitle("Enter " + attribute.getName());
@@ -141,14 +99,11 @@ public final class UINotificationUtils {
 				generic.save();
 				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			} catch (InvalidAttributeValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			} catch (MIDaaSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
 			}
 		  }
 		});

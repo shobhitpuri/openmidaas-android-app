@@ -21,9 +21,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.TextView;
 
 /**

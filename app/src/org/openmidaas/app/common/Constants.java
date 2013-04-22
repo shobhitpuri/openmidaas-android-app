@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
-import java.util.EnumMap;
 
 public final class Constants {
 	public enum NAME { first_name, last_name, email, address };
@@ -23,4 +22,8 @@ public final class Constants {
 		public static final String FIRST_NAME = "first_name";
 		public static final String LAST_NAME = "last_name";
 	}
+	public static final String ATTRIBUTE_CATEGORY_PERSONAL = "Personal";
+	public static final String ATTRIBUTE_CATEGORY_EMAIL = "Email";
+	public static final String[] ATTRIBUTE_CATEGORY_LABELS = {ATTRIBUTE_CATEGORY_PERSONAL, ATTRIBUTE_CATEGORY_EMAIL};
+	
 }

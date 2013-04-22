@@ -13,32 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui;
 
-public class Category {
+import android.app.Activity;
+
+public interface ListElementTouchDelegate {
 	
-	private String mName;
-	
-	private String mLabel;
+	public void onTouch(Activity activity);
 
-	public Category(String name, String label) {
-		this.mName = name;
-		this.mLabel = label;
-	}
-	
-	public String getName() {
-		return mName;
-	}
-
-	public void setName(String name) {
-		this.mName = name;
-	}
-
-	public String getLabel() {
-		return mLabel;
-	}
-
-	public void setLabel(String label) {
-		this.mLabel = label;
-	}
 }

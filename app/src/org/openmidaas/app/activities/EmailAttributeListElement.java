@@ -15,13 +15,13 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
-import org.openmidaas.library.model.EmailAttributeFactory;
 
 import android.app.Activity;
 
-public class EmailAttributeListElement extends AbstractAttributeListElement implements OnTouchDelegate {
+public class EmailAttributeListElement extends AbstractAttributeListElement {
 
 	public EmailAttributeListElement() {
 		mOnTouchDelegate = this;
