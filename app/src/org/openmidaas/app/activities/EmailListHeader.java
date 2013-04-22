@@ -13,18 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.common;
+package org.openmidaas.app.activities;
 
-import java.util.EnumMap;
+import android.app.Activity;
+import android.content.Intent;
 
-
-public class ListUtils {
+public class EmailListHeader extends AbstractListHeader implements AddButtonClickDelegate {
 	
-	public static enum NAME { first_name, last_name, email, address };
-	
-	public static void getMap() {
+	public EmailListHeader() {
+		mGroupName = "Email";
+		mTransition = this;
+	}
+
+	@Override
+	protected void setOnAddButtonClick() {
 		
-		
+	}
+
+	@Override
+	public void onButtonClick(Activity activity) {
+		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
+		activity.finish();
 	}
 
 }

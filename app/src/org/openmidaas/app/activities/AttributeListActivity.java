@@ -83,9 +83,9 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	private List<AbstractAttribute<?>> mAttributeList;
 	
-	private LinkedHashMap<String, ListHeader> mCategoryToListMap = new LinkedHashMap<String, ListHeader>();
+	private LinkedHashMap<String, AbstractListHeader> mCategoryToListMap = new LinkedHashMap<String, AbstractListHeader>();
 	
-	private ArrayList<ListHeader> mCategoriesList = new ArrayList<ListHeader>();
+	private ArrayList<AbstractListHeader> mCategoriesList = new ArrayList<AbstractListHeader>();
 	
 	private BroadcastReceiver attributeEvent = new BroadcastReceiver() {
 
@@ -112,28 +112,15 @@ public class AttributeListActivity extends AbstractActivity{
 	private void createEmptyAttributeList() {
 		CategoryManager.getInstance().getCategoriesList().clear();
 		CategoryManager.getInstance().getMap().clear();
-		ListHeader header = new ListHeader();
-		header.setGroupName("Personal");
-		GenericAttribute firstName;
+		PersonalListHeader header = new PersonalListHeader();
 		try {
-			firstName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME);
+			GenericAttribute firstName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME);
 			GenericAttribute lastName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME);
 			header.getList().add(new GenericAttributeListElement(firstName));
 			header.getList().add(new GenericAttributeListElement(lastName));
 			CategoryManager.getInstance().getCategoriesList().add(header);
 			CategoryManager.getInstance().getMap().put("Personal", header);
-			ListHeader emailHeader = new ListHeader();
-			emailHeader.setGroupName("Email");
-			emailHeader.setAddButtonHandler(new AddButtonClickDelegate() {
-
-				@Override
-				public void onButtonClick(Activity activity) {
-					activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-					activity.finish();
-				}
-				
-			});
-			//emailHeader.getList().add(new EmailAttributeListElement());
+			EmailListHeader emailHeader = new EmailListHeader();
 			
 			CategoryManager.getInstance().getMap().put("Email", emailHeader);
 			CategoryManager.getInstance().getCategoriesList().add(emailHeader);
@@ -144,81 +131,8 @@ public class AttributeListActivity extends AbstractActivity{
 		}
 	}
 	
-	private void initAttributeCategories() {
-//		for(String s: CategoryMap.getCategories()) {
-//			ListHeader header = new ListHeader();
-//			header.setGroupName(s);
-//			try {
-//				if(s.equalsIgnoreCase("Personal")) {
-//					
-//					GenericAttribute firstName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME);
-//					GenericAttribute lastName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME);
-//					header.getList().add(new GenericAttributeListElement(firstName));
-//					header.getList().add(new GenericAttributeListElement(lastName));
-//				}
-//				CategoryManager.getInstance().getCategoriesList().add(header);
-//				CategoryManager.getInstance().getMap().put(s, header);
-//			} catch(Exception e){}
-//		}
-		createEmptyAttributeList();
-		CategoryManager.getInstance().getMap().get("Email").getList().add(new EmailAttributeListElement());
-//			ListHeader emailHeader = new ListHeader();
-//			emailHeader.getList().add(new EmailAttributeListElement());
-//			emailHeader.setGroupName("Email");
-//			emailHeader.setAddButtonHandler(new AddButtonClickDelegate() {
-//
-//				@Override
-//				public void onButtonClick(Activity activity) {
-//					activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-//					activity.finish();
-//				}
-//				
-//			});
-//			//emailHeader.getList().add(new EmailAttributeListElement());
-//			
-//			CategoryManager.getInstance().getMap().put("Email", emailHeader);
-//			CategoryManager.getInstance().getCategoriesList().add(emailHeader);
-		
-		
-		
-		
-		
-//		for(String s:CategoryMap.getCategories()) {
-//			ListHeader header = new ListHeader();
-//			
-//			header.setGroupName(s);
-//			if(s.equalsIgnoreCase("Personal")) {
-//				header.setAddButtonHandler(new AddButtonClickDelegate() {
-//
-//					@Override
-//					public void onButtonClick(Activity activity) {
-//					}
-//					
-//				});
-//				try {
-//					GenericAttribute firstName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME);
-//					GenericAttribute lastName = GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME);
-//					header.getList().add(firstName);
-//					header.getList().add(lastName);
-//				} catch (InvalidAttributeNameException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			} else if(s.equalsIgnoreCase("Email")) {
-//				header.setAddButtonHandler(new AddButtonClickDelegate() {
-//
-//					@Override
-//					public void onButtonClick(Activity activity) {
-//						activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-//						activity.finish();
-//					}
-//				
-//				});
-//			}
-//			mCategoriesWithChildren.put(s, header);
-//			mCategoriesList.add(header);
-//		}
-	}
+	
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstance) {
@@ -245,12 +159,6 @@ public class AttributeListActivity extends AbstractActivity{
 				// when the cell is clicked, check to see if the attribute state is pending verification.
 				 AbstractAttributeListElement listElement = (AbstractAttributeListElement) mAdapter.getChild(groupPosition, childPosition);
 				 listElement.getOnTouchDelegate().onTouch(mActivity);
-//					AbstractAttribute<?> attribute = (AbstractAttribute<?>) mAdapter.getChild(groupPosition, childPosition);
-//					if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-//						showCodeCollectionDialog(attribute);
-//					} else {
-//						UINotificationUtils.showAttributeModificationDialog(mActivity, attribute);
-//					}
 				
 				return false;
 			}
@@ -264,7 +172,8 @@ public class AttributeListActivity extends AbstractActivity{
 					int position, long id) {
 				if(ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 					if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) { 
-						showAttributeDetails(position, (AbstractAttribute<?>) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id)));
+						AbstractAttributeListElement element =  (AbstractAttributeListElement) mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id));
+						showAttributeDetails(position, element.getAttribute());
 					}
 					return true;
 				}
@@ -277,43 +186,21 @@ public class AttributeListActivity extends AbstractActivity{
 	
 	
 	private void addAttributeToCategory(AbstractAttribute<?> attribute) {
-		Logger.debug(getClass(), CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
-		ListHeader header = CategoryManager.getInstance().getMap().get(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
-//		if(header == null) {
-//			header = new ListHeader();
-//			header.setGroupName(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
-//			
-//			mCategoriesWithChildren.put(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel(), header);
-//			mCategoriesList.add(header);
-//		}
 		
-		ArrayList<AbstractAttributeListElement> attributeChildrenList = header.getList();
-		if(attributeChildrenList.isEmpty()) {
-			
-		} else {
-			int i=0;
-			for(AbstractAttributeListElement a:attributeChildrenList) {
-				if(a.getAttribute() == null) {
-					initAttributeCategories();
-					AbstractAttributeListElement element = attributeChildrenList.remove(i);
-					element.setAttribute(attribute);
-					
-					attributeChildrenList.add(element);
-					
-					continue;
-				}
-				else if(a.getAttribute().getName().equalsIgnoreCase(attribute.getName())) {
-					attributeChildrenList.get(i).setAttribute(attribute);
-					attributeChildrenList.set(i, attributeChildrenList.get(i));	
-				}
-				i++;
-			}
+		//AbstractListHeader header = CategoryManager.getInstance().getMap().get(CategoryMap.get(attribute.getName()).getCategoryDisplayLabel());
+		AbstractListHeader header;
+		if(attribute.getName().equalsIgnoreCase("first_name")) {
+			header = CategoryManager.getInstance().getCategoriesList().get(0);
+			header.getList().get(0).setAttribute(attribute);
+		} else if(attribute.getName().equalsIgnoreCase("last_name")) {
+			header = CategoryManager.getInstance().getCategoriesList().get(0);
+			header.getList().get(1).setAttribute(attribute);
+		} else if(attribute.getName().equalsIgnoreCase("email")) {
+			header = CategoryManager.getInstance().getCategoriesList().get(1);
+			EmailAttributeListElement element = new EmailAttributeListElement();
+			element.setAttribute(attribute);
+			header.getList().add(element);
 		}
-		
-		
-		//attributeChildrenList.add(attribute);
-		//header.setList(attributeChildrenList);
-	
 	}
 	
 	
@@ -336,30 +223,6 @@ public class AttributeListActivity extends AbstractActivity{
 			}
 		}
 		UINotificationUtils.showDeleteAttributeDialog(mActivity,attribute, message);
-	}
-	
-	private void completeAttributeVerification(String code, AbstractAttribute<?> attribute) {
-		attribute.completeVerification(code, new CompleteVerificationCallback() {
-
-			@Override
-			public void onSuccess() {
-				mActivity.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						refreshAttributeList();
-					}
-					
-				});
-				
-			}
-
-			@Override
-			public void onError(MIDaaSException exception) {
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
-			}
-			
-		});
 	}
 	
 	@Override

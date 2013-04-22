@@ -18,26 +18,15 @@ package org.openmidaas.app.activities;
 import java.util.ArrayList;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
-public class ListHeader {
+public abstract class AbstractListHeader {
 	
-	private String mGroupName;
+	protected String mGroupName;
 	
-	private ArrayList<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
+	protected ArrayList<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
 	
-	private String mGroupLabel;
+	protected String mGroupLabel;
 
-	private AddButtonClickDelegate mTransition;
-	
-	public ListHeader(){}
-	
-	public ListHeader(String groupName) {
-		this.mGroupName = groupName;
-	}
-	
-	public ListHeader(String groupName, String groupLabel) {
-		this.mGroupName = groupName;
-		this.mGroupLabel = groupLabel;
-	}
+	protected AddButtonClickDelegate mTransition;
 	
 	public void setGroupName(String name) {
 		this.mGroupName = name;
@@ -63,12 +52,9 @@ public class ListHeader {
 		return mList;
 	}
 	
-	public void setAddButtonHandler(AddButtonClickDelegate transition) {
-		mTransition = transition;
-	}
+	protected abstract void setOnAddButtonClick();
 	
 	public AddButtonClickDelegate getAddButtonHandler() {
 		return mTransition;
 	}
-	
 }
