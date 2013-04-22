@@ -15,25 +15,22 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.activities.ui.AbstractListHeader;
+import org.openmidaas.app.common.Constants;
+
 import android.app.Activity;
 import android.content.Intent;
 
-public class EmailListHeader extends AbstractListHeader implements AddButtonClickDelegate {
+public class EmailListHeader extends AbstractListHeader {
 	
 	public EmailListHeader() {
-		mGroupName = "Email";
-		mTransition = this;
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_EMAIL;
+		addButtonDelegate = this;
 	}
 
 	@Override
-	protected void setOnAddButtonClick() {
-		
-	}
-
-	@Override
-	public void onButtonClick(Activity activity) {
+	public void onAddButtonClick(Activity activity) {
 		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
 		activity.finish();
 	}
-
 }

@@ -13,28 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui;
 
 import org.openmidaas.library.model.core.AbstractAttribute;
 
-public abstract class AbstractAttributeListElement {
+/**
+ * 
+ * ADT for a single element in the list
+ *
+ */
+public abstract class AbstractAttributeListElement implements ListElementTouchDelegate{
 	
 	protected AbstractAttribute<?> mAttribute;
 	
-	protected OnTouchDelegate mOnTouchDelegate;
+	protected ListElementTouchDelegate mOnTouchDelegate;
 
+	/**
+	 * Returns the attribute for that list element
+	 * @return the attribute for that list element
+	 */
 	public AbstractAttribute<?> getAttribute() {
 		return mAttribute;
 	}
 
+	/**
+	 * Sets the attribute for that list element
+	 * @param attribute the attribute for that list element
+	 */
 	public void setAttribute(AbstractAttribute<?> attribute) {
 		this.mAttribute = attribute;
 	}
 
-	public OnTouchDelegate getOnTouchDelegate() {
+	public ListElementTouchDelegate getOnTouchDelegate() {
 		return mOnTouchDelegate;
 	}
 
+	/**
+	 * Override this to return the display format of the attribute. 
+	 * @return a user readable format for the attribute
+	 */
 	public abstract String getRenderedAttributeValue();
 	
 }

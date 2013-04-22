@@ -25,6 +25,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * 
+ * Abstract class that performs attribute registrations with the AVS. 
+ * Extends this class to collect other verifiable attributes such as 
+ * email, phone number. 
+ *
+ */
 public abstract class AbstractAttributeRegistrationActivity extends AbstractActivity {
 	
 	protected EditText mAttributeVerificationCode;

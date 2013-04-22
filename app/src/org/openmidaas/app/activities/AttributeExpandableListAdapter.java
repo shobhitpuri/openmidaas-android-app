@@ -15,10 +15,10 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
+import org.openmidaas.app.activities.ui.AbstractListHeader;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import android.app.Activity;
@@ -36,26 +36,17 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private List<AbstractListHeader> mGroupHeaders;
 	
-	//private List<AttributeCategory> mCategories;
-	
 	public AttributeExpandableListAdapter(Activity activity, List<AbstractListHeader> groupHeaders) {
 		this.mActivity = activity;
 		this.mGroupHeaders = groupHeaders;
 	}
-	
-//	public AttributeExpandableListAdapter(Activity activity, List<AttributeCategory> categories) {
-//		this.mActivity = activity;
-//		this.mCategories = categories;
-//	}
 
 	public void clearExistingAttributeEntries() {
-		//mCategories.clear();
 		mGroupHeaders.clear();
 	}
 	
 	@Override
 	public Object getChild(int arg0, int arg1) {
-		//return mCategories.get(arg0).getAttributesInCategory().get(arg1);
 		return mGroupHeaders.get(arg0).getList().get(arg1);
 	}
 
@@ -81,7 +72,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 			
 				tvAttributeName.setText(CategoryMap.get(attribute.getName()).getAttributeDisplayLabel());
 				if(attribute.getValue() != null) {
-					tvAttributeValue.setText(attribute.getValue().toString());
+					tvAttributeValue.setText(listElement.getRenderedAttributeValue());
 				}
 				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 				switch (attribute.getState()) {
@@ -100,19 +91,16 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int arg0) {
-		//return mCategories.get(arg0).getAttributesInCategory().size();
 		return mGroupHeaders.get(arg0).getList().size();
 	}
 
 	@Override
 	public Object getGroup(int arg0) {
-		//return mCategories.get(arg0);
 		return mGroupHeaders.get(arg0);
 	}
 
 	@Override
 	public int getGroupCount() {
-		//return mCategories.size();
 		return mGroupHeaders.size();
 	}
 
@@ -136,11 +124,10 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				header.getAddButtonHandler().onButtonClick(mActivity);
+				header.getAddButtonHandler().onAddButtonClick(mActivity);
 			}
 		});
         tv.setText(header.getGroupName().trim());
-        //tv.setText(mCategories.get(groupPosition).getCategory());
         return convertView;
     }
 
@@ -153,5 +140,4 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	public boolean isChildSelectable(int arg0, int arg1) {
 		return true;
 	}
-
 }

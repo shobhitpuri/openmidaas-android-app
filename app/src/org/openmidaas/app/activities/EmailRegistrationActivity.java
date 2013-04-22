@@ -18,7 +18,6 @@ package org.openmidaas.app.activities;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.EmailAttribute;
 import org.openmidaas.library.model.EmailAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeValueException;
@@ -56,7 +55,6 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 		Logger.info(getClass(), "starting email verification");
 			try {
 				if(!isInitVerificationSuccess) {
-					//emailAttribute = AttributeFactory.getEmailAttributeFactory().createAttribute();
 					emailAttribute = EmailAttributeFactory.createAttribute();
 					emailAttribute.setValue(mAttributeValue.getText().toString());
 					
@@ -71,15 +69,13 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						try {
 							emailAttribute.save();
 						} catch (MIDaaSException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (InvalidAttributeValueException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+						} catch (InvalidAttributeValueException ex) {
+							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
 						}
 						EmailAttributeListElement emailElement = new EmailAttributeListElement();
 						emailElement.setAttribute(emailAttribute);
-						CategoryManager.getInstance().getMap().get("Email").getList().add(emailElement);
+						CategoryManager.getInstance().getCategoriesList().get(1).getList().add(emailElement);
 						
 						mActivity.runOnUiThread(new Runnable() {
 

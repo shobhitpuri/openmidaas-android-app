@@ -16,23 +16,23 @@
 package org.openmidaas.app.activities;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import org.openmidaas.app.activities.ui.AbstractListHeader;
 
-import org.openmidaas.app.common.CategoryMap;
-
+/**
+ * 
+ * Class that manages the list headers 
+ *
+ */
 public class CategoryManager {
 	
 	private static CategoryManager mInstance = null;
 	
 	private List<AbstractListHeader> mCategoriesList;
 	
-	private Map<String, AbstractListHeader> mListMap;
-	
 	private CategoryManager() {
 		mCategoriesList = new ArrayList<AbstractListHeader>();
-		mListMap = new HashMap<String, AbstractListHeader>();
+		
 	}
 	
 	public static synchronized CategoryManager getInstance() {
@@ -42,12 +42,12 @@ public class CategoryManager {
 		return mInstance;
 	}
 	
+	/**
+	 * Returns the category list
+	 * @return
+	 */
 	public List<AbstractListHeader> getCategoriesList() {
 		return mCategoriesList;
-	}
-	
-	public Map<String, AbstractListHeader> getMap() {
-		return mListMap;
 	}
 
 }

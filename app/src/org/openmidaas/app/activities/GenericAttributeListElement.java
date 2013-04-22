@@ -15,12 +15,14 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
+import org.openmidaas.app.activities.ui.ListElementTouchDelegate;
 import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.model.GenericAttribute;
 
 import android.app.Activity;
 
-public class GenericAttributeListElement extends AbstractAttributeListElement implements OnTouchDelegate {
+public class GenericAttributeListElement extends AbstractAttributeListElement implements ListElementTouchDelegate {
 
 	public GenericAttributeListElement(GenericAttribute attribute) {
 		mAttribute = attribute;
@@ -29,7 +31,7 @@ public class GenericAttributeListElement extends AbstractAttributeListElement im
 
 	@Override
 	public void onTouch(Activity activity) {
-		UINotificationUtils.showAttributeModificationDialog(activity, mAttribute);
+		UINotificationUtils.showGenericAttributeModificationDialog(activity, mAttribute);
 	}
 
 	@Override
