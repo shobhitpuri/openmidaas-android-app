@@ -33,6 +33,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+/**
+ * 
+ * Home screen for the application. 
+ *
+ */
 public class HomeScreen extends AbstractActivity {
 	
 	private final int SCAN_REQUEST = 102938;
@@ -96,24 +101,36 @@ public class HomeScreen extends AbstractActivity {
 	private void processScanResult(String result) {
 		try {
 			URI uri = new URI(result);
-			if(uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
-				AsyncHttpClient client = new AsyncHttpClient();
-				client.get(uri.toString(), new AsyncHttpResponseHandler() {
-					@Override
-				    public void onSuccess(String response) {
-						UINotificationUtils.showNeutralButtonDialog(mActivity, "Debug", response);
-				    }
-					
-					@Override
-				    public void onFailure(Throwable e, String response) {
-				        UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
-				    }
-				});
+			if(uri.isAbsolute()) {
+				if(uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
+					AsyncHttpClient client = new AsyncHttpClient();
+					mProgressDialog.setMessage("Loading...");
+					mProgressDialog.show();
+					client.get(uri.toString(), new AsyncHttpResponseHandler() {
+						@Override
+					    public void onSuccess(String response) {
+							if(mProgressDialog.isShowing()) {
+								mProgressDialog.dismiss();
+							}
+							UINotificationUtils.showNeutralButtonDialog(mActivity, "Debug", response);
+					    }
+						
+						@Override
+					    public void onFailure(Throwable e, String response) {
+							if(mProgressDialog.isShowing()) {
+								mProgressDialog.dismiss();
+							}
+					        UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+					    }
+					});
+				} else {
+					UINotificationUtils.showNeutralButtonDialog(mActivity, "Non http/https URI type", result);
+				}
 			} else {
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Non http/https URI type", result);
+				UINotificationUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Either relative URI or unknown format: " + result);
 			}
 		} catch (URISyntaxException e) {
-			UINotificationUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Invalid URI");
+			UINotificationUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Invalid URI: " + result);
 		}
 	}
 	
