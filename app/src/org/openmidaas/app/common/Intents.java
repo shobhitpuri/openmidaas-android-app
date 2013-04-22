@@ -16,5 +16,10 @@
 package org.openmidaas.app.common;
 
 public final class Intents {
-	public static final String ATTRIBUTE_LIST_CHANGE_EVENT = "org.openmidaas.app.ATTRIBUTE_LIST_CHANGE_EVENT";
+	
+	private static final String BASE_INTENT_NAME = "org.openmidaas.app";
+	
+	public static final String ATTRIBUTE_LIST_CHANGE_EVENT = BASE_INTENT_NAME + ".ATTRIBUTE_LIST_CHANGE_EVENT";
+	
+	public static final String QR_CODE_INIT_INTENT = "com.google.zxing.client.android.SCAN";
 }

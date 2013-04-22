@@ -25,5 +25,8 @@ public final class Constants {
 	public static final String ATTRIBUTE_CATEGORY_PERSONAL = "Personal";
 	public static final String ATTRIBUTE_CATEGORY_EMAIL = "Email";
 	public static final String[] ATTRIBUTE_CATEGORY_LABELS = {ATTRIBUTE_CATEGORY_PERSONAL, ATTRIBUTE_CATEGORY_EMAIL};
-	
+	 public static final String ZXING_MARKET =
+			    "market://search?q=pname:com.google.zxing.client.android";
+			  public static final String ZXING_DIRECT =
+			    "https://zxing.googlecode.com/files/BarcodeScanner3.1.apk";
 }
