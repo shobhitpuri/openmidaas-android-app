@@ -140,7 +140,6 @@ public final class UINotificationUtils {
 						public void run() {
 							activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 						}
-						
 					});
 					
 				}
@@ -215,23 +214,16 @@ public final class UINotificationUtils {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			try {
-				//GenericAttribute attribute = AttributeFactory.getGenericAttributeFactory().createAttribute(attributeName, value.toString());
 				GenericAttribute attribute = GenericAttributeFactory.createAttribute(attributeName);
 				attribute.setValue(value.toString());
 				attribute.save();
 				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (InvalidAttributeValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			} catch (MIDaaSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
 			} catch (InvalidAttributeNameException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			}
 		  }
 		});
@@ -244,5 +236,4 @@ public final class UINotificationUtils {
 
 		alert.show();
 	}
-	
 }

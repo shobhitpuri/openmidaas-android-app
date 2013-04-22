@@ -75,7 +75,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 				if(mProgressDialog.isShowing()) {
 					mProgressDialog.dismiss();
 				}
-				startActivity(new Intent(DeviceRegistrationActivity.this, AttributeListActivity.class));
+				startActivity(new Intent(DeviceRegistrationActivity.this, HomeScreen.class));
 				DeviceRegistrationActivity.this.finish();
 			}
 		});
