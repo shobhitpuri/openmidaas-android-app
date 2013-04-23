@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.listui;
 
-import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
 import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
+import org.openmidaas.library.model.GenericAttribute;
 
 import android.app.Activity;
 
-public class EmailAttributeListElement extends AbstractAttributeListElement {
+public class GenericAttributeListElement extends AbstractAttributeListElement {
 
-	public EmailAttributeListElement() {
-		mOnTouchDelegate = this;
+	public GenericAttributeListElement(GenericAttribute attribute) {
+		mAttribute = attribute;
 	}
 
 	@Override
 	public void onTouch(Activity activity) {
-		if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-			UINotificationUtils.showCodeCollectionDialog(activity, mAttribute);
+		UINotificationUtils.showGenericAttributeModificationDialog(activity, mAttribute);
 	}
-}
 
 	@Override
 	public String getRenderedAttributeValue() {
-		return mAttribute.getValue().toString();
+		return (mAttribute.getValue().toString());
 	}
 }

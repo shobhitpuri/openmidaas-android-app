@@ -73,15 +73,14 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						} catch (InvalidAttributeValueException ex) {
 							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
 						}
-						EmailAttributeListElement emailElement = new EmailAttributeListElement();
-						emailElement.setAttribute(emailAttribute);
-						CategoryManager.getInstance().getCategoriesList().get(1).getList().add(emailElement);
 						
 						mActivity.runOnUiThread(new Runnable() {
 
 							@Override
 							public void run() {
-								mProgressDialog.cancel();
+								if (mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
 								mBtnCompleteAttributeVerification.setEnabled(true);
 								mBtnStartAttributeVerification.setText("Re-send email");
 								mAttributeVerificationCode.requestFocus();

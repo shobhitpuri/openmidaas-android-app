@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
-
-import org.openmidaas.app.activities.ui.AbstractListHeader;
-import org.openmidaas.app.common.Constants;
+package org.openmidaas.app.activities.listui;
 
 import android.app.Activity;
-import android.content.Intent;
 
-public class EmailListHeader extends AbstractListHeader {
+/**
+ * Implement this interface to specify  what needs to be
+ * done when a single element is touched in the list
+ */
+public interface OnListElementTouch {
+	/**
+	 * Method that is called when a single element is
+	 * touched
+	 * in the list
+	 * @param activity the calling activity
+	 */
+	public void onTouch(Activity activity);
 	
-	public EmailListHeader() {
-		mGroupName = Constants.ATTRIBUTE_CATEGORY_EMAIL;
-		addButtonDelegate = this;
-	}
-
-	@Override
-	public void onAddButtonClick(Activity activity) {
-		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-		activity.finish();
-	}
 }

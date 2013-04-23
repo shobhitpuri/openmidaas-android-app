@@ -13,41 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.listui;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.openmidaas.app.activities.ui.AbstractListHeader;
+import android.app.Activity;
 
 /**
- * 
- * Class that manages the list headers 
- *
+ * Implement this interface to specify  what needs to be
+ * done when a single element is long touched in the list
  */
-public class CategoryManager {
-	
-	private static CategoryManager mInstance = null;
-	
-	private List<AbstractListHeader> mCategoriesList;
-	
-	private CategoryManager() {
-		mCategoriesList = new ArrayList<AbstractListHeader>();
-		
-	}
-	
-	public static synchronized CategoryManager getInstance() {
-		if(mInstance == null) {
-			mInstance = new CategoryManager();
-		}
-		return mInstance;
-	}
+public interface OnListElementLongTouch {
 	
 	/**
-	 * Returns the category list
-	 * @return
+	 * Method that is called when a single element is
+	 * long touched
+	 * in the list
+	 * @param activity the calling activity
 	 */
-	public List<AbstractListHeader> getCategoriesList() {
-		return mCategoriesList;
-	}
+	public void onLongTouch(Activity activity);
 
 }

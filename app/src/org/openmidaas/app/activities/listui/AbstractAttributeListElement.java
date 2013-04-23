@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.ui;
+package org.openmidaas.app.activities.listui;
 
+import org.openmidaas.app.Settings;
+import org.openmidaas.app.common.UINotificationUtils;
 import org.openmidaas.library.model.core.AbstractAttribute;
+
+import android.app.Activity;
 
 /**
  * 
  * ADT for a single element in the list
  *
  */
-public abstract class AbstractAttributeListElement implements ListElementTouchDelegate{
+public abstract class AbstractAttributeListElement implements OnListElementTouch, OnListElementLongTouch {
 	
 	protected AbstractAttribute<?> mAttribute;
-	
-	protected ListElementTouchDelegate mOnTouchDelegate;
 
+	
 	/**
 	 * Returns the attribute for that list element
 	 * @return the attribute for that list element
@@ -43,11 +46,14 @@ public abstract class AbstractAttributeListElement implements ListElementTouchDe
 	public void setAttribute(AbstractAttribute<?> attribute) {
 		this.mAttribute = attribute;
 	}
-
-	public ListElementTouchDelegate getOnTouchDelegate() {
-		return mOnTouchDelegate;
+	
+	@Override
+	public void onLongTouch(Activity activity) {
+		if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
+			UINotificationUtils.showAttributeDetails(activity, mAttribute);
+		}
 	}
-
+	
 	/**
 	 * Override this to return the display format of the attribute. 
 	 * @return a user readable format for the attribute

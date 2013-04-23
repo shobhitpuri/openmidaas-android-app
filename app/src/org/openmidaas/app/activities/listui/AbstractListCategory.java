@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.ui;
+package org.openmidaas.app.activities.listui;
 
 import java.util.ArrayList;
+import java.util.List;
+import org.openmidaas.library.model.core.AbstractAttribute;
+import android.app.Activity;
 
 /**
  * 
  * ADT for a list header. 
  *
  */
-public abstract class AbstractListHeader implements AddButtonTouchDelegate{
+public abstract class AbstractListCategory {
 	
 	protected String mGroupName;
 	
-	protected ArrayList<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
-
-	protected AddButtonTouchDelegate addButtonDelegate;
+	protected List<AbstractAttributeListElement> mList = new ArrayList<AbstractAttributeListElement>();
 	
 	/**
 	 * Returns the group name
@@ -42,15 +43,21 @@ public abstract class AbstractListHeader implements AddButtonTouchDelegate{
 	 * Returns attribute list element array
 	 * @return attribute list element array
 	 */
-	public ArrayList<AbstractAttributeListElement> getList() {
+	public List<AbstractAttributeListElement> getList() {
 		return mList;
 	}
 	
 	/**
-	 * Returns the delegate for the add button
-	 * @return delegate for the add button 
+	 * Implement this to specify what happens when the add button 
+	 * is touched by the user for a specific category
+	 * @param activity activity from which this method is 
+	 * being called
 	 */
-	public AddButtonTouchDelegate getAddButtonHandler() {
-		return addButtonDelegate;
-	}
+	public abstract void onAddButtonTouch(Activity activity);
+	
+	/**
+	 * Implement this to add the attribute to the list. 
+	 * @param attribute attribute to add
+	 */
+	public abstract void addAttribute(AbstractAttribute<?> attribute);
 }
