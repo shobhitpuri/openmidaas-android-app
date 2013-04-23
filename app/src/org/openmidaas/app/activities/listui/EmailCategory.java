@@ -13,12 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.ui;
+package org.openmidaas.app.activities.listui;
+
+import org.openmidaas.app.activities.EmailRegistrationActivity;
+import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.content.Intent;
 
-public interface ListElementTouchDelegate {
+/**
+ * 
+ * An email category
+ *
+ */
+public class EmailCategory extends AbstractListCategory {
 	
-	public void onTouch(Activity activity);
+	public EmailCategory() {
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_EMAIL;
+	}
 
+	@Override
+	public void onAddButtonTouch(Activity activity) {
+		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
+		activity.finish();
+	}
+
+	@Override
+	public void addAttribute(AbstractAttribute<?> attribute) {
+		EmailAttributeListElement element = new EmailAttributeListElement();
+		element.setAttribute(attribute);
+		mList.add(element);
+	}
 }

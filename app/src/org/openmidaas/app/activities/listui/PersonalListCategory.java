@@ -13,23 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.listui;
 
-import org.openmidaas.app.activities.ui.AbstractListHeader;
+import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
 
-public class PersonalListHeader extends AbstractListHeader {
+/**
+ * 
+ * Personal category
+ *
+ */
+public class PersonalListCategory extends AbstractListCategory {
 	
-	public PersonalListHeader() {
+	public PersonalListCategory() {
 		mGroupName = Constants.ATTRIBUTE_CATEGORY_PERSONAL;
-		addButtonDelegate = this;
 	}
 
 	@Override
-	public void onAddButtonClick(Activity activity) {
+	public void onAddButtonTouch(Activity activity) {
 		
 	}
 
+	@Override
+	public void addAttribute(AbstractAttribute<?> attribute) {
+		if(attribute.getName().equals(CategoryMap.FIRST_NAME.getAttributeName())) {
+			if(mList.get(0).getAttribute().getName().equals(CategoryMap.FIRST_NAME.getAttributeName())) {
+				mList.get(0).setAttribute(attribute);
+			}
+		} else if(attribute.getName().equals(CategoryMap.LAST_NAME.getAttributeName())) {
+			if(mList.get(1).getAttribute().getName().equals(CategoryMap.LAST_NAME.getAttributeName())) {
+				mList.get(1).setAttribute(attribute);
+			}
+		}
+	}
 }

@@ -26,9 +26,9 @@ public enum CategoryMap {
 	 * Map of UI label -> attribute name
 	 * category_label, attribute_name, attribute_label
 	 */
-	FIRST_NAME("Personal", "first_name", "First Name"),
-	LAST_NAME("Personal", "last_name", "Last Name"),
-	EMAIL("Email", "email", "Email");
+	FIRST_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, "first_name", "First Name"),
+	LAST_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, "last_name", "Last Name"),
+	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, "email", "Email");
 	
 	private final String mCategoryDisplayLabel;
 	
@@ -42,8 +42,8 @@ public enum CategoryMap {
 	private static final List<CategoryMap> categories = new ArrayList<CategoryMap>();
 	static {
 		for(CategoryMap map: CategoryMap.values()) {
-			if(!(list.contains(map.getCategoryDisplayLabel()))) {
-				list.add(map.getCategoryDisplayLabel());
+			if(!(list.contains(map.getCategoryName()))) {
+				list.add(map.getCategoryName());
 			}
 		}
 	
@@ -52,14 +52,14 @@ public enum CategoryMap {
 	
 	
 		for(CategoryMap map: CategoryMap.values()) {
-			ArrayList<CategoryMap> list = enumForCateory.get(map.getCategoryDisplayLabel());
+			ArrayList<CategoryMap> list = enumForCateory.get(map.getCategoryName());
 			if(list ==  null) {
 				list = new ArrayList<CategoryMap>();
 				list.add(map);
 			} else {
 				list.add(map);
 			}
-			enumForCateory.put(map.getCategoryDisplayLabel(),list);
+			enumForCateory.put(map.getCategoryName(),list);
 		}
 		
 		for(CategoryMap map: CategoryMap.values()) {
@@ -78,11 +78,11 @@ public enum CategoryMap {
 		return mAttributeName;
 	}
 	
-	public String getCategoryDisplayLabel() {
+	public String getCategoryName() {
 		return mCategoryDisplayLabel;
 	}
 	
-	public String getAttributeDisplayLabel() {
+	public String getAttributeLabel() {
 		return mAttributeDisplayLabel;
 	}
 	
@@ -107,7 +107,7 @@ public enum CategoryMap {
 		ArrayList<CategoryMap> list = enumForCateory.get(category);
 		ArrayList<String> labelsList = new ArrayList<String>();
 		for(int i=0; i<list.size(); i++) {
-			labelsList.add(list.get(i).getAttributeDisplayLabel());
+			labelsList.add(list.get(i).getAttributeLabel());
 		}
 		return labelsList;
 	}

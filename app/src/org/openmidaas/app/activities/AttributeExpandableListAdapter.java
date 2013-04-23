@@ -17,8 +17,8 @@ package org.openmidaas.app.activities;
 
 import java.util.List;
 import org.openmidaas.app.R;
-import org.openmidaas.app.activities.ui.AbstractAttributeListElement;
-import org.openmidaas.app.activities.ui.AbstractListHeader;
+import org.openmidaas.app.activities.listui.AbstractAttributeListElement;
+import org.openmidaas.app.activities.listui.AbstractListCategory;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import android.app.Activity;
@@ -34,15 +34,38 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	private Activity mActivity;
 
-	private List<AbstractListHeader> mGroupHeaders;
+	private List<AbstractListCategory> mGroupHeaders;
 	
-	public AttributeExpandableListAdapter(Activity activity, List<AbstractListHeader> groupHeaders) {
+	public AttributeExpandableListAdapter(Activity activity, List<AbstractListCategory> groupHeaders) {
 		this.mActivity = activity;
 		this.mGroupHeaders = groupHeaders;
 	}
 
 	public void clearExistingAttributeEntries() {
 		mGroupHeaders.clear();
+	}
+	
+	public void setHeaders(List<AbstractListCategory> groupHeaders) {
+		this.mGroupHeaders = groupHeaders;
+	}
+	
+	/**
+	 * 
+	 * View holder implementation for the group and 
+	 * child view to support smooth scrolling so as 
+	 * to avoid finding the view element every time
+	 * a pass in made through the data set. 
+	 * For addition info, see:
+	 * http://developer.android.com/training/improving-layouts/smooth-scrolling.html
+	 */
+	static class GroupViewHolder {
+		TextView tvTitle;
+		Button btnAdd;
+	}
+	
+	static class ChildViewHolder {
+		TextView tvAttributeLabel;
+		TextView tvAttributeValue;
 	}
 	
 	@Override
@@ -58,33 +81,39 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
 			ViewGroup parent) {
+		ChildViewHolder childViewHolder;
 		AbstractAttributeListElement listElement = (AbstractAttributeListElement)getChild(groupPosition, childPosition);
 		AbstractAttribute<?> attribute = listElement.getAttribute();
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_child_layout, null);
+           childViewHolder = new ChildViewHolder();
+           childViewHolder.tvAttributeLabel = (TextView)convertView.findViewById(R.id.tvAttributeName);
+           childViewHolder.tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
+           convertView.setTag(childViewHolder);
+		} else {
+			childViewHolder = (ChildViewHolder) convertView.getTag();
 		}
-			TextView tvAttributeName = (TextView)convertView.findViewById(R.id.tvAttributeName);
-			TextView tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
-			tvAttributeName.setText("");
-			tvAttributeValue.setText("");
 			
-				tvAttributeName.setText(CategoryMap.get(attribute.getName()).getAttributeDisplayLabel());
-				if(attribute.getValue() != null) {
-					tvAttributeValue.setText(listElement.getRenderedAttributeValue());
-				}
-				tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-				switch (attribute.getState()) {
-					case PENDING_VERIFICATION:
-						tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.warning, 0);
-						break;
-					case VERIFIED:
-						tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
-						break;
-					default:
-						break;
-				}
+		childViewHolder.tvAttributeLabel.setText("");
+		childViewHolder.tvAttributeValue.setText("");
+			
+		childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
+		if(attribute.getValue() != null) {
+			childViewHolder.tvAttributeValue.setText(listElement.getRenderedAttributeValue());
+		}
+		childViewHolder.tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+		switch (attribute.getState()) {
+			case PENDING_VERIFICATION:
+				childViewHolder.tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.warning, 0);
+				break;
+			case VERIFIED:
+				childViewHolder.tvAttributeValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.checkmark, 0);
+				break;
+			default:
+				break;
+		}
 		
 		return convertView;
 	}
@@ -112,22 +141,27 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
     public View getGroupView(final int groupPosition, boolean isExpanded, View convertView,
             ViewGroup parent) {
-		final AbstractListHeader header = (AbstractListHeader)getGroup(groupPosition);
+		GroupViewHolder groupViewHolder;
+		final AbstractListCategory category = (AbstractListCategory)getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_group_layout, null);
+            groupViewHolder = new GroupViewHolder();
+            groupViewHolder.tvTitle = (TextView)convertView.findViewById(R.id.tvGroupName);
+            groupViewHolder.btnAdd = (Button) convertView.findViewById(R.id.btnAddMore);
+            convertView.setTag(groupViewHolder);
+        } else {
+        	groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
         
-        TextView tv = (TextView) convertView.findViewById(R.id.tvGroupName);
-        Button btnAdd = (Button) convertView.findViewById(R.id.btnAddMore);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
+        groupViewHolder.btnAdd.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				header.getAddButtonHandler().onAddButtonClick(mActivity);
+				category.onAddButtonTouch(mActivity);
 			}
 		});
-        tv.setText(header.getGroupName().trim());
+        groupViewHolder.tvTitle.setText(category.getGroupName().trim());
         return convertView;
     }
 
