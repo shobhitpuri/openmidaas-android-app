@@ -18,14 +18,17 @@ package org.openmidaas.app.activities;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.UINotificationUtils;
-import org.openmidaas.library.model.AttributeFactory;
 import org.openmidaas.library.model.EmailAttribute;
+import org.openmidaas.library.model.EmailAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.widget.EditText;
 
 
 public class EmailRegistrationActivity extends AbstractAttributeRegistrationActivity {
@@ -34,27 +37,61 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 	
 	private EmailAttribute emailAttribute;
 	
+	private EditText mAttributeValue;
+	
+	private boolean isInitVerificationSuccess = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mActivity = this;	
+		mActivity = this;
+		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue); 
+		mAttributeValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+		mAttributeValue.requestFocus();
 	}
 
 	@Override
 	protected void startAttributeVerification() {
 		Logger.info(getClass(), "starting email verification");
 			try {
-				emailAttribute = AttributeFactory.createEmailAttributeFactory().createAttribute(mAttributeValue.getText().toString());
+				if(!isInitVerificationSuccess) {
+					emailAttribute = EmailAttributeFactory.createAttribute();
+					emailAttribute.setValue(mAttributeValue.getText().toString());
+					
+				}
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
 					@Override
 					public void onSuccess() {
 						Logger.info(getClass(), "email verification started successfully");
-						UINotificationUtils.showToast(mActivity, mActivity.getString(R.string.attribute_verification_start_success));
+						UINotificationUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
+						isInitVerificationSuccess = true;
+						try {
+							emailAttribute.save();
+						} catch (MIDaaSException e) {
+							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+						} catch (InvalidAttributeValueException ex) {
+							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
+						}
+						
+						mActivity.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								if (mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
+								mBtnCompleteAttributeVerification.setEnabled(true);
+								mBtnStartAttributeVerification.setText("Re-send email");
+								mAttributeVerificationCode.requestFocus();
+							}
+							
+						});
 					}
 
 					@Override
 					public void onError(MIDaaSException exception) {
+						cancelCurrentProgressDialog();
 						Logger.info(getClass(), "error in start email verification");
 						Logger.info(getClass(), exception.getError().getErrorMessage());
 						UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
@@ -62,12 +99,15 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				
 				});
 			} catch (final InvalidAttributeValueException e) {
-				Logger.info(getClass(), e.getMessage());
+				cancelCurrentProgressDialog();
+				Logger.error(getClass(), e.getMessage());
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
-			}
+			} 
+			
 	}
 
 
+	
 	
 	
 	@Override
@@ -78,13 +118,21 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			@Override
 			public void onSuccess() {
 				UINotificationUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				startActivity(new Intent(EmailRegistrationActivity.this, AttributeListActivity.class));
+				EmailRegistrationActivity.this.finish();
 			}
 
 			@Override
 			public void onError(MIDaaSException exception) {
+				cancelCurrentProgressDialog();
 				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
 			}
 		});
+	}
+	
+	@Override
+	protected String getProgressDialogMessage() {
+		return (getString(R.string.sendingEmailText));
 	}
 
 	@Override
@@ -93,5 +141,15 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	protected String getTitlebarText() {
+		return ("Add an email");
+	}
+
+	@Override
+	protected int getLayoutResourceId() {
+		return (R.layout.attribute_registration_view);
 	}
 }

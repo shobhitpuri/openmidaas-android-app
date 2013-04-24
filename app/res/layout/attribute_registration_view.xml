@@ -15,20 +15,9 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/default_bg"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-
-    <EditText
-        android:id="@+id/etAttributeValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvAttributeName"
-        android:layout_alignParentRight="true"
-        android:ems="10"
-        android:inputType="text" >
-
-        <requestFocus />
-    </EditText>
 
     <TextView
         android:id="@+id/tvStep1"
@@ -36,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:text="@string/tvStep1Text"
+        android:textColor="#000000"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -45,33 +35,8 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvStep1"
         android:padding="5dp"
+        android:textColor="#000000"
         android:text="@string/tvDefaultStartVerificationInfoText" />
-
-    <TextView
-        android:id="@+id/tvAttributeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tvStartVerificationInfo"
-        android:layout_marginTop="16dp"
-        android:text="@string/tvDefaultAttributeName" />
-
-    <Button
-        android:id="@+id/btnStartAttributeVerification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etAttributeValue"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="36dp"
-        android:text="@string/btnStartVerification" />
-
-    <TextView
-        android:id="@+id/tvVerificationPin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/etVerificationCode"
-        android:layout_alignParentLeft="true"
-        android:text="@string/tvVerificationPin" />
 
     <Button
         android:id="@+id/btnCompleteAttributeVerification"
@@ -89,13 +54,14 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvStep2"
         android:padding="5dp"
+        android:textColor="#000000"
         android:text="@string/tvCompleteVerificationInfoText" />
 
     <EditText
         android:id="@+id/etVerificationCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
         android:layout_below="@+id/textView1"
         android:layout_marginTop="24dp"
         android:inputType="text"
@@ -108,6 +74,25 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:text="@string/tvStep2Text"
+        android:textColor="#000000"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/btnStartAttributeVerification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvStep2"
+        android:layout_centerHorizontal="true"
+        android:text="@string/btnStartVerification" />
+
+    <EditText
+        android:id="@+id/etAttributeValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStartAttributeVerification"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="33dp"
+        android:ems="10"
+        android:inputType="text" />
 
 </RelativeLayout>
