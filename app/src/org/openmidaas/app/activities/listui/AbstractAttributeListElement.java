@@ -16,7 +16,7 @@
 package org.openmidaas.app.activities.listui;
 
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
@@ -50,7 +50,7 @@ public abstract class AbstractAttributeListElement implements OnListElementTouch
 	@Override
 	public void onLongTouch(Activity activity) {
 		if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
-			UINotificationUtils.showAttributeDetails(activity, mAttribute);
+			DialogUtils.showAttributeDetails(activity, mAttribute);
 		}
 	}
 	

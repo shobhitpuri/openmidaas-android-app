@@ -23,12 +23,13 @@ import java.util.Map;
 public enum CategoryMap {
 	
 	/**
-	 * Map of UI label -> attribute name
-	 * category_label, attribute_name, attribute_label
+	 * Map of category -> attribute name
+	 * category_name, attribute_name, attribute_label
 	 */
-	FIRST_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, "first_name", "First Name"),
-	LAST_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, "last_name", "Last Name"),
-	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, "email", "Email");
+	GIVEN_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.GIVEN_NAME, "Given Name"),
+	MIDDLE_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.MIDDLE_NAME, "Middle Name"),
+	FAMILY_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.FAMILY_NAME, "Family Name"),
+	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, Constants.AttributeNames.EMAIL, "Email");
 	
 	private final String mCategoryDisplayLabel;
 	
