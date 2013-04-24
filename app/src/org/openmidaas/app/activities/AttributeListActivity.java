@@ -208,4 +208,10 @@ public class AttributeListActivity extends AbstractActivity {
 			return true;
 		}
 	});
+	
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(mActivity, HomeScreen.class));
+		finish();
+	}
 }
