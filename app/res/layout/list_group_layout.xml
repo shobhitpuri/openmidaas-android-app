@@ -15,7 +15,7 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="70dp"
     android:background="@drawable/list_cell_bg_default"
     >
 
@@ -23,22 +23,24 @@
         android:id="@+id/tvGroupName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/btnAddMore"
-        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
         android:gravity="center"
-        android:text="Medium Text"
+        android:text=""
+        android:layout_marginLeft="4dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
 
     <Button
         android:id="@+id/btnAddMore"
-         android:layout_width="35dp"
+        android:layout_width="35dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/add_button"
         android:focusable="false"
-        android:layout_alignParentTop="true"
-        android:text="+" />
+        style="@style/addButtonStyle"
+        android:layout_centerVertical="true"
+         />
 
 </RelativeLayout>

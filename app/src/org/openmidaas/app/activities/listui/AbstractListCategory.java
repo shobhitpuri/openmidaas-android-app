@@ -60,4 +60,5 @@ public abstract class AbstractListCategory {
 	 * @param attribute attribute to add
 	 */
 	public abstract void addAttribute(AbstractAttribute<?> attribute);
+	
 }
