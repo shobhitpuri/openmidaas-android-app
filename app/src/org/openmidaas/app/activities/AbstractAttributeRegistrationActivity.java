@@ -15,19 +15,24 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.UINotificationUtils;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * 
+ * Abstract class that performs attribute registrations with the AVS. 
+ * Extends this class to collect other verifiable attributes such as 
+ * email, phone number. 
+ *
+ */
 public abstract class AbstractAttributeRegistrationActivity extends AbstractActivity {
-	
-	protected EditText mAttributeValue;
 	
 	protected EditText mAttributeVerificationCode;
 	
@@ -40,7 +45,6 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue);
 		mAttributeVerificationCode = (EditText)findViewById(R.id.etVerificationCode);
 		mBtnStartAttributeVerification = (Button)findViewById(R.id.btnStartAttributeVerification);
 		mBtnCompleteAttributeVerification = (Button)findViewById(R.id.btnCompleteAttributeVerification);
@@ -52,6 +56,7 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 			@Override	
 			public void onClick(View v) {
 				if(isAttributeValid()) {
+					mProgressDialog.show();
 					startAttributeVerification();
 				} else {
 					UINotificationUtils.showNeutralButtonDialog(AbstractAttributeRegistrationActivity.this, "Error", getString(R.string.missing_attribute_value_text));
@@ -63,14 +68,34 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 			
 			@Override
 			public void onClick(View v) {
+				mProgressDialog.show();
 				completeAttributeVerification();
 			}
 		});
 	} 
 	
-	@Override
-	protected int getLayoutResourceId() {
-		return (R.layout.attribute_registration_view);
+	protected void cancelCurrentProgressDialog() {
+		this.runOnUiThread(new Runnable() {
+			
+
+			@Override
+			public void run() {
+				if (mProgressDialog != null) {
+					if (mProgressDialog.isShowing()) {
+						mProgressDialog.dismiss();
+					}
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Override to return your custom progress dialog 
+	 * message
+	 * @return - custom progress dialog message
+	 */
+	protected String getProgressDialogMessage() {
+		return (getString(R.string.loadingText));
 	}
 	
 	/**
@@ -108,4 +133,10 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 	 * Method that completes the attribute verification.
 	 */
 	protected abstract void completeAttributeVerification();
+	
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(this, AttributeListActivity.class));
+		this.finish();
+	}
 }

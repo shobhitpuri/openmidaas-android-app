@@ -19,13 +19,11 @@ package org.openmidaas.app.activities;
  * This activity handles device registration
  */
 
-
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -34,15 +32,14 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	
 	private TextView tvRegistrationStatus;
 	
-	private ProgressDialog registeringDialog = null;
-	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		Logger.info(this.getClass(), "activity created");
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
-		registeringDialog = new ProgressDialog(this);
-		// register the app or check to see if already registered. 
+		// register the app or check to see if already registered.
+		MIDaaS.setLoggingLevel(MIDaaS.LOG_LEVEL_DEBUG);
+		mProgressDialog.show();
 		MIDaaS.initialize(this, new InitializationCallback() {
 
 			@Override
@@ -57,7 +54,14 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void onRegistering() {
-				showRegistrationDialog();
+				DeviceRegistrationActivity.this.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						mProgressDialog.setMessage("Registering...");
+					}
+				});
+				
 			}
 		
 		});
@@ -68,11 +72,10 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
-				if(registeringDialog.isShowing()) {
-					registeringDialog.dismiss();
+				if(mProgressDialog.isShowing()) {
+					mProgressDialog.dismiss();
 				}
-				tvRegistrationStatus.setText(getString(R.string.registration_success_text));
-				startActivity(new Intent(DeviceRegistrationActivity.this, EmailRegistrationActivity.class));
+				startActivity(new Intent(DeviceRegistrationActivity.this, HomeScreen.class));
 				DeviceRegistrationActivity.this.finish();
 			}
 		});
@@ -84,6 +87,9 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
+				if(mProgressDialog.isShowing()) {
+					mProgressDialog.dismiss();
+				}
 				tvRegistrationStatus.setText(getString(R.string.registration_error_text));
 			}
 			
@@ -94,10 +100,9 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	public int getLayoutResourceId() {
 		return (R.layout.device_registration_view);
 	}
-	
-	private void showRegistrationDialog() {
-		registeringDialog.setMessage(getString(R.string.registering_text));
-		registeringDialog.setCanceledOnTouchOutside(false);
-		registeringDialog.show();
+
+	@Override
+	protected String getTitlebarText() {
+		return ("Home");
 	}
 }
