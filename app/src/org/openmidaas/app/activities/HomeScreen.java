@@ -29,6 +29,7 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -88,14 +89,19 @@ public class HomeScreen extends AbstractActivity {
 	}
 	
 	private void showQRCodeScanner() {
-		Intent intentScan = new Intent(Intents.QR_CODE_INIT_INTENT);
-		intentScan.putExtra("SCAN_MODE", "QR_CODE_MODE");
-		intentScan.putExtra("SAVE_HISTORY", false);
-	    try {
-	      startActivityForResult(intentScan, SCAN_REQUEST);
-	    } catch (ActivityNotFoundException error) {
-	    	showNoQRCodeScannersPresentDialog();
-	    }
+		// check to see if a rear-camera is available
+		if(mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+			Intent intentScan = new Intent(Intents.QR_CODE_INIT_INTENT);
+			intentScan.putExtra("SCAN_MODE", "QR_CODE_MODE");
+			intentScan.putExtra("SAVE_HISTORY", false);
+		    try {
+		      startActivityForResult(intentScan, SCAN_REQUEST);
+		    } catch (ActivityNotFoundException error) {
+		    	showNoQRCodeScannersPresentDialog();
+		    }
+		} else {
+			showNoBackCameraPresentDialog();
+		}
 	}
 	
 	private void processScanResult(String result) {
@@ -158,6 +164,10 @@ public class HomeScreen extends AbstractActivity {
         );
         dlBuilder.setNegativeButton(R.string.cancel, null);
         dlBuilder.show();
+	}
+	
+	private void showNoBackCameraPresentDialog() {
+		UINotificationUtils.showNeutralButtonDialog(mActivity, "Problem", getString(R.string.rear_camera_not_present_text));
 	}
 	 
 	@Override

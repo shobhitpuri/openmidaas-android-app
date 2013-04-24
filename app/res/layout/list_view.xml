@@ -25,14 +25,4 @@
 		 >
     </ExpandableListView>
 
-    <TextView
-        android:id="@+id/tvAttributeListInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:textColor="#000000"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
 </RelativeLayout>

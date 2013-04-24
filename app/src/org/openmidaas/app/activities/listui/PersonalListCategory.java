@@ -17,6 +17,7 @@ package org.openmidaas.app.activities.listui;
 
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
@@ -47,6 +48,8 @@ public class PersonalListCategory extends AbstractListCategory {
 			if(mList.get(1).getAttribute().getName().equals(CategoryMap.LAST_NAME.getAttributeName())) {
 				mList.get(1).setAttribute(attribute);
 			}
+		} else {
+			mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
 		}
 	}
 }

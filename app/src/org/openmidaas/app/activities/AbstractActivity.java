@@ -55,14 +55,6 @@ public abstract class AbstractActivity extends Activity{
 	}
 	
 	/**
-	 * Override to return your custom titlebar button text. 
-	 * @return - custom titlebar button text
-	 */
-	protected String getTitlebarButtonText() {
-		return ("+");
-	}
-	
-	/**
 	 * Override to return your custom titlebar test.
 	 * @return - custom titlebar text
 	 */
