@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.listui;
 
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.GenericAttribute;
 
 import android.app.Activity;
@@ -28,7 +28,7 @@ public class GenericAttributeListElement extends AbstractAttributeListElement {
 
 	@Override
 	public void onTouch(Activity activity) {
-		UINotificationUtils.showGenericAttributeModificationDialog(activity, mAttribute);
+		DialogUtils.showGenericAttributeModificationDialog(activity, mAttribute);
 	}
 
 	@Override

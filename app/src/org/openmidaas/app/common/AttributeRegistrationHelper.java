@@ -33,7 +33,7 @@ public class AttributeRegistrationHelper {
 			@Override
 			public void onSuccess() {
 				Logger.info(getClass(), toastText);
-				UINotificationUtils.showToast(activity, toastText);
+				DialogUtils.showToast(activity, toastText);
 				activity.runOnUiThread(new Runnable() {
 
 					@Override
@@ -49,7 +49,7 @@ public class AttributeRegistrationHelper {
 			public void onError(MIDaaSException exception) {
 				mProgressDialog.dismiss();
 				Logger.info(getClass(), exception.getError().getErrorMessage());
-				UINotificationUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
+				DialogUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
 			}
 			
 		});

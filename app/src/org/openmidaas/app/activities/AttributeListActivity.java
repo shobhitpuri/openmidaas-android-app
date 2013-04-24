@@ -29,7 +29,7 @@ import org.openmidaas.app.activities.listui.PersonalListCategory;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Intents;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
 import org.openmidaas.library.model.core.AbstractAttribute;
@@ -141,7 +141,7 @@ public class AttributeListActivity extends AbstractActivity {
 
 			@Override
 			public void onError(MIDaaSException exception) {
-				UINotificationUtils.showNeutralButtonDialog(AttributeListActivity.this, "Error", exception.getError().getErrorMessage());
+				DialogUtils.showNeutralButtonDialog(AttributeListActivity.this, "Error", exception.getError().getErrorMessage());
 			}
 			
 		});
@@ -174,13 +174,14 @@ public class AttributeListActivity extends AbstractActivity {
 	private void createEmptyAttributeList() {
 		try {
 			PersonalListCategory personalCategory = new PersonalListCategory();
-			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.FIRST_NAME)));
-			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.LAST_NAME)));
-			mCategoryToElementMap.put(CategoryMap.FIRST_NAME.getCategoryName(), personalCategory);
+			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.GIVEN_NAME)));
+			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.MIDDLE_NAME)));
+			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.FAMILY_NAME)));
+			mCategoryToElementMap.put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
 			EmailCategory emailHeader = new EmailCategory();
 			mCategoryToElementMap.put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
 		} catch (InvalidAttributeNameException e) {
-			UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}
 		
 	}
