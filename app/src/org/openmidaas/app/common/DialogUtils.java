@@ -120,6 +120,7 @@ public final class DialogUtils {
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(activity);
+		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		alert.setView(input);
 		
 		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
@@ -262,6 +263,7 @@ public final class DialogUtils {
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(activity);
+		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		alert.setView(input);
 
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
