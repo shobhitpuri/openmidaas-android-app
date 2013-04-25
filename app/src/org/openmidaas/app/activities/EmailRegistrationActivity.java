@@ -17,7 +17,7 @@ package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.EmailAttribute;
 import org.openmidaas.library.model.EmailAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeValueException;
@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 
@@ -48,6 +49,8 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 		mAttributeValue = (EditText)findViewById(R.id.etAttributeValue); 
 		mAttributeValue.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 		mAttributeValue.requestFocus();
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		
 	}
 
 	@Override
@@ -64,14 +67,14 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 					@Override
 					public void onSuccess() {
 						Logger.info(getClass(), "email verification started successfully");
-						UINotificationUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
+						DialogUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
 						isInitVerificationSuccess = true;
 						try {
 							emailAttribute.save();
 						} catch (MIDaaSException e) {
-							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+							DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
 						} catch (InvalidAttributeValueException ex) {
-							UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
+							DialogUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
 						}
 						
 						mActivity.runOnUiThread(new Runnable() {
@@ -84,6 +87,8 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 								mBtnCompleteAttributeVerification.setEnabled(true);
 								mBtnStartAttributeVerification.setText("Re-send email");
 								mAttributeVerificationCode.requestFocus();
+								getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+								mAttributeVerificationCode.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 							}
 							
 						});
@@ -94,14 +99,14 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						cancelCurrentProgressDialog();
 						Logger.info(getClass(), "error in start email verification");
 						Logger.info(getClass(), exception.getError().getErrorMessage());
-						UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
+						DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
 					}
 				
 				});
 			} catch (final InvalidAttributeValueException e) {
 				cancelCurrentProgressDialog();
 				Logger.error(getClass(), e.getMessage());
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
 			} 
 			
 	}
@@ -117,7 +122,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 
 			@Override
 			public void onSuccess() {
-				UINotificationUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				DialogUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
 				startActivity(new Intent(EmailRegistrationActivity.this, AttributeListActivity.class));
 				EmailRegistrationActivity.this.finish();
 			}
@@ -125,7 +130,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			@Override
 			public void onError(MIDaaSException exception) {
 				cancelCurrentProgressDialog();
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
 			}
 		});
 	}

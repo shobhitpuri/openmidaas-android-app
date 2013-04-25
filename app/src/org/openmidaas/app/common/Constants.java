@@ -19,12 +19,13 @@ package org.openmidaas.app.common;
 public final class Constants {
 	public enum NAME { first_name, last_name, email, address };
 	public static final class AttributeNames {
-		public static final String FIRST_NAME = "first_name";
-		public static final String LAST_NAME = "last_name";
+		public static final String GIVEN_NAME = "given_name";
+		public static final String MIDDLE_NAME = "middle_name";
+		public static final String FAMILY_NAME = "family_name";
+		public static final String EMAIL = "email";
 	}
 	public static final String ATTRIBUTE_CATEGORY_PERSONAL = "Personal";
 	public static final String ATTRIBUTE_CATEGORY_EMAIL = "Email";
-	public static final String[] ATTRIBUTE_CATEGORY_LABELS = {ATTRIBUTE_CATEGORY_PERSONAL, ATTRIBUTE_CATEGORY_EMAIL};
 	 public static final String ZXING_MARKET =
 			    "market://search?q=pname:com.google.zxing.client.android";
 			  public static final String ZXING_DIRECT =

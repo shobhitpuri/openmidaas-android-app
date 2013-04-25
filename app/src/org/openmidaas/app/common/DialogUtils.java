@@ -29,16 +29,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Base64;
+import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 /**
  * 
- * Helper class to display UI notifications. 
+ * Helper class to display UI dialogs. 
  *
  */
-public final class UINotificationUtils {
+public final class DialogUtils {
 	
 	
 	/**
@@ -111,13 +115,13 @@ public final class UINotificationUtils {
 	public static void showGenericAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-		alert.setTitle("Enter " + attribute.getName());
+		alert.setTitle("Enter " + CategoryMap.get(attribute.getName()).getAttributeLabel());
 		alert.setMessage("Enter a new value and tap save");
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(activity);
 		alert.setView(input);
-
+		
 		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
@@ -142,7 +146,18 @@ public final class UINotificationUtils {
 		  }
 		});
 
-		alert.show();
+		final AlertDialog alertDialog = alert.create();
+		input.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View arg0, boolean hasFocus) {
+				if (hasFocus) {
+					alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		        }
+			}
+			
+		});
+		alertDialog.show();
 	}
 	
 	public static void showCodeCollectionDialog(final Activity activity, final AbstractAttribute<?> attribute) {
@@ -174,7 +189,7 @@ public final class UINotificationUtils {
 
 				@Override
 				public void onError(MIDaaSException exception) {
-					UINotificationUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
+					DialogUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
 				}
 				
 			});
@@ -186,8 +201,19 @@ public final class UINotificationUtils {
 		    	
 		  }
 		});
+		final AlertDialog alertDialog = alert.create();
+		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+		input.setOnFocusChangeListener(new OnFocusChangeListener() {
 
-		alert.show();
+			@Override
+			public void onFocusChange(View arg0, boolean hasFocus) {
+				if (hasFocus) {
+					alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		        }
+			}
+			
+		});
+		alertDialog.show();
 	}
 	
 	public static void showDeleteAttributeDialog(final Activity mActivity, final AbstractAttribute<?> attribute, final String message) {
@@ -262,6 +288,17 @@ public final class UINotificationUtils {
 		  }
 		});
 
-		alert.show();
+		final AlertDialog alertDialog = alert.create();
+		input.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View arg0, boolean hasFocus) {
+				if (hasFocus) {
+					alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		        }
+			}
+			
+		});
+		alertDialog.show();
 	}
 }

@@ -15,7 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.listui;
 
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 
 import android.app.Activity;
@@ -28,7 +28,7 @@ public class EmailAttributeListElement extends AbstractAttributeListElement {
 	@Override
 	public void onTouch(Activity activity) {
 		if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-			UINotificationUtils.showCodeCollectionDialog(activity, mAttribute);
+			DialogUtils.showCodeCollectionDialog(activity, mAttribute);
 	}
 }
 
