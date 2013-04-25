@@ -21,7 +21,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Intents;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import android.app.Activity;
@@ -75,7 +75,7 @@ public class HomeScreen extends AbstractActivity {
 				  Logger.debug(getClass(), intent.getStringExtra("SCAN_RESULT"));
 				  processScanResult(intent.getStringExtra("SCAN_RESULT"));
 			  } else {
-				  UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");
+				  DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");
 			  }
 		  } else if (resultCode == RESULT_CANCELED) {
 			  Logger.debug(getClass(), "Scan cancelled");
@@ -118,7 +118,7 @@ public class HomeScreen extends AbstractActivity {
 							if(mProgressDialog.isShowing()) {
 								mProgressDialog.dismiss();
 							}
-							UINotificationUtils.showNeutralButtonDialog(mActivity, "Debug", response);
+							DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
 					    }
 						
 						@Override
@@ -126,17 +126,17 @@ public class HomeScreen extends AbstractActivity {
 							if(mProgressDialog.isShowing()) {
 								mProgressDialog.dismiss();
 							}
-					        UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+					        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 					    }
 					});
 				} else {
-					UINotificationUtils.showNeutralButtonDialog(mActivity, "Non http/https URI type", result);
+					DialogUtils.showNeutralButtonDialog(mActivity, "Non http/https URI type", result);
 				}
 			} else {
-				UINotificationUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Either relative URI or unknown format: " + result);
+				DialogUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Either relative URI or unknown format: " + result);
 			}
 		} catch (URISyntaxException e) {
-			UINotificationUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Invalid URI: " + result);
+			DialogUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Invalid URI: " + result);
 		}
 	}
 	
@@ -167,7 +167,7 @@ public class HomeScreen extends AbstractActivity {
 	}
 	
 	private void showNoBackCameraPresentDialog() {
-		UINotificationUtils.showNeutralButtonDialog(mActivity, "Problem", getString(R.string.rear_camera_not_present_text));
+		DialogUtils.showNeutralButtonDialog(mActivity, "Problem", getString(R.string.rear_camera_not_present_text));
 	}
 	 
 	@Override

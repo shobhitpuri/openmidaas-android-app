@@ -93,6 +93,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="33dp"
         android:ems="10"
-        android:inputType="text" />
+        android:inputType="text" >
+        <requestFocus />
+     </EditText>
 
 </RelativeLayout>

@@ -16,7 +16,7 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -59,7 +59,7 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 					mProgressDialog.show();
 					startAttributeVerification();
 				} else {
-					UINotificationUtils.showNeutralButtonDialog(AbstractAttributeRegistrationActivity.this, "Error", getString(R.string.missing_attribute_value_text));
+					DialogUtils.showNeutralButtonDialog(AbstractAttributeRegistrationActivity.this, "Error", getString(R.string.missing_attribute_value_text));
 				}
 			}
 		});

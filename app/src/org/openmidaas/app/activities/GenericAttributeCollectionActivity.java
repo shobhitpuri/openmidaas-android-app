@@ -21,7 +21,7 @@ import java.util.Map;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.GenericAttributeParcel;
-import org.openmidaas.app.common.UINotificationUtils;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
@@ -88,7 +88,7 @@ public class GenericAttributeCollectionActivity extends AbstractActivity {
 				} catch (InvalidAttributeValueException e) {
 					
 				} catch (MIDaaSException e) {
-					UINotificationUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
 				} catch (InvalidAttributeNameException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

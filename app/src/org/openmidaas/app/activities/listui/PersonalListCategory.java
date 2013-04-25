@@ -40,15 +40,20 @@ public class PersonalListCategory extends AbstractListCategory {
 
 	@Override
 	public void addAttribute(AbstractAttribute<?> attribute) {
-		if(attribute.getName().equals(CategoryMap.FIRST_NAME.getAttributeName())) {
-			if(mList.get(0).getAttribute().getName().equals(CategoryMap.FIRST_NAME.getAttributeName())) {
+		if(attribute.getName().equals(CategoryMap.GIVEN_NAME.getAttributeName())) {
+			if(mList.get(0).getAttribute().getName().equals(CategoryMap.GIVEN_NAME.getAttributeName())) {
 				mList.get(0).setAttribute(attribute);
 			}
-		} else if(attribute.getName().equals(CategoryMap.LAST_NAME.getAttributeName())) {
-			if(mList.get(1).getAttribute().getName().equals(CategoryMap.LAST_NAME.getAttributeName())) {
+		}else if(attribute.getName().equals(CategoryMap.MIDDLE_NAME.getAttributeName())) {
+			if(mList.get(1).getAttribute().getName().equals(CategoryMap.MIDDLE_NAME.getAttributeName())) {
 				mList.get(1).setAttribute(attribute);
 			}
-		} else {
+		} else if(attribute.getName().equals(CategoryMap.FAMILY_NAME.getAttributeName())) {
+			if(mList.get(2).getAttribute().getName().equals(CategoryMap.FAMILY_NAME.getAttributeName())) {
+				mList.get(2).setAttribute(attribute);
+			}
+		} 
+		else {
 			mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
 		}
 	}
