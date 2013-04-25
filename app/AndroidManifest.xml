@@ -43,20 +43,7 @@
         <activity android:name=".activities.AttributeListActivity"></activity>
         <activity android:name=".activities.GenericAttributeCollectionActivity"></activity>
         <activity android:name=".activities.HomeScreen"></activity>
-         <activity android:name="com.google.zxing.client.android.CaptureActivity"
-		   android:screenOrientation="landscape"
-		   android:configChanges="orientation|keyboardHidden"
-		   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-		   android:windowSoftInputMode="stateAlwaysHidden">
-	   		<intent-filter>
-		      <action android:name="android.intent.action.MAIN"/>
-		      <category android:name="android.intent.category.DEFAULT"/>
-	   		</intent-filter>
-		   <intent-filter>
-		      <action android:name="org.openmidaas.app.SCAN"/>
-		      <category android:name="android.intent.category.DEFAULT"/>
-		    </intent-filter>
-		</activity>
+        <activity android:name=".activities.AddressActivity"></activity>
     </application>
 
 </manifest>

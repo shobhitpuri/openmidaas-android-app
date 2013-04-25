@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import org.openmidaas.app.R;
 import org.openmidaas.app.activities.listui.AbstractListCategory;
+import org.openmidaas.app.activities.listui.AddressCategory;
 import org.openmidaas.app.activities.listui.EmailCategory;
 import org.openmidaas.app.activities.listui.GenericAttributeListElement;
 import org.openmidaas.app.activities.listui.OnListElementLongTouch;
@@ -180,6 +181,8 @@ public class AttributeListActivity extends AbstractActivity {
 			mCategoryToElementMap.put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
 			EmailCategory emailHeader = new EmailCategory();
 			mCategoryToElementMap.put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
+			AddressCategory addressCategory = new AddressCategory();
+			mCategoryToElementMap.put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
 		} catch (InvalidAttributeNameException e) {
 			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}

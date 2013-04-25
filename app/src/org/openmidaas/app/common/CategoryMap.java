@@ -29,7 +29,8 @@ public enum CategoryMap {
 	GIVEN_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.GIVEN_NAME, "Given Name"),
 	MIDDLE_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.MIDDLE_NAME, "Middle Name"),
 	FAMILY_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.FAMILY_NAME, "Family Name"),
-	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, Constants.AttributeNames.EMAIL, "Email");
+	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, Constants.AttributeNames.EMAIL, "Email"),
+	ADDRESS(Constants.ATTRIBUTE_CATEGORY_ADDRESS, Constants.AttributeNames.ADDRESS, "Shipping Address");
 	
 	private final String mCategoryDisplayLabel;
 	
