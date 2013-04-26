@@ -16,6 +16,8 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.CategoryManager;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.EmailAttribute;
@@ -25,7 +27,6 @@ import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.WindowManager;
@@ -71,6 +72,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						isInitVerificationSuccess = true;
 						try {
 							emailAttribute.save();
+							
 						} catch (MIDaaSException e) {
 							DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
 						} catch (InvalidAttributeValueException ex) {
@@ -123,7 +125,6 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			@Override
 			public void onSuccess() {
 				DialogUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
-				startActivity(new Intent(EmailRegistrationActivity.this, AttributeListActivity.class));
 				EmailRegistrationActivity.this.finish();
 			}
 
