@@ -15,7 +15,10 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import java.util.List;
+
 import org.json.JSONObject;
+import org.openmidaas.app.activities.listui.AbstractAttributeListElement;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
@@ -90,7 +93,8 @@ public final class DialogUtils {
 	 * @param activity
 	 * @param attribute
 	 */
-	public static void showAttributeDetails(Activity activity, AbstractAttribute<?> attribute) {
+	public static void showAttributeDetails(Activity activity, AbstractAttributeListElement listElement) {
+		AbstractAttribute<?> attribute = listElement.getAttribute();
 		String message = "Name: " + attribute.getName() + "\n" +
 				 "Value: " + attribute.getValue() + "\n"; 
 		String[] jwsParams = null;
@@ -108,7 +112,7 @@ public final class DialogUtils {
 			} catch(Exception e) {
 			}
 		}
-		showDeleteAttributeDialog(activity,attribute, message);
+		showDeleteAttributeDialog(activity,listElement, message);
 	}
 	
 	
@@ -217,7 +221,8 @@ public final class DialogUtils {
 		alertDialog.show();
 	}
 	
-	public static void showDeleteAttributeDialog(final Activity mActivity, final AbstractAttribute<?> attribute, final String message) {
+	public static void showDeleteAttributeDialog(final Activity mActivity,  final AbstractAttributeListElement listElement, final String message) {
+		final AbstractAttribute<?> attribute = listElement.getAttribute();
 		mActivity.runOnUiThread(new Runnable() {
 
 			@Override
@@ -237,17 +242,18 @@ public final class DialogUtils {
 					} 
 				})
 			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
-
+			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
 						try {
 							attribute.delete();
+						
 							mActivity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 						} catch (MIDaaSException e) {
 							
 						}
 					}
-			    })
+			    })	
 			     .show();
 			}
 			
