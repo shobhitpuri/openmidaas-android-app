@@ -31,4 +31,5 @@ public final class Constants {
 			    "market://search?q=pname:com.google.zxing.client.android";
 			  public static final String ZXING_DIRECT =
 			    "https://zxing.googlecode.com/files/BarcodeScanner3.1.apk";
+	public static final String HOCKEY_APP_ID = "f1563456973bce3f6566bf26ba29ae46";
 }
