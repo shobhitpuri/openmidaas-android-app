@@ -36,7 +36,6 @@ public class EmailCategory extends AbstractListCategory {
 	@Override
 	public void onAddButtonTouch(Activity activity) {
 		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-		activity.finish();
 	}
 
 	@Override

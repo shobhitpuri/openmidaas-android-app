@@ -13,31 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.common;
 
-import org.openmidaas.app.activities.AddressActivity;
-import org.openmidaas.app.common.Constants;
-import org.openmidaas.library.model.core.AbstractAttribute;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import android.app.Activity;
-import android.content.Intent;
+import org.openmidaas.app.activities.listui.AbstractListCategory;
 
-public class AddressCategory extends AbstractListCategory{
-
-	public AddressCategory() {
-		mGroupName = Constants.ATTRIBUTE_CATEGORY_ADDRESS;
-	}
+public class CategoryManager {
 	
-	@Override
-	public void onAddButtonTouch(Activity activity) {
-		activity.startActivity(new Intent(activity, AddressActivity.class));
-	}
-
-	@Override
-	public void addAttribute(AbstractAttribute<?> attribute) {
-		AddressListElement element = new AddressListElement();
-		element.setAttribute(attribute);
-		mList.add(element);
+	private static Map<String, AbstractListCategory> mCategoryToElementMap = new LinkedHashMap<String, AbstractListCategory>();
+	
+	public static synchronized Map<String, AbstractListCategory> getMap() {
+		return mCategoryToElementMap;
 	}
 
 }
