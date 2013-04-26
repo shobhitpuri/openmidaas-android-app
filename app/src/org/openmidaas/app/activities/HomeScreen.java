@@ -17,6 +17,10 @@ package org.openmidaas.app.activities;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Intents;
@@ -64,6 +68,7 @@ public class HomeScreen extends AbstractActivity {
 				showManageInfoScreen();
 			}
 		});
+		checkForUpdates();
 	}
 
 	
@@ -169,6 +174,14 @@ public class HomeScreen extends AbstractActivity {
 	private void showNoBackCameraPresentDialog() {
 		DialogUtils.showNeutralButtonDialog(mActivity, "Problem", getString(R.string.rear_camera_not_present_text));
 	}
+	
+	private void checkForCrashes() {
+		CrashManager.register(this, Constants.HOCKEY_APP_ID);
+	}
+
+	private void checkForUpdates() {  
+		UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+	}
 	 
 	@Override
 	protected String getTitlebarText() {
@@ -180,4 +193,9 @@ public class HomeScreen extends AbstractActivity {
 		return (R.layout.home_screen);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		checkForCrashes();
+	}
 }
