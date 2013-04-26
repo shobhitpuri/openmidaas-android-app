@@ -107,8 +107,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				});
 			} catch (final InvalidAttributeValueException e) {
 				cancelCurrentProgressDialog();
-				Logger.error(getClass(), e.getMessage());
-				DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,e.getMessage());
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The email you entered is invalid");
 			} 
 			
 	}
