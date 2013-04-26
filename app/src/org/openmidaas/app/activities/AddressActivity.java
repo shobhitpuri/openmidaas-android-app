@@ -16,16 +16,14 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.CategoryManager;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
-import org.openmidaas.app.common.Intents;
 import org.openmidaas.library.model.AddressAttribute;
 import org.openmidaas.library.model.AddressAttributeFactory;
 import org.openmidaas.library.model.AddressValue;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.MIDaaSException;
-
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -102,7 +100,6 @@ public class AddressActivity extends AbstractActivity{
 		address.setLabel(addressLabel.getSelectedItem().toString());
 		address.setValue(value);
 		address.save();
-		startActivity(new Intent(AddressActivity.this, AttributeListActivity.class));
 		AddressActivity.this.finish();
 	}
 }

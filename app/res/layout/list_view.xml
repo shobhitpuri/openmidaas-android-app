@@ -22,6 +22,8 @@
         android:id="@+id/listViewAttributes"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
+        android:scrollbars="vertical"
+        android:cacheColorHint="#00000000"
 		 >
     </ExpandableListView>
 
