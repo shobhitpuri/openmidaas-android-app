@@ -28,6 +28,8 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -37,16 +39,22 @@ public class AddressActivity extends AbstractActivity{
 	private EditText mStreetAddress;
 	private EditText mCity;
 	private EditText mZip;
+	private Spinner mState;
+	private Spinner mCountry;
+	private Spinner mAddressLabel;
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		Button mBtnSaveAndQuit = (Button)findViewById(R.id.btnSaveAndQuit);
 		mStreetAddress = (EditText)findViewById(R.id.edStreet);
 		mCity = (EditText)findViewById(R.id.edCity);
 		mZip = (EditText)findViewById(R.id.edZip);
+		mState = (Spinner)findViewById(R.id.statePicker);
+		mCountry = (Spinner)findViewById(R.id.countryPicker);
+		mAddressLabel = (Spinner)findViewById(R.id.addressLabelPicker);
 		mStreetAddress.setInputType(InputType.TYPE_CLASS_TEXT);
 		mCity.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		mZip.setInputType(InputType.TYPE_CLASS_TEXT);
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);		
 		mBtnSaveAndQuit.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -77,9 +85,7 @@ public class AddressActivity extends AbstractActivity{
 	private void saveAndQuit() throws IllegalArgumentException, InvalidAttributeValueException, MIDaaSException {
 		AddressAttribute address = AddressAttributeFactory.createAttribute();
 		
-		Spinner state = (Spinner)findViewById(R.id.statePicker);
-		Spinner country = (Spinner)findViewById(R.id.countryPicker);
-		Spinner addressLabel = (Spinner)findViewById(R.id.addressLabelPicker);
+		
 		if(mStreetAddress.getText().toString() == null || mStreetAddress.getText().toString().isEmpty()) {
 			throw new IllegalArgumentException ("Street address cannot be empty");
 		}
@@ -89,15 +95,15 @@ public class AddressActivity extends AbstractActivity{
 		if(mZip.getText().toString() == null || mZip.getText().toString().isEmpty()) {
 			throw new IllegalArgumentException ("Zip/Postal Code cannot be empty");
 		}
-		if(state.getSelectedItem().toString() == null || state.getSelectedItem().toString().isEmpty()) {
+		if(mState.getSelectedItem().toString() == null || mState.getSelectedItem().toString().isEmpty()) {
 			throw new IllegalArgumentException ("Invalid state/province selected");
 		}
-		if(country.getSelectedItem().toString() == null || country.getSelectedItem().toString().isEmpty()) {
+		if(mCountry.getSelectedItem().toString() == null || mCountry.getSelectedItem().toString().isEmpty()) {
 			throw new IllegalArgumentException ("Invalid country selected");
 		}
 		AddressValue value = new AddressValue(mStreetAddress.getText().toString(), mCity.getText().toString(), 
-				state.getSelectedItem().toString(), mZip.getText().toString(), country.getSelectedItem().toString());
-		address.setLabel(addressLabel.getSelectedItem().toString());
+				mState.getSelectedItem().toString(), mZip.getText().toString(), mCountry.getSelectedItem().toString());
+		address.setLabel(mAddressLabel.getSelectedItem().toString());
 		address.setValue(value);
 		address.save();
 		AddressActivity.this.finish();
