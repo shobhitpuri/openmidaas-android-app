@@ -15,33 +15,22 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.listui;
 
-import org.openmidaas.app.activities.EmailRegistrationActivity;
-import org.openmidaas.app.common.Constants;
-import org.openmidaas.library.model.core.AbstractAttribute;
-
+import org.openmidaas.library.model.AddressAttribute;
 import android.app.Activity;
-import android.content.Intent;
 
-/**
- * 
- * An email category
- *
- */
-public class EmailCategory extends AbstractListCategory {
-	
-	public EmailCategory() {
-		mGroupName = Constants.ATTRIBUTE_CATEGORY_EMAIL;
+public class AddressListElement extends AbstractAttributeListElement{
+
+	@Override
+	public void onTouch(Activity activity) {
 	}
 
 	@Override
-	public void onAddButtonTouch(Activity activity) {
-		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
-	}
-
-	@Override
-	public void addAttribute(AbstractAttribute<?> attribute) {
-		EmailAttributeListElement element = new EmailAttributeListElement();
-		element.setAttribute(attribute);
-		mList.add(element);
+	public String getRenderedAttributeValue() {
+		try {
+			AddressAttribute attribute = (AddressAttribute)mAttribute;
+			return (attribute.getValue().getFormattedAddress());
+		} catch (ClassCastException e) {
+			return "Address cannot be displayed";
+		}
 	}
 }

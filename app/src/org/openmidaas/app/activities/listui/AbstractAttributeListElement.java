@@ -50,7 +50,7 @@ public abstract class AbstractAttributeListElement implements OnListElementTouch
 	@Override
 	public void onLongTouch(Activity activity) {
 		if(Settings.ATTRIBUTE_DIAGNOSTICS_ENABLED) {
-			DialogUtils.showAttributeDetails(activity, mAttribute);
+			DialogUtils.showAttributeDetails(activity, this);
 		}
 	}
 	

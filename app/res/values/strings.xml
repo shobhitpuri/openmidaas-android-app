@@ -64,10 +64,94 @@
 	<string name="home_screen_text">Home</string>
 	<string name="no_qrcode_dialog_message">You will need to update the Google Search app in the app store or install the ZXing Barcode scanner app in order to 
 	    scan a QR code</string>
-	    <string name="no_qrcode_dialog_title">Update or install</string>
-	    <string name="install_button">Install</string>
-	    <string name="cancel">Cancel</string>
-	    <string name="scan_qr_code">Scan\nQR Code</string>
-	    <string name="manage_info">Manage\nInformation</string>
-	    <string name="rear_camera_not_present_text">No rear camera was detected on this phone. You will need a device equipped with a rear camera to take a picture of a QR code.</string>
+    <string name="no_qrcode_dialog_title">Update or install</string>
+    <string name="install_button">Install</string>
+    <string name="cancel">Cancel</string>
+    <string name="scan_qr_code">Scan\nQR Code</string>
+    <string name="manage_info">Manage\nInformation</string>
+    <string name="rear_camera_not_present_text">No rear camera was detected on this phone. You will need a device equipped with a rear camera to take a picture of a QR code.</string>
+    <string name="country_prompt">Choose a country</string>
+	<string-array name="country_arrays">
+        <item>Canada</item>
+        <item>United States</item>
+    </string-array>
+    <string name="state_prompt">Choose a state/province</string>
+	<string-array name="state_arrays">
+	    <item>Alberta</item>
+	    <item>British Columbia</item>
+	    <item>Manitoba</item>
+	    <item>New Brunswick</item>
+	    <item>Newfoundland</item>
+	    <item>Nova Scotia</item>
+	    <item>Nunavut</item>
+        <item>Ontario</item>
+        <item>Prince Edward Island</item>
+        <item>Quebec</item>
+        <item>Saskatchewan</item>
+        <item>Northwest Territories</item>
+        <item>Yukon Territory</item>
+        <item>Alabama</item>
+        <item>Alaska</item>
+        <item>Arizona</item>
+        <item>Arkansas</item>
+        <item>California</item>
+        <item>Colorado</item>
+        <item>Connecticut</item>
+        <item>Delaware</item>
+        <item>Florida</item>
+        <item>Georgia</item>
+        <item>Hawaii</item>
+        <item>Idaho</item>
+        <item>Illinois</item>
+        <item>Indiana</item>
+        <item>Iowa</item>
+        <item>Kansas</item>
+        <item>Kentucky</item>
+        <item>Louisiana</item>
+        <item>Maine</item>
+        <item>Maryland</item>
+        <item>Massachusetts</item>
+        <item>Michigan</item>
+        <item>Minnesota</item>
+        <item>Mississippi</item>
+        <item>Missouri</item>
+        <item>Montana</item>
+        <item>Nebraska</item>
+        <item>Nevada</item>
+        <item>New Hampshire</item>
+        <item>New Jersey</item>
+        <item>New Mexico</item>
+        <item>New York</item>
+        <item>North Carolina</item>
+        <item>North Dakota</item>     
+        <item>Ohio</item>
+        <item>Oklahoma</item>
+        <item>Oregon</item>
+        <item>Pennsylvania</item>
+        <item>Rhode Island</item>
+        <item>South Carolina</item>
+        <item>South Dakota</item>
+        <item>Tennessee</item>
+        <item>Texas</item>
+        <item>Utha</item>
+        <item>Vermont</item>
+        <item>Virginia</item>
+        <item>Washington</item>
+        <item>West Virginia</item>
+        <item>Wisconsin</item>
+        <item>Wyoming</item>
+    </string-array>
+     <string name="address_labels_prompt">Choose a label for this address</string>
+	<string-array name="address_labels_arrays">
+	    <item>None</item>
+        <item>Home</item>
+        <item>Work</item>
+        <item>Shipping</item>
+        <item>Billing</item>
+    </string-array>
+    <string name="streetAddressHint">Street Address</string>
+    <string name="cityHint">City/Town</string>
+    <string name="zipHint">Zip/Postal Code</string>
+    <string name="btnSaveAndCloseText">Save and Close</string>
+    <string name="selectLabelText">Select a label: </string>
 </resources>

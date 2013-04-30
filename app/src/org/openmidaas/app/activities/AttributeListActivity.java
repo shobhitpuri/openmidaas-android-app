@@ -15,17 +15,15 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.openmidaas.app.R;
-import org.openmidaas.app.activities.listui.AbstractListCategory;
+import org.openmidaas.app.activities.listui.AddressCategory;
 import org.openmidaas.app.activities.listui.EmailCategory;
 import org.openmidaas.app.activities.listui.GenericAttributeListElement;
 import org.openmidaas.app.activities.listui.OnListElementLongTouch;
 import org.openmidaas.app.activities.listui.OnListElementTouch;
 import org.openmidaas.app.activities.listui.PersonalListCategory;
+import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Intents;
@@ -58,10 +56,6 @@ public class AttributeListActivity extends AbstractActivity {
 	
 	private AttributeExpandableListAdapter mAdapter;
 	
-	private List<AbstractListCategory> mListValues;
-	
-	private static Map<String, AbstractListCategory> mCategoryToElementMap = new LinkedHashMap<String, AbstractListCategory>();
-	
 	@Override
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
@@ -71,10 +65,9 @@ public class AttributeListActivity extends AbstractActivity {
 		mActivity = this;
 		mAttributeListView.setGroupIndicator(null);
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		mListValues = new ArrayList<AbstractListCategory>();
-		mAdapter = new AttributeExpandableListAdapter(mActivity, mListValues);
+		mAdapter = new AttributeExpandableListAdapter(mActivity);
 		mAttributeListView.setAdapter(mAdapter);
-		refreshAttributeList();
+		
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
 			 @Override
 	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
@@ -107,9 +100,16 @@ public class AttributeListActivity extends AbstractActivity {
 	}
 	
 	@Override
+	public void onStart() {
+		super.onStart();
+		
+	}
+	
+	@Override
 	public void onResume() {
 		super.onResume();
-		registerReceiver(attributeEvent, new IntentFilter(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+		registerReceiver(attributeEvent, new IntentFilter(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));	
+		refreshAttributeList();
 	}
 	
 	@Override
@@ -148,18 +148,20 @@ public class AttributeListActivity extends AbstractActivity {
 		
 	}
 	
+	/**
+	 * Adds data to the map in a thread-safe way
+	 * @param attributeList the attribute list from the library.  
+	 */
 	private void addItemsToList(final List<AbstractAttribute<?>> attributeList) {
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				mAdapter.clearExistingAttributeEntries();
 				createEmptyAttributeList();
 				for(AbstractAttribute<?> attribute:attributeList) {
-					// reverse lookup: attribute name -> category name -> category
-					mCategoryToElementMap.get(CategoryMap.get(attribute.getName()).getCategoryName()).addAttribute(attribute);
-				}  
-				mListValues.addAll(mCategoryToElementMap.values());
+					// reverse lookup: attribute name -> category name -> category list
+					CategoryManager.getMap().get(CategoryMap.get(attribute.getName()).getCategoryName()).addAttribute(attribute);
+				} 
 				mHandler.sendEmptyMessage(1);
 			}
 			
@@ -170,6 +172,8 @@ public class AttributeListActivity extends AbstractActivity {
 	 * Bootstraps an empty list of attributes in a specific order.  
 	 * E.g., Personal Info (first name, last name), Email
 	 * Add your category to the end of the list. 
+	 * Since the map is using the LinkedHashMap implementation, the order
+	 * of insertion is guaranteed. 
 	 */
 	private void createEmptyAttributeList() {
 		try {
@@ -177,9 +181,11 @@ public class AttributeListActivity extends AbstractActivity {
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.GIVEN_NAME)));
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.MIDDLE_NAME)));
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.FAMILY_NAME)));
-			mCategoryToElementMap.put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
+			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
 			EmailCategory emailHeader = new EmailCategory();
-			mCategoryToElementMap.put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
+			CategoryManager.getMap().put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
+			AddressCategory addressCategory = new AddressCategory();
+			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
 		} catch (InvalidAttributeNameException e) {
 			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}
@@ -198,6 +204,9 @@ public class AttributeListActivity extends AbstractActivity {
 		
 	};
 	
+	/**
+	 * Notify the UI thread to refresh the list with new data. 
+	 */
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		
 		@Override

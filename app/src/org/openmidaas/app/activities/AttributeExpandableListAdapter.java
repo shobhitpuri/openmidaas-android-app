@@ -15,10 +15,12 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.openmidaas.app.R;
 import org.openmidaas.app.activities.listui.AbstractAttributeListElement;
 import org.openmidaas.app.activities.listui.AbstractListCategory;
+import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import android.app.Activity;
@@ -34,20 +36,22 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	
 	private Activity mActivity;
 
-	private List<AbstractListCategory> mGroupHeaders;
+	private List<AbstractListCategory> mGroupHeaders = new ArrayList<AbstractListCategory>();
 	
-	public AttributeExpandableListAdapter(Activity activity, List<AbstractListCategory> groupHeaders) {
+	public AttributeExpandableListAdapter(Activity activity) {
 		this.mActivity = activity;
-		this.mGroupHeaders = groupHeaders;
-	}
-
-	public void clearExistingAttributeEntries() {
-		mGroupHeaders.clear();
 	}
 	
-	public void setHeaders(List<AbstractListCategory> groupHeaders) {
-		this.mGroupHeaders = groupHeaders;
+	/**
+	 * Reload the data form the category map. 
+	 */
+	@Override
+	public void notifyDataSetChanged() {
+		this.mGroupHeaders.clear();
+		this.mGroupHeaders.addAll(CategoryManager.getMap().values());
+		super.notifyDataSetChanged();
 	}
+	
 	
 	/**
 	 * 
@@ -98,8 +102,11 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 			
 		childViewHolder.tvAttributeLabel.setText("");
 		childViewHolder.tvAttributeValue.setText("");
-			
-		childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
+		if(attribute.getLabel() == null || attribute.getLabel().isEmpty()) {	
+			childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
+		} else {
+			childViewHolder.tvAttributeLabel.setText(attribute.getLabel());
+		}
 		if(attribute.getValue() != null) {
 			childViewHolder.tvAttributeValue.setText(listElement.getRenderedAttributeValue());
 		}
