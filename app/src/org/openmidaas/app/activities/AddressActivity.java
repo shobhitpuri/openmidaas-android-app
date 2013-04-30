@@ -16,8 +16,6 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.CategoryManager;
-import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.AddressAttribute;
 import org.openmidaas.library.model.AddressAttributeFactory;
@@ -28,8 +26,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -103,7 +99,9 @@ public class AddressActivity extends AbstractActivity{
 		}
 		AddressValue value = new AddressValue(mStreetAddress.getText().toString(), mCity.getText().toString(), 
 				mState.getSelectedItem().toString(), mZip.getText().toString(), mCountry.getSelectedItem().toString());
-		address.setLabel(mAddressLabel.getSelectedItem().toString());
+		if(mAddressLabel.getSelectedItemPosition() != 0 && (!(mAddressLabel.getSelectedItem().equals("None")))) {
+			address.setLabel(mAddressLabel.getSelectedItem().toString());
+		}
 		address.setValue(value);
 		address.save();
 		AddressActivity.this.finish();

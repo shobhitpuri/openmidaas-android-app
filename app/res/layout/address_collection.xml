@@ -13,74 +13,81 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/default_bg"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
-
-    <EditText
-        android:id="@+id/edCity"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/edStreet"
-        android:layout_marginTop="15dp"
-        android:hint="@string/cityHint"
-        android:ems="10" />
-
-    <Spinner
-        android:id="@+id/statePicker"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/edCity"
-        android:entries="@array/state_arrays"
-        android:prompt="@string/state_prompt"
-        android:layout_marginTop="15dp" />
-
-    <EditText
-        android:id="@+id/edZip"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/statePicker"
-        android:layout_marginTop="15dp"
-        android:hint="@string/zipHint"
-        android:ems="10" />
-
-    <Spinner
-        android:id="@+id/countryPicker"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/edZip"
-        android:entries="@array/country_arrays"
-        android:prompt="@string/country_prompt"
-        android:layout_marginTop="15dp" />
-
-    <Button
-        android:id="@+id/btnSaveAndQuit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/btnSaveAndCloseText" />
-
-    <EditText
-        android:id="@+id/edStreet"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
-        android:ems="10"
-        android:hint="@string/streetAddressHint" >
-         <requestFocus />
-	</EditText>
-
-    <Spinner
-        android:id="@+id/addressLabelPicker"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/countryPicker"
-        android:layout_marginTop="15dp"
-        android:entries="@array/address_labels_arrays"
-        android:prompt="@string/address_labels_prompt" />
-
-</RelativeLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
+    >
+	<RelativeLayout 
+	    android:background="@drawable/default_bg"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" >
+	
+	    <EditText
+	        android:id="@+id/edCity"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/edStreet"
+	        android:layout_marginTop="15dp"
+	        android:hint="@string/cityHint"
+	        android:ems="10" />
+	
+	    <Spinner
+	        android:id="@+id/statePicker"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/edCity"
+	        android:entries="@array/state_arrays"
+	        android:prompt="@string/state_prompt"
+	        android:layout_marginTop="15dp" />
+	
+	    <EditText
+	        android:id="@+id/edZip"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/statePicker"
+	        android:layout_marginTop="15dp"
+	        android:hint="@string/zipHint"
+	        android:ems="10" />
+	
+	    <Spinner
+	        android:id="@+id/countryPicker"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/edZip"
+	        android:entries="@array/country_arrays"
+	        android:prompt="@string/country_prompt"
+	        android:layout_marginTop="15dp" />
+	
+	    <Button
+	        android:id="@+id/btnSaveAndQuit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/addressLabelPicker"
+	        android:layout_marginTop="15dp"
+	        android:layout_centerHorizontal="true"
+	        android:text="@string/btnSaveAndCloseText" />
+	
+	    <EditText
+	        android:id="@+id/edStreet"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_marginTop="5dp"
+	        android:ems="10"
+	        android:hint="@string/streetAddressHint" >
+	         <requestFocus />
+		</EditText>
+	
+	    <Spinner
+	        android:id="@+id/addressLabelPicker"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/countryPicker"
+	        android:layout_marginTop="15dp"
+	        android:entries="@array/address_labels_arrays"
+	        android:prompt="@string/address_labels_prompt" />
+	
+	</RelativeLayout>
+</ScrollView>
