@@ -153,4 +153,5 @@
     <string name="zipHint">Zip/Postal Code</string>
     <string name="btnSaveAndCloseText">Save and Close</string>
     <string name="selectLabelText">Select a label: </string>
+    <string name="authorization_title_text">Authorize</string>
 </resources>
