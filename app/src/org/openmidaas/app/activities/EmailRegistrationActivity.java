@@ -16,8 +16,6 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.CategoryManager;
-import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.model.EmailAttribute;
