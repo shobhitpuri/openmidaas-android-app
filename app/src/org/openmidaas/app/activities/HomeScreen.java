@@ -135,6 +135,7 @@ public class HomeScreen extends AbstractActivity {
 							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 							intent.putExtra(AuthorizationActivity.BUNDLE_KEY, response);
 							startActivity(intent);
+							mActivity.finish();
 							//DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
 					    }
 						

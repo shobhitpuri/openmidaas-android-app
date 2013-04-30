@@ -24,9 +24,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AbstractAttributeSet;
-import org.openmidaas.app.session.MissingRequestValueException;
 import org.openmidaas.app.session.Session;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -82,14 +80,14 @@ public class AuthorizationActivity extends AbstractActivity{
 					session.setRequestData(requestData);
 					mAttributeSet.clear();
 					mAttributeSet = session.getAttributeSet();
-					//mAuthorizationListAdapter.addAll
+					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
 					mHandler.sendMessage(message);
 				} catch (JSONException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_PARSE_ERROR;
 					mHandler.sendMessage(message);
-				} catch (MissingRequestValueException e) {
+				} catch (RuntimeException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_PARSE_ERROR;
 					mHandler.sendMessage(message);

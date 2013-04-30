@@ -48,6 +48,8 @@ public class Session {
 	
 	private List<AbstractAttributeSet> mAttributeSet;
 	
+	private ReturnStrategy mReturnStrategy;
+	
 	public Session() {
 		mAttributeSet = new ArrayList<AbstractAttributeSet>();
 	}
@@ -58,20 +60,21 @@ public class Session {
 	 * @param requestObject
 	 * @throws JSONException
 	 */
-	public void setRequestData(JSONObject requestObject) throws JSONException, MissingRequestValueException {
+	public void setRequestData(JSONObject requestObject) throws JSONException  {
 		JSONObject attrRequest;
 		if(requestObject == null) {
-			throw new MissingRequestValueException("");
+			throw new RuntimeException("Ther requestObject parameter is null. ");
 		}
-		if(requestObject.isNull(CLIENT_ID)) {
-			// throw exception
+		// we need to the keys listed below to proceed. Check to see if they exist. 
+		if((!(requestObject.has(CLIENT_ID))) || (!(requestObject.has(ATTRIBUTES))) || (!(requestObject.has(RETURN)))) {
+			throw new RuntimeException("clientId, attrs, and/or return keys are missing in the request");
 		}
-		if(requestObject.isNull(ATTRIBUTES)) {
-			// throw exception			
+			
+		// we need values for the keys listed below to proceed. Check to see if they exist. 
+		if(requestObject.isNull(CLIENT_ID) || requestObject.isNull(ATTRIBUTES) || requestObject.isNull(RETURN)) {
+			throw new RuntimeException("clientId, attrs, and/or return values are missing in the request");
 		}
-		if (requestObject.isNull(RETURN)) {
-			// throw exception
-		}
+
 		attrRequest = requestObject.getJSONObject(ATTRIBUTES);
 		mClientId = requestObject.getString(CLIENT_ID);
 		if(!(requestObject.isNull(STATE))) {
@@ -86,10 +89,10 @@ public class Session {
 				if(attrRequest.get(key) instanceof JSONObject) {
 					createAttributeSet(key, attrRequest.getJSONObject(key));
 				} else {
-					throw new MissingRequestValueException();
+					throw new RuntimeException("The value for the key in \"attrs\" is not of type JSONObject.");
 				}
 			} else {
-				throw new MissingRequestValueException();
+				throw new RuntimeException("The value for key: " + key + " is null");
 			}
 		}
 		

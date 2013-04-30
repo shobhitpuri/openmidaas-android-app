@@ -35,6 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvAuthorizationItems"
         android:layout_centerHorizontal="true"
-        android:text="Button" />
+        android:text="@string/authorizeButtonText" />
 
 </RelativeLayout>
