@@ -57,7 +57,16 @@ public class HomeScreen extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
-				 showQRCodeScanner();
+				 //showQRCodeScanner();
+				
+				String text = "{\"clientId\": \"https://edbc.ca\",\"acr\": \"1\",\"attrs\": {"+ 
+						"\"email\": {\"essential\": true,\"label\": \"work email\",\"verified\": true}},\"state\": \"1234\","+ 
+						"\"return\": {\"method\": \"postback\",\"url\": \"https://edbc.ca/sess/fhyxy8209jskso\"}}\"";
+				//processScanResult(text);
+				Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+				intent.putExtra(AuthorizationActivity.BUNDLE_KEY, text);
+				startActivity(intent);
+				
 			}
 		});
 		
@@ -123,7 +132,10 @@ public class HomeScreen extends AbstractActivity {
 							if(mProgressDialog.isShowing()) {
 								mProgressDialog.dismiss();
 							}
-							DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
+							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+							intent.putExtra(AuthorizationActivity.BUNDLE_KEY, response);
+							startActivity(intent);
+							//DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
 					    }
 						
 						@Override
