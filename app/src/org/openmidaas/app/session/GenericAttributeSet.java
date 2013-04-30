@@ -15,16 +15,10 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
-public class MissingRequestValueException extends Exception {
-
-	private static final long serialVersionUID = 1L;
-
-	public MissingRequestValueException(){
-		super();
-	}
+public class GenericAttributeSet {
 	
-	public MissingRequestValueException(String message) {
-		super(message);
+	protected GenericAttributeSet() {
+		
 	}
 
 }

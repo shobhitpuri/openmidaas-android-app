@@ -16,9 +16,9 @@
 package org.openmidaas.app.activities;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import android.app.Activity;
@@ -26,6 +26,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Spinner;
@@ -42,8 +44,8 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		mAttributeSet = new ArrayList<AbstractAttributeSet>();
 	}
 	
-	public synchronized void add(AbstractAttributeSet attributeSet) {
-		//mAttributeSet.addall.add(attributeSet);
+	public synchronized void setList(List<AbstractAttributeSet> attributeSet) {
+		mAttributeSet = attributeSet;
 	}
 	
 	@Override
@@ -62,7 +64,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup viewGroup) {
+	public View getView(final int position, View convertView, ViewGroup viewGroup) {
 		ViewHolder viewHolder;
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -77,8 +79,23 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		viewHolder.tvAttributeLabel.setText("");
 		viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
 		ArrayAdapter<AbstractAttribute<?>> dataAdapter = new ArrayAdapter<AbstractAttribute<?>>(mActivity,
-	                android.R.layout.simple_spinner_item, mAttributeSet.get(position).getAttributeList());
-		viewHolder.attributeSelector.setAdapter(dataAdapter); 
+	                android.R.layout.simple_selectable_list_item, mAttributeSet.get(position).getAttributeList());
+		viewHolder.attributeSelector.setAdapter(dataAdapter);
+		viewHolder.attributeSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				Logger.debug(getClass(), mAttributeSet.get(position).getAttributeList().get(arg2).getValue().toString());
+				mAttributeSet.get(position).setSelectedAttribute(mAttributeSet.get(position).getAttributeList().get(arg2));
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				
+			}
+			
+		});
 		return convertView;
 	}
 	
