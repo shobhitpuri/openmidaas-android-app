@@ -143,6 +143,7 @@
     </string-array>
      <string name="address_labels_prompt">Choose a label for this address</string>
 	<string-array name="address_labels_arrays">
+	    <item>None</item>
         <item>Home</item>
         <item>Work</item>
         <item>Shipping</item>
