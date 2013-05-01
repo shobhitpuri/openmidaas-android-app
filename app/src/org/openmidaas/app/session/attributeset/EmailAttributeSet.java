@@ -29,7 +29,7 @@ import android.app.Activity;
 
 public class EmailAttributeSet extends AbstractAttributeSet {
 
-	private boolean mNotificationSuccess = false;
+	private boolean mRetrievalSuccess = false;
 	
 	protected EmailAttributeSet() {
 		mType = Constants.AttributeNames.EMAIL;
@@ -37,19 +37,19 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 	
 	@Override
 	public void fetch() throws AttributeFetchException{
-		mNotificationSuccess = false;
+		mRetrievalSuccess = false;
 		final CountDownLatch MUTEX = new CountDownLatch(1);
 		AttributePersistenceCoordinator.getEmails(new EmailDataCallback() {
 
 			@Override
 			public void onError(MIDaaSException arg0) {
-				mNotificationSuccess = false;
+				mRetrievalSuccess = false;
 				MUTEX.countDown();
 			}
 
 			@Override
 			public void onSuccess(List<EmailAttribute> emailList) {
-				mNotificationSuccess = true;
+				mRetrievalSuccess = true;
 				mAttributeList.addAll(emailList);
 				MUTEX.countDown();
 			}
@@ -57,7 +57,7 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 		});
 		try {
 			MUTEX.await(TIMEOUT, TIME_UNIT);
-			if(!mNotificationSuccess) {
+			if(!mRetrievalSuccess) {
 				throw new AttributeFetchException("Attribute could not be retrieved from persistence store.");
 			}
 		} catch (InterruptedException e) {

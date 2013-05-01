@@ -78,18 +78,15 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeLabel.setText("");
-		// if we have a label set the label. 
-		if(mAttributeSet.get(position).getLabel() != null || (!(mAttributeSet.get(position).getLabel().isEmpty()))) {
-			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
-		} else {
-			// if we have a mapped label from attribute name, get the label
-			if(CategoryMap.get(mAttributeSet.get(position).getType()) != null) {
-				viewHolder.tvAttributeLabel.setText(CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
-			} else {
-				// otherwise just set the key to the label. 
+		
+		if(mAttributeSet.get(position).getLabel() == null || (mAttributeSet.get(position).getLabel().isEmpty())) {
+			if(CategoryMap.get(mAttributeSet.get(position).getType()) == null) {
 				viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getKey());
+			} else {
+				viewHolder.tvAttributeLabel.setText(CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
 			}
-			
+		} else {
+			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
 		}
 		if(mAttributeSet.get(position).isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.append("*");

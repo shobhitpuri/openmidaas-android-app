@@ -15,9 +15,59 @@
  ******************************************************************************/
 package org.openmidaas.app.session.attributeset;
 
-public class GenericAttributeSet {
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.session.AttributeFetchException;
+import org.openmidaas.library.model.GenericAttribute;
+import org.openmidaas.library.model.core.MIDaaSException;
+import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
+import org.openmidaas.library.persistence.core.GenericDataCallback;
+
+import android.app.Activity;
+
+public class GenericAttributeSet extends AbstractAttributeSet {
 	
-	protected GenericAttributeSet() {
+	private boolean mRetrievalSuccess = false;
+	
+	protected GenericAttributeSet(String name) {
+		mType = name;
+	}
+
+	@Override
+	public void fetch() throws AttributeFetchException {
+		final CountDownLatch MUTEX = new CountDownLatch(1);
+		AttributePersistenceCoordinator.getGenericAttributes(mType, new GenericDataCallback() {
+
+			@Override
+			public void onError(MIDaaSException arg0) {
+				mRetrievalSuccess = false;
+				MUTEX.countDown();
+			}
+
+			@Override
+			public void onSuccess(List<GenericAttribute> list) {
+				mRetrievalSuccess = true;
+				mAttributeList.addAll(list);
+				MUTEX.countDown();
+			}
+			
+		});
+		
+		try {
+			MUTEX.await(TIMEOUT, TIME_UNIT);
+			if(!mRetrievalSuccess) {
+				throw new AttributeFetchException("Attribute could not be retrieved from persistence store.");
+			}
+		} catch (InterruptedException e) {
+			Logger.error(getClass(), e.getMessage());
+			throw new AttributeFetchException("Operation to retrieve value from persistence store timed out.");
+		}
+	}
+
+	@Override
+	public void onModify(Activity activity) {
 		
 	}
 
