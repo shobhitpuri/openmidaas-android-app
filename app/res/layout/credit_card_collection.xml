@@ -16,69 +16,98 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/default_bg"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:layout_marginTop="5dp" >
 
     <EditText
         android:id="@+id/edCCNumber"
         android:inputType="number"
+        android:maxLength="16"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="@string/creditCardHint" >
-         <requestFocus />
-	</EditText>
-    
-    
-    <Spinner
-        android:id="@+id/spnMonth"
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:id="@+id/ltExpiryLabels"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/edCCNumber"
-        android:entries="@array/month_array"
-        android:prompt="@string/month_prompt"
-        android:layout_marginTop="15dp" />
-    
-    <Spinner
-        android:id="@+id/spnYear"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/txtExpiryMonthLabel"
+            style="@style/textViewStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".3"
+            android:layout_marginLeft="5dp"
+            android:text="@string/month_label" />
+
+        <TextView
+            android:id="@+id/txtExpiryYearLabel"
+            style="@style/textViewStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".7"
+            android:layout_marginLeft="5dp"
+            android:text="@string/year_label" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ltExpiryDate"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/spnMonth"
-        android:entries="@array/year_array"
-        android:prompt="@string/year_prompt"
-        android:layout_marginTop="15dp" />
-    
-    <EditText
-        android:id="@+id/edCCV"
-        android:inputType="number"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/spnYear"
-        android:layout_marginTop="5dp"
-        android:ems="10"
-        android:hint="@string/creditCardCCVHint" >
-	</EditText>
+        android:layout_below="@+id/ltExpiryLabels"
+        android:orientation="horizontal" >
+
+        <Spinner
+            android:id="@+id/spnMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".3"
+            android:entries="@array/month_array"
+            android:prompt="@string/month_prompt" />
+
+        <Spinner
+            android:id="@+id/spnYear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:prompt="@string/year_prompt" />
+
+        <EditText
+            android:id="@+id/edCCV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".2"
+            android:maxLength="3"
+            android:ems="10"
+            android:hint="@string/creditCardCCVHint"
+            android:inputType="number" >
+        </EditText>
+    </LinearLayout>
 
     <EditText
         android:id="@+id/edCardHolderName"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edCCV"
+        android:layout_below="@+id/ltExpiryDate"
         android:layout_marginTop="5dp"
         android:ems="10"
-        android:hint="@string/creditCardHolderNameHint" >
-	</EditText>
-	
+        android:hint="@string/creditCardHolderNameHint"
+        android:inputType="textCapWords" >
+    </EditText>
+
     <Button
         android:id="@+id/btnSaveAndQuit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/edCardHolderName"
         android:layout_centerHorizontal="true"
         android:text="@string/btnSaveAndCloseText" />
-
-    
-
 
 </RelativeLayout>
