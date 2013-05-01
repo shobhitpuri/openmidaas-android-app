@@ -23,12 +23,17 @@ import org.openmidaas.library.model.CreditCardValue;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.MIDaaSException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Calendar;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 public class CreditCardActivity extends AbstractActivity {
 
@@ -46,7 +51,9 @@ public class CreditCardActivity extends AbstractActivity {
 		mCardHolderName = (EditText)findViewById(R.id.edCardHolderName);
 		mExpiryMonth = (Spinner)findViewById(R.id.spnMonth);
 		mExpiryYear = (Spinner)findViewById(R.id.spnYear);
-		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);		
+		mExpiryYear.setAdapter( genExpiryYearAdapter() );
+		
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		mBtnSaveAndQuit.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -112,4 +119,16 @@ public class CreditCardActivity extends AbstractActivity {
 		return (R.layout.credit_card_collection);
 	}
 
+	//create a spinner adapter and populate with expiry year values
+	private ArrayAdapter<String> genExpiryYearAdapter() {
+		int numYears = 10;
+		List<String> array = new ArrayList<String>(numYears);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, array);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		int year = Calendar.getInstance().get(Calendar.YEAR);
+		for (int i=0; i<numYears; i++) {
+			array.add( String.valueOf(i + year) );
+		}
+		return adapter;
+	}
 }
