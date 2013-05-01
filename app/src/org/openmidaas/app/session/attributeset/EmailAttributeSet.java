@@ -13,38 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.session;
+package org.openmidaas.app.session.attributeset;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.openmidaas.app.common.Constants;
+import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.session.AttributeFetchException;
 import org.openmidaas.library.model.EmailAttribute;
-import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.EmailDataCallback;
 
+import android.app.Activity;
+
 public class EmailAttributeSet extends AbstractAttributeSet {
 
+	private boolean mNotificationSuccess = false;
 	
 	protected EmailAttributeSet() {
 		mType = Constants.AttributeNames.EMAIL;
 	}
 	
 	@Override
-	public void fetch(){
+	public void fetch() throws AttributeFetchException{
+		mNotificationSuccess = false;
 		final CountDownLatch MUTEX = new CountDownLatch(1);
 		AttributePersistenceCoordinator.getEmails(new EmailDataCallback() {
 
 			@Override
 			public void onError(MIDaaSException arg0) {
+				mNotificationSuccess = false;
 				MUTEX.countDown();
 			}
 
 			@Override
 			public void onSuccess(List<EmailAttribute> emailList) {
+				mNotificationSuccess = true;
 				mAttributeList.addAll(emailList);
 				MUTEX.countDown();
 			}
@@ -52,14 +57,17 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 		});
 		try {
 			MUTEX.await(TIMEOUT, TIME_UNIT);
+			if(!mNotificationSuccess) {
+				throw new AttributeFetchException("Attribute could not be retrieved from persistence store.");
+			}
 		} catch (InterruptedException e) {
-			
-			e.printStackTrace();
+			Logger.error(getClass(), e.getMessage());
+			throw new AttributeFetchException("Operation to retrieve value from persistence store timed out.");
 		}
 	}
 
 	@Override
-	public void onModify() {
+	public void onModify(Activity activity) {
 		
 	}
 }

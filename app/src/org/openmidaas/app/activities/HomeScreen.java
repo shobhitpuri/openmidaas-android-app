@@ -64,7 +64,7 @@ public class HomeScreen extends AbstractActivity {
 						"\"return\": {\"method\": \"postback\",\"url\": \"https://edbc.ca/sess/fhyxy8209jskso\"}}\"";
 				//processScanResult(text);
 				Intent intent = new Intent(mActivity, AuthorizationActivity.class);
-				intent.putExtra(AuthorizationActivity.BUNDLE_KEY, text);
+				intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, text);
 				startActivity(intent);
 				
 			}
@@ -133,10 +133,9 @@ public class HomeScreen extends AbstractActivity {
 								mProgressDialog.dismiss();
 							}
 							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
-							intent.putExtra(AuthorizationActivity.BUNDLE_KEY, response);
+							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 							startActivity(intent);
 							mActivity.finish();
-							//DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
 					    }
 						
 						@Override

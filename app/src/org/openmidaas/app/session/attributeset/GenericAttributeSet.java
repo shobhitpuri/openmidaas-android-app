@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.session;
+package org.openmidaas.app.session.attributeset;
 
-import org.openmidaas.app.common.Constants;
-
-public final class AttributeSetFactory {
+public class GenericAttributeSet {
 	
-	public static AbstractAttributeSet getAttributeSetForType(String type) {
-		if(type.equals(Constants.AttributeNames.EMAIL)) {
-			return new EmailAttributeSet();
-		}
-		return null;
+	protected GenericAttributeSet() {
+		
 	}
 
 }

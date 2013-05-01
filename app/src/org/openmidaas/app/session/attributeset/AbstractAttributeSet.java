@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.session;
+package org.openmidaas.app.session.attributeset;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.openmidaas.app.session.AttributeFetchException;
 import org.openmidaas.library.model.core.AbstractAttribute;
+
+import android.app.Activity;
 
 public abstract class AbstractAttributeSet{
 	
@@ -35,15 +38,15 @@ public abstract class AbstractAttributeSet{
 	
 	private boolean isVerifiedRequested = false;
 	
-	private String mLabel;
+	private String mLabel = null;
 	
 	private AbstractAttribute<?> mSelectedAttribute;
 	
 	protected List<AbstractAttribute<?>> mAttributeList = new ArrayList<AbstractAttribute<?>>();
 	
-	public abstract void fetch();
+	public abstract void fetch() throws AttributeFetchException;
 	
-	public abstract void onModify();
+	public abstract void onModify(Activity activity);
 
 	public String getKey() {
 		return mKey;
@@ -100,5 +103,4 @@ public abstract class AbstractAttributeSet{
 	public void setAttributeList(List<AbstractAttribute<?>> attributeList) {
 		this.mAttributeList = attributeList;
 	}
-
 }
