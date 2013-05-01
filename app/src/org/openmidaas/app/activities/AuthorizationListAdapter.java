@@ -18,8 +18,9 @@ package org.openmidaas.app.activities;
 import java.util.ArrayList;
 import java.util.List;
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.session.AbstractAttributeSet;
+import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import android.app.Activity;
 import android.content.Context;
@@ -77,9 +78,25 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeLabel.setText("");
-		viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
+		// if we have a label set the label. 
+		if(mAttributeSet.get(position).getLabel() != null || (!(mAttributeSet.get(position).getLabel().isEmpty()))) {
+			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
+		} else {
+			// if we have a mapped label from attribute name, get the label
+			if(CategoryMap.get(mAttributeSet.get(position).getType()) != null) {
+				viewHolder.tvAttributeLabel.setText(CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
+			} else {
+				// otherwise just set the key to the label. 
+				viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getKey());
+			}
+			
+		}
+		if(mAttributeSet.get(position).isEssentialRequested()) {
+			viewHolder.tvAttributeLabel.append("*");
+		}
 		ArrayAdapter<AbstractAttribute<?>> dataAdapter = new ArrayAdapter<AbstractAttribute<?>>(mActivity,
-	                android.R.layout.simple_selectable_list_item, mAttributeSet.get(position).getAttributeList());
+	                android.R.layout.simple_spinner_item, mAttributeSet.get(position).getAttributeList());
+		dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		viewHolder.attributeSelector.setAdapter(dataAdapter);
 		viewHolder.attributeSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
 

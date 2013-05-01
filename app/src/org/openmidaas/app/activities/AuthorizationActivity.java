@@ -23,8 +23,12 @@ import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.session.AbstractAttributeSet;
+import org.openmidaas.app.session.AttributeFetchException;
+import org.openmidaas.app.session.InvalidRequestException;
 import org.openmidaas.app.session.Session;
+import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
+
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,7 +36,7 @@ import android.widget.ListView;
 
 public class AuthorizationActivity extends AbstractActivity{
 	
-	public static final String BUNDLE_KEY = "authorization_package_data";
+	public static final String REQUEST_BUNDLE_KEY = "authorization_package_data";
 	
 	private ListView mAuthorizationList;
 	
@@ -44,17 +48,25 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private final int ATTRIBUTE_SET_PARSE_ERROR = -1;
 	
+	private final int ATTRIBUTE_SET_INVALID_REQUEST= -2;
+	
+	private Activity mActivity;
+	
+	private Session mSession;
+	
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
+		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
-		mAuthorizationListAdapter = new AuthorizationListAdapter(this);
+		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
 		mAuthorizationList.setAdapter(mAuthorizationListAdapter);
-		if(this.getIntent().getStringExtra(BUNDLE_KEY) != null) {
+		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
 			try {
-				JSONObject requestData = new JSONObject(this.getIntent().getStringExtra(BUNDLE_KEY));
+				JSONObject requestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
+				mProgressDialog.show();
 				startSession(requestData);
 			} catch(JSONException e) {
-				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error reading the QR code");
+				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error processing the request.");
 			}
 		}
 	}
@@ -74,44 +86,71 @@ public class AuthorizationActivity extends AbstractActivity{
 
 			@Override
 			public void run() {
-				Session session = new Session();
+				mSession = new Session();
 				Message message = Message.obtain();
 				try {
-					session.setRequestData(requestData);
+					mSession.setRequestData(requestData);
 					mAttributeSet.clear();
-					mAttributeSet = session.getAttributeSet();
+					mAttributeSet = mSession.getAttributeSet();
 					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
+					mHandler.sendMessage(message);
+				} catch (InvalidRequestException e) {
+					Logger.error(getClass(), e.getMessage());
+					message.what = ATTRIBUTE_SET_INVALID_REQUEST;
 					mHandler.sendMessage(message);
 				} catch (JSONException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_PARSE_ERROR;
 					mHandler.sendMessage(message);
-				} catch (RuntimeException e) {
+				} catch (AttributeFetchException e) {
 					Logger.error(getClass(), e.getMessage());
-					message.what = ATTRIBUTE_SET_PARSE_ERROR;
-					mHandler.sendMessage(message);
+					// re-try fetching the attribute set from the persistence store again. 
+					try {
+						mAttributeSet.clear();
+						mSession.getAttributeSet().clear();
+						mAttributeSet = mSession.getAttributeSet();
+						mAuthorizationListAdapter.setList(mAttributeSet);
+						message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
+						mHandler.sendMessage(message);
+					} catch (AttributeFetchException e1) {
+						Logger.error(getClass(), e.getMessage());
+						mHandler.sendMessage(message);
+					}
 				}
 			}
 			
 		}).start();
 	}
 	
+	/**
+	 * Create a handler to the UI thread. 
+	 */
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		
 		@Override
 		public boolean handleMessage(Message msg) {
+			if(mProgressDialog.isShowing()) {
+				mProgressDialog.dismiss();
+			}
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
+					// refresh the authorization list
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;
+				case ATTRIBUTE_SET_INVALID_REQUEST:
+					// a more specific error message. We can recover from this. 
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", mActivity.getString(R.string.invalidAttributeRequestMessage));
+				break;
 				case ATTRIBUTE_SET_PARSE_ERROR:
-				
+					// if there was a JSON parsing exception (runtime exception
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", mActivity.getString(R.string.attributeSetParseErrorMessage));
 				break;
 				default:
+					// this should never occur. 
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", mActivity.getString(R.string.fatalErrorMessage));
 				break;
 			}
-			
 			return true;
 		}
 	});
