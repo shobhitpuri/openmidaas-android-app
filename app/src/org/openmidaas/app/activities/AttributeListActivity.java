@@ -23,6 +23,7 @@ import org.openmidaas.app.activities.listui.GenericAttributeListElement;
 import org.openmidaas.app.activities.listui.OnListElementLongTouch;
 import org.openmidaas.app.activities.listui.OnListElementTouch;
 import org.openmidaas.app.activities.listui.PersonalListCategory;
+import org.openmidaas.app.activities.listui.CreditCardCategory;
 import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
@@ -186,6 +187,8 @@ public class AttributeListActivity extends AbstractActivity {
 			CategoryManager.getMap().put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
 			AddressCategory addressCategory = new AddressCategory();
 			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
+			CreditCardCategory creditCardCategory = new CreditCardCategory();
+			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_CREDIT_CARD, creditCardCategory);
 		} catch (InvalidAttributeNameException e) {
 			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}
