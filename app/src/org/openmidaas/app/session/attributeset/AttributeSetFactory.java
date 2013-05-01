@@ -22,8 +22,9 @@ public final class AttributeSetFactory {
 	public static AbstractAttributeSet getAttributeSetForType(String type) {
 		if(type.equals(Constants.AttributeNames.EMAIL)) {
 			return new EmailAttributeSet();
+		} else {
+			return new GenericAttributeSet(type);
 		}
-		return null;
 	}
 
 }

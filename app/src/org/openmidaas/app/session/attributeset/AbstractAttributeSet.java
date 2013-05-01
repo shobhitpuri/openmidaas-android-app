@@ -26,7 +26,7 @@ import android.app.Activity;
 
 public abstract class AbstractAttributeSet{
 	
-	protected final int TIMEOUT = 500;
+	protected final int TIMEOUT = 250;
 	
 	protected final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 	
