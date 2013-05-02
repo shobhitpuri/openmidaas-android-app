@@ -154,4 +154,9 @@
     <string name="zipHint">Zip/Postal Code</string>
     <string name="btnSaveAndCloseText">Save and Close</string>
     <string name="selectLabelText">Select a label: </string>
+    <string name="authorization_title_text">Authorize</string>
+    <string name="authorizeButtonText">Authorize</string>
+    <string name= "invalidAttributeRequestMessage">The request appears to be invalid. Please try again.</string>
+    <string name= "attributeSetParseErrorMessage">A fatal error just occurred. Please try again.</string>
+    <string name="fatalErrorMessage">Fatal error. Please restart the app</string>
 </resources>
