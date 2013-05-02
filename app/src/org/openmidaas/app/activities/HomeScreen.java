@@ -57,7 +57,17 @@ public class HomeScreen extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
-				 showQRCodeScanner();		
+				 //showQRCodeScanner();
+				
+				String text = "{\"clientId\": \"https://edbc.ca\",\"acr\": \"1\",\"attrs\": {"+ "\"given_name\" : { \"essential\": true },"+
+				"\"home_address\": {\"type\": \"address\", \"essential\": true, \"label\": \"Home address\", \"verified\": true}," +
+						"\"email\": {\"essential\": true,\"label\": \"Work email\",\"verified\": true}},\"state\": \"1234\","+ 
+						"\"return\": {\"method\": \"postback\",\"url\": \"https://edbc.ca/sess/fhyxy8209jskso\"}}\"";
+				//processScanResult(text);
+				Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+				intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, text);
+				startActivity(intent);
+				
 			}
 		});
 		
