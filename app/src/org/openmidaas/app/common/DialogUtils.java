@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
-import java.util.List;
-
 import org.json.JSONObject;
 import org.openmidaas.app.activities.listui.AbstractAttributeListElement;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;

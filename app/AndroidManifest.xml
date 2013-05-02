@@ -46,6 +46,7 @@
         <activity android:name=".activities.GenericAttributeCollectionActivity"></activity>
         <activity android:name=".activities.HomeScreen"></activity>
         <activity android:name=".activities.AddressActivity"></activity>
+        <activity android:name=".activities.CreditCardActivity"></activity>
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
     </application>
 
