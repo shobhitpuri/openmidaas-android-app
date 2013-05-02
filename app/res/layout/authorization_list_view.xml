@@ -22,7 +22,7 @@
     <ListView
         android:id="@+id/lvAuthorizationItems"
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:scrollbars="vertical"
         android:cacheColorHint="#00000000"
@@ -34,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lvAuthorizationItems"
+        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="@string/authorizeButtonText" />
 
