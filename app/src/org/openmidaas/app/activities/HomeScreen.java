@@ -57,7 +57,7 @@ public class HomeScreen extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
-				 showQRCodeScanner();
+				 showQRCodeScanner();		
 			}
 		});
 		
@@ -123,7 +123,10 @@ public class HomeScreen extends AbstractActivity {
 							if(mProgressDialog.isShowing()) {
 								mProgressDialog.dismiss();
 							}
-							DialogUtils.showNeutralButtonDialog(mActivity, "Debug", response);
+							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
+							startActivity(intent);
+							mActivity.finish();
 					    }
 						
 						@Override

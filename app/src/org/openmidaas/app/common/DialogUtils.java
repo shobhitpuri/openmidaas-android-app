@@ -94,7 +94,7 @@ public final class DialogUtils {
 	public static void showAttributeDetails(Activity activity, AbstractAttributeListElement listElement) {
 		AbstractAttribute<?> attribute = listElement.getAttribute();
 		String message = "Name: " + attribute.getName() + "\n" +
-				 "Value: " + attribute.getValue() + "\n"; 
+				 "Value: " + attribute.toString() + "\n"; 
 		String[] jwsParams = null;
 		JSONObject object = null;
 		if(attribute.getSignedToken() != null) {
