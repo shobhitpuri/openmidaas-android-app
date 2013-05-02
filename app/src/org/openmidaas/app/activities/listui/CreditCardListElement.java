@@ -28,7 +28,7 @@ public class CreditCardListElement extends AbstractAttributeListElement{
 	public String getRenderedAttributeValue() {
 		try {
 			CreditCardAttribute attribute = (CreditCardAttribute)mAttribute;
-			return (attribute.getValue().getCreditCardNumber()); //TODO: add getFormattedNumber()
+			return (attribute.toString());
 		} catch (ClassCastException e) {
 			return "Credit card cannot be displayed";
 		}
