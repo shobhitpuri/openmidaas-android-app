@@ -47,6 +47,7 @@
         <activity android:name=".activities.HomeScreen"></activity>
         <activity android:name=".activities.AddressActivity"></activity>
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
+        <activity android:name=".activities.AuthorizationActivity"></activity>
     </application>
 
 </manifest>
