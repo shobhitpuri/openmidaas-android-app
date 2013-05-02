@@ -84,9 +84,7 @@ public class CreditCardActivity extends AbstractActivity {
 		if( ccNum == null || ccNum.isEmpty()) {
 			throw new IllegalArgumentException ("Credit card# cannot be empty");
 		}
-		if( ccv == null || ccv.isEmpty()) {
-			throw new IllegalArgumentException ("CCV cannot be empty");
-		}
+		//ccv is optional and can be empty
 		if( ccHolderName == null || ccHolderName.isEmpty()) {
 			throw new IllegalArgumentException ("Cardholder name cannot be empty");
 		}
@@ -96,13 +94,12 @@ public class CreditCardActivity extends AbstractActivity {
 		if( expiryYear == null || expiryYear.isEmpty()) {
 			throw new IllegalArgumentException ("Expiry year cannot be empty");
 		}
-		CreditCardValue value = new CreditCardValue( ccNum, Short.parseShort(ccv),
-				Short.parseShort(expiryMonth), Short.parseShort(expiryYear),
-				ccHolderName);
+		CreditCardValue value = new CreditCardValue( ccNum, ccv,
+				expiryMonth, expiryYear, ccHolderName);
 
 		creditCard.setValue(value);
 		
-		creditCard.setLabel(creditCard.getValue().getCardType().name());
+		creditCard.setLabel(creditCard.getValue().getCardType());
 		
 		creditCard.save();
 		
