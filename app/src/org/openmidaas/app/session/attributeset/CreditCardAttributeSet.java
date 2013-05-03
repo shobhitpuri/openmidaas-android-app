@@ -17,6 +17,8 @@ package org.openmidaas.app.session.attributeset;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
 import org.openmidaas.library.model.CreditCardAttribute;
@@ -28,6 +30,10 @@ import android.app.Activity;
 public class CreditCardAttributeSet extends AbstractAttributeSet {
 	private boolean mRetrievalSuccess = false;
 
+	protected CreditCardAttributeSet() {
+		mType = Constants.AttributeNames.CREDIT_CARD;
+	}
+	
 	@Override
 	public void fetch() throws AttributeFetchException {
 		mRetrievalSuccess = false;

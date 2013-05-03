@@ -61,6 +61,7 @@ public class HomeScreen extends AbstractActivity {
 				
 				String text = "{\"clientId\": \"https://edbc.ca\",\"acr\": \"1\",\"attrs\": {"+ "\"given_name\" : { \"essential\": true },"+
 				"\"home_address\": {\"type\": \"address\", \"essential\": true, \"label\": \"Home address\", \"verified\": true}," +
+						"\"credit_card\":{\"label\": \"Credit Card\"}," + 
 						"\"email\": {\"essential\": true,\"label\": \"Work email\",\"verified\": true}},\"state\": \"1234\","+ 
 						"\"return\": {\"method\": \"postback\",\"url\": \"https://edbc.ca/sess/fhyxy8209jskso\"}}\"";
 				//processScanResult(text);
