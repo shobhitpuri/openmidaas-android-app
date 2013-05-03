@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui.list;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ui.spinner.AttributeSpinnerAdapter;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 	
 	private List<AbstractAttributeSet> mAttributeSet;
 	
-	protected AuthorizationListAdapter(Activity activity) {
+	public AuthorizationListAdapter(Activity activity) {
 		mActivity = activity;
 		mAttributeSet = new ArrayList<AbstractAttributeSet>();
 	}
@@ -89,7 +91,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
 		}
 		if(mAttributeSet.get(position).isEssentialRequested()) {
-			viewHolder.tvAttributeLabel.append("*");
+			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
 		}
 		final AttributeSpinnerAdapter mSpinnerAdapter = new AttributeSpinnerAdapter(mActivity, android.R.layout.simple_spinner_item, mAttributeSet.get(position).getAttributeList());
 		mSpinnerAdapter.setDropDownViewResource(R.layout.attribute_spinner_custom_textview);
@@ -101,7 +103,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int selectedPositionInSpinner, long arg3) {
-				Logger.debug(getClass(), "Setting selected value: " + mAttributeSet.get(position).getAttributeList().get(selectedPositionInSpinner).getValue().toString());
+				Logger.debug(getClass(), "Setting selected value: " + mAttributeSet.get(position).getAttributeList().get(selectedPositionInSpinner).toString());
 				mAttributeSet.get(position).setSelectedAttribute(mAttributeSet.get(position).getAttributeList().get(selectedPositionInSpinner));
 				mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
 			}

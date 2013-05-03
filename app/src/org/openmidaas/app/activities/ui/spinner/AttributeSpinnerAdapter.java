@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui.spinner;
 
 import java.util.List;
 
@@ -61,9 +61,21 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 		}
 		viewHolder.tvAttributeSpinnerValue.setText("");
 		if(mAttributeList.get(position).getLabel() != null && (!(mAttributeList.get(position).getLabel().isEmpty()))) {
-			viewHolder.tvAttributeSpinnerValue.setText(mAttributeList.get(position).getLabel()+"\n");
+			viewHolder.tvAttributeSpinnerValue.setText(mAttributeList.get(position).getLabel());
 		} else {
 			viewHolder.tvAttributeSpinnerValue.setText("");
+		}
+		switch (mAttributeList.get(position).getState()) {
+		case PENDING_VERIFICATION:
+			viewHolder.tvAttributeSpinnerValue.append(" (Pending Verification)\n");
+			break;
+		case VERIFIED:
+			viewHolder.tvAttributeSpinnerValue.append(" (Verified)\n");
+			break;
+		case NOT_VERIFIED:
+			viewHolder.tvAttributeSpinnerValue.append(" (Not Verified)\n");
+		default:
+			break;
 		}
 		viewHolder.tvAttributeSpinnerValue.append(mAttributeList.get(position).toString());
 		if(position == mSelectedIndex) {
@@ -71,6 +83,7 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 		} else {
 			viewHolder.tvAttributeSpinnerValue.setChecked(false);
 		}
+		
 		return convertView;
 	}
 	
