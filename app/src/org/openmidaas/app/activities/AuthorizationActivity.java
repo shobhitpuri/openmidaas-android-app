@@ -25,21 +25,28 @@ import org.openmidaas.app.activities.ui.list.AuthorizationListAdapter;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
-import org.openmidaas.app.session.InvalidRequestException;
+import org.openmidaas.app.session.EssentialAttributeMissingException;
+import org.openmidaas.app.session.ParseException;
 import org.openmidaas.app.session.Session;
+import org.openmidaas.app.session.Session.OnDoneCallback;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class AuthorizationActivity extends AbstractActivity{
 	
 	public static final String REQUEST_BUNDLE_KEY = "authorization_package_data";
 	
 	private ListView mAuthorizationList;
+	
+	private TextView tvRpInfo;
 	
 	private AuthorizationListAdapter mAuthorizationListAdapter;
 	
@@ -59,6 +66,7 @@ public class AuthorizationActivity extends AbstractActivity{
 		super.onCreate(savedInstance);
 		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
+		tvRpInfo = (TextView)findViewById(R.id.tvRpInfo);
 		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
 		mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
@@ -70,8 +78,40 @@ public class AuthorizationActivity extends AbstractActivity{
 				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error processing the request.");
 			}
 		}
+		findViewById(R.id.bthAuthorize).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				performAuthorization();
+			}
+		});
 	}
 
+	private void performAuthorization() {
+		mProgressDialog.setMessage("Authorizing...");
+		mProgressDialog.show(); 
+		try {
+			mSession.authorizeRequest(new OnDoneCallback() {
+	
+				@Override
+				public void onDone(String message) {
+					dismissDialog();
+					mActivity.startActivity(new Intent(mActivity, HomeScreen.class));
+				}
+	
+				@Override
+				public void onError(Exception e) {
+					dismissDialog();
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+				}
+				
+			});
+		} catch(EssentialAttributeMissingException e) {
+			dismissDialog();
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+		}
+	}
+	
 	@Override
 	protected String getTitlebarText() {
 		return (getString(R.string.authorization_title_text));
@@ -96,7 +136,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
 					mHandler.sendMessage(message);
-				} catch (InvalidRequestException e) {
+				} catch (ParseException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_INVALID_REQUEST;
 					mHandler.sendMessage(message);
@@ -136,6 +176,9 @@ public class AuthorizationActivity extends AbstractActivity{
 			}
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
+					if(mSession.getClientId()!= null) {
+						tvRpInfo.setText(mSession.getClientId() + " " + mActivity.getString(R.string.rpInfoText));
+					}
 					// refresh the authorization list
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;

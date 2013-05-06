@@ -43,4 +43,21 @@
         android:drawableLeft="@drawable/list"
         android:text="@string/manage_info" />
 
+    <RelativeLayout
+        android:id="@+id/rlInfoSlider"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" >
+
+        <TextView
+            android:id="@+id/tvInfoSlider"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="TextView" />
+        
+    </RelativeLayout>
+
 </RelativeLayout>

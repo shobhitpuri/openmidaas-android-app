@@ -15,30 +15,15 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.openmidaas.app.session.Session.OnDoneCallback;
-
-public abstract class ReturnStrategy {
+public class ReturnStrategyFactory {
 	
-	protected URI mReturnUrl;
+	private final static String POSTBACK = "postback"; 
 	
-	protected final String PARAMETER_VERIFIED_ATTRIBUTE = "vattr";
-	
-	protected final String PARAMETER_UNVERIFIED_ATTRIBUTE = "attr";
-	
-	protected final String PARAMETER_STATE = "state";
-	
-	public void setReturnUrl(String url) throws URISyntaxException {
-		URI uri = new URI(url);
-		if(uri.isAbsolute()) {
-			this.mReturnUrl = uri;
+	public static ReturnStrategy getStrategyForMethodName(String method) throws IllegalArgumentException {
+		if(method.equals(POSTBACK)) {
+			return new PostbackReturnStrategy();
 		} else {
-			throw new URISyntaxException(url, "Invalid return URL");
+			throw new IllegalArgumentException("There is no return strategy of type " + method);
 		}
 	}
-	
-	public abstract void sendReturn(String verifiedAttributeBundle, String unverifiedAttributeBundle, OnDoneCallback callback);
-	
 }

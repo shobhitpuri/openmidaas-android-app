@@ -17,7 +17,7 @@ package org.openmidaas.app.test.session;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openmidaas.app.session.InvalidRequestException;
+import org.openmidaas.app.session.ParseException;
 import org.openmidaas.app.session.Session;
 
 import junit.framework.Assert;
@@ -59,7 +59,7 @@ public class SessionTest extends InstrumentationTestCase {
 			Assert.assertEquals(mState, mSession.getState());
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (InvalidRequestException e) {
+		} catch (ParseException e) {
 			Assert.fail();
 		}
 	}
@@ -72,7 +72,7 @@ public class SessionTest extends InstrumentationTestCase {
 			Assert.fail();
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (InvalidRequestException e) {
+		} catch (ParseException e) {
 		}
 	}
 	
@@ -83,7 +83,7 @@ public class SessionTest extends InstrumentationTestCase {
 			mSession.setRequestData(object);
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (InvalidRequestException e) {
+		} catch (ParseException e) {
 			Assert.fail();
 		}
 		

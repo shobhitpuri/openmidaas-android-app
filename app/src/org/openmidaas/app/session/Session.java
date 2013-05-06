@@ -15,13 +15,23 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.app.session.attributeset.AttributeSetFactory;
+import org.openmidaas.library.MIDaaS;
+import org.openmidaas.library.MIDaaS.VerifiedAttributeBundleCallback;
+import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
+import org.openmidaas.library.model.core.AbstractAttribute;
+import org.openmidaas.library.model.core.MIDaaSException;
 
 public class Session {
 	
@@ -34,6 +44,8 @@ public class Session {
 	private final String RETURN = "return";
 	
 	private final String RETURN_METHOD = "method";
+	
+	private final String RETURN_URL = "url";
 	
 	private final String TYPE = "type";
 	
@@ -49,10 +61,20 @@ public class Session {
 	
 	private List<AbstractAttributeSet> mAttributeSet;
 	
+	private Map<String, AbstractAttribute<?>> mVerifiedAttributeMap;
+	
+	private Map<String, AbstractAttribute<?>> mUnverifiedAttributeMap;
+	
 	private ReturnStrategy mReturnStrategy = null;
+	
+	private String mVerifiedResponse = null;
+	
+	private String mUnverifiedResponse = null;
 	
 	public Session() {
 		mAttributeSet = new ArrayList<AbstractAttributeSet>();
+		mVerifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();
+		mUnverifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();
 	}
 	
 	/**
@@ -61,26 +83,43 @@ public class Session {
 	 * @param requestObject
 	 * @throws JSONException
 	 */
-	public synchronized void setRequestData(JSONObject requestObject) throws JSONException, InvalidRequestException  {
+	public synchronized void setRequestData(JSONObject requestObject) throws JSONException, ParseException  {
 		JSONObject attrRequest;
 		if(requestObject == null) {
-			throw new InvalidRequestException("Ther requestObject parameter is null. ");
+			throw new ParseException("Ther requestObject parameter is null. ");
 		}
 		// we need to the keys listed below to proceed. Check to see if they exist. 
 		if((!(requestObject.has(CLIENT_ID))) || (!(requestObject.has(ATTRIBUTES))) || (!(requestObject.has(RETURN)))) {
-			throw new InvalidRequestException("clientId, attrs, and/or return keys are missing in the request");
+			throw new ParseException("clientId, attrs, and/or return keys are missing in the request");
 		}
 			
 		// we need values for the keys listed below to proceed. Check to see if they exist. 
 		if(requestObject.isNull(CLIENT_ID) || requestObject.isNull(ATTRIBUTES) || requestObject.isNull(RETURN)) {
-			throw new InvalidRequestException("clientId, attrs, and/or return values are missing in the request");
+			throw new ParseException("clientId, attrs, and/or return values are missing in the request");
 		}
+		// we need to check whether the return object has the correct keys
+		if(!(requestObject.getJSONObject(RETURN).has(RETURN_METHOD))) {
+			throw new ParseException("Return object has no return method.");
+		}
+		if(!(requestObject.getJSONObject(RETURN).has(RETURN_URL))) {
+			throw new ParseException("Return object has no return url.");
+		}
+		
 		// check if "attrs" value is actually a JSONObject
 		if (!(requestObject.get(ATTRIBUTES) instanceof JSONObject)) {
-			throw new InvalidRequestException("The value for \"attrs\" is not of type JSONObject.");
+			throw new ParseException("The value for \"attrs\" is not of type JSONObject.");
 		}
 		attrRequest = requestObject.getJSONObject(ATTRIBUTES);
 		mClientId = requestObject.getString(CLIENT_ID);
+		
+		mReturnStrategy = ReturnStrategyFactory.getStrategyForMethodName(requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+		
+		try {
+			mReturnStrategy.setReturnUrl(requestObject.getJSONObject(RETURN).getString(RETURN_URL));
+		} catch (URISyntaxException e) {
+			throw new ParseException("The return url appears to be an invalid url");
+		}
+		
 		if(!(requestObject.isNull(STATE))) {
 			mState = requestObject.getString(STATE);
 		}
@@ -93,10 +132,10 @@ public class Session {
 				if(attrRequest.get(key) instanceof JSONObject) {
 					createAttributeSet(key, attrRequest.getJSONObject(key));
 				} else {
-					throw new InvalidRequestException("The value for the key in \"attrs\" is not of type JSONObject.");
+					throw new ParseException("The value for the key in \"attrs\" is not of type JSONObject.");
 				}
 			} else {
-				throw new InvalidRequestException("The value for key: " + key + " is null");
+				throw new ParseException("The value for key: " + key + " is null");
 			}
 		}
 	}
@@ -120,21 +159,21 @@ public class Session {
 	 * @param key
 	 * @param attributeItem
 	 * @throws JSONException
-	 * @throws InvalidRequestException
+	 * @throws ParseException
 	 */
-	private void createAttributeSet(String key, JSONObject attributeItem) throws JSONException, InvalidRequestException {
+	private void createAttributeSet(String key, JSONObject attributeItem) throws JSONException, ParseException {
 		String type = null;
 		if(attributeItem.has(TYPE)) {
 			if(!(attributeItem.isNull(TYPE))) {
 				type = attributeItem.getString(TYPE);
 			} else {
-				throw new InvalidRequestException("Missing value for \"type\"");
+				throw new ParseException("Missing value for \"type\"");
 			}
 		} else {
 			if(key != null) {
 				type = key;
 			} else {
-				throw new InvalidRequestException("Key is null or not specified.");
+				throw new ParseException("Key is null or not specified.");
 			}
 		}
 		AbstractAttributeSet attributeSet = AttributeSetFactory.getAttributeSetForType(type);
@@ -174,5 +213,88 @@ public class Session {
 		this.mAttributeSet = null;
 		this.mReturnStrategy = null;
 		super.finalize();
+	}
+	
+	private void putAttributeInMap(AbstractAttributeSet attributeSet, AbstractAttribute<?> userSelectedAttribute) {
+		// if is verified was requested for the selected attribute and the selected attribute state is actually verified
+		// put it in the verifiedAttributeMap. 
+		if(attributeSet.isVerifiedRequested() && userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED)) {
+			this.mVerifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+		// if is verified was requested by the selected attribute is not verified, put the selected attribute in the unverified map. 
+		// this is on a best effort basis. 
+		} else if(attributeSet.isVerifiedRequested() && !(userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED))) {
+			 this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+		// if verified was not request, irrespective of the attribute state, the attribute is added to the unverified attribute map. 
+		} else if(!(attributeSet.isVerifiedRequested())) {
+			this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+		}
+	}
+	
+	
+	public void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
+		
+		for(AbstractAttributeSet attributeSet: this.mAttributeSet){
+			// if essential is requested and nothing was selected, throw an exception
+			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
+				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
+			}
+			// if essential is requested and selected attribute is not null.
+			else if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() != null) {
+				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
+				
+			// if is essential is not set but we have a selected attribute
+			} else if(!(attributeSet.isEssentialRequested()) && attributeSet.getSelectedAttribute() != null) {
+				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
+			}
+		}
+		// if there is atleast one verified attribute in the map. 
+		if(this.mVerifiedAttributeMap.size() >0) {
+			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, new VerifiedAttributeBundleCallback() {
+
+				@Override
+				public void onError(MIDaaSException arg0) {
+					onDoneCallback.onError(new Exception(arg0.getError().getErrorMessage()));
+				}
+
+				@Override
+				public void onSuccess(String response) {
+					if(response == null || response.isEmpty()) {
+						onDoneCallback.onError(new Exception("Response from server is empty"));
+					} else {
+						// set the verified/signed attribute bundle. 
+						mVerifiedResponse = response;
+						// if there are data elements in the unverified attribute map
+						if(mUnverifiedAttributeMap.size() > 0) {
+							// get the unverified attribute bundle. 
+							mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
+							returnDataToRp(mUnverifiedResponse,mUnverifiedResponse, onDoneCallback);
+							if(mUnverifiedResponse == null) {
+								onDoneCallback.onDone("Unverified attributes could not be generated");
+							}
+						} else {
+							returnDataToRp(mVerifiedResponse,null, onDoneCallback);
+						}
+					}
+				}
+				
+			});
+		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
+			mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
+			returnDataToRp(null,mUnverifiedResponse, onDoneCallback);
+		}
+	}
+	
+	private void returnDataToRp(String verifiedAttributeBundle, String unverifiedAttributeBundle, OnDoneCallback callback) {
+		Logger.debug(getClass(), "Returning data to RP");
+		Logger.debug(getClass(), "verified bundle: " + verifiedAttributeBundle);
+		Logger.debug(getClass(), "unverified bundle: " + unverifiedAttributeBundle);
+		mReturnStrategy.sendReturn(verifiedAttributeBundle, unverifiedAttributeBundle, callback);
+	}
+	
+	public static interface OnDoneCallback {
+		
+		public void onDone(String message);
+		
+		public void onError(Exception e);
 	}
 }

@@ -23,6 +23,7 @@ tests/local.properties
 app/.classpath
 app/.project
 app/.settings
+app/lint.xml
 tests/.classpath
 tests/.project
 tests/.settings
