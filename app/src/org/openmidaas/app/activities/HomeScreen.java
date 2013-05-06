@@ -57,7 +57,10 @@ public class HomeScreen extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
-				 showQRCodeScanner();
+				showQRCodeScanner();
+				
+				
+				
 			}
 		});
 		

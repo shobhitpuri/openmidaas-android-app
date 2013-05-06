@@ -90,6 +90,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		} else {
 			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
 		}
+		viewHolder.tvAttributeLabel.setTypeface(null, Typeface.NORMAL);
 		if(mAttributeSet.get(position).isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
 		}
