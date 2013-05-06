@@ -25,7 +25,7 @@ import org.openmidaas.app.session.attributeset.AttributeSetFactory;
 
 public class Session {
 	
-	private final String CLIENT_ID = "clientId";
+	private final String CLIENT_ID = "client_id";
 	
 	private final String ATTRIBUTES = "attrs";
 	
@@ -100,6 +100,7 @@ public class Session {
 			}
 		}
 	}
+	
 	
 	/**
 	 * Returns an attribute set for the request. 
