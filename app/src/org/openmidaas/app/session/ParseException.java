@@ -15,30 +15,16 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+public class ParseException extends Exception {
+	
 
-import org.openmidaas.app.session.Session.OnDoneCallback;
+	private static final long serialVersionUID = 1L;
 
-public abstract class ReturnStrategy {
-	
-	protected URI mReturnUrl;
-	
-	protected final String PARAMETER_VERIFIED_ATTRIBUTE = "vattr";
-	
-	protected final String PARAMETER_UNVERIFIED_ATTRIBUTE = "attr";
-	
-	protected final String PARAMETER_STATE = "state";
-	
-	public void setReturnUrl(String url) throws URISyntaxException {
-		URI uri = new URI(url);
-		if(uri.isAbsolute()) {
-			this.mReturnUrl = uri;
-		} else {
-			throw new URISyntaxException(url, "Invalid return URL");
-		}
+	public ParseException() {
+		super();
 	}
-	
-	public abstract void sendReturn(String verifiedAttributeBundle, String unverifiedAttributeBundle, OnDoneCallback callback);
-	
+
+	public ParseException(String message) {
+		super(message);
+	}
 }
