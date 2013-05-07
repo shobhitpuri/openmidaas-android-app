@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.app.session.attributeset.AttributeSetFactory;
@@ -59,7 +60,7 @@ public class Session {
 	
 	private String mState;
 	
-	private List<AbstractAttributeSet> mAttributeSet;
+	private List<AbstractAttributeSet> mAttributeListSet;
 	
 	private Map<String, AbstractAttribute<?>> mVerifiedAttributeMap;
 	
@@ -72,7 +73,7 @@ public class Session {
 	private String mUnverifiedResponse = null;
 	
 	public Session() {
-		mAttributeSet = new ArrayList<AbstractAttributeSet>();
+		mAttributeListSet = new ArrayList<AbstractAttributeSet>();
 		mVerifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();
 		mUnverifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();
 	}
@@ -148,10 +149,10 @@ public class Session {
 	 * @throws AttributeFetchException 
 	 */
 	public synchronized List<AbstractAttributeSet> getAttributeSet() throws AttributeFetchException {
-		for(AbstractAttributeSet attributeSet: mAttributeSet) {
+		for(AbstractAttributeSet attributeSet: mAttributeListSet) {
 			attributeSet.fetch();
 		}
-		return mAttributeSet;
+		return mAttributeListSet;
 	}
 	
 	/**
@@ -186,8 +187,16 @@ public class Session {
 		}
 		if (attributeItem.has(LABEL) && !(attributeItem.isNull(LABEL))) {
 			attributeSet.setLabel(attributeItem.getString(LABEL));
+		} else {
+			// if we have no mapping of the attribute type,
+			if(CategoryMap.get(attributeSet.getType()) == null) {
+				attributeSet.setLabel(attributeSet.getKey());
+			} else {
+				// get the mapped label and set it. 
+				attributeSet.setLabel(CategoryMap.get(attributeSet.getType()).getAttributeLabel());
+			}
 		}
-		mAttributeSet.add(attributeSet);
+		mAttributeListSet.add(attributeSet);
 	}
 	
 	/**
@@ -210,7 +219,7 @@ public class Session {
 	protected void finalize() throws Throwable {
 		this.mClientId = null;
 		this.mState = null;
-		this.mAttributeSet = null;
+		this.mAttributeListSet = null;
 		this.mReturnStrategy = null;
 		super.finalize();
 	}
@@ -237,7 +246,7 @@ public class Session {
 	 */
 	public synchronized void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
 		
-		for(AbstractAttributeSet attributeSet: this.mAttributeSet){
+		for(AbstractAttributeSet attributeSet: this.mAttributeListSet){
 			// if essential is requested and nothing was selected, throw an exception
 			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
 				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
