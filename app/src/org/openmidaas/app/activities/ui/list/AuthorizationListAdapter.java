@@ -80,16 +80,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeLabel.setText("");
-		
-		if(mAttributeSet.get(position).getLabel() == null || (mAttributeSet.get(position).getLabel().isEmpty())) {
-			if(CategoryMap.get(mAttributeSet.get(position).getType()) == null) {
-				viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getKey());
-			} else {
-				viewHolder.tvAttributeLabel.setText(CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
-			}
-		} else {
-			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
-		}
+		viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
 		viewHolder.tvAttributeLabel.setTypeface(null, Typeface.NORMAL);
 		if(mAttributeSet.get(position).isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
