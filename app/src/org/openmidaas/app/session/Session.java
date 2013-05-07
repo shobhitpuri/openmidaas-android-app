@@ -230,24 +230,25 @@ public class Session {
 		}
 	}
 	
-	
-	public void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
+	/**
+	 * Authorizes the release of attributes to the RP for this session. 
+	 * @param onDoneCallback the callback handler to get the status of the authorization
+	 * @throws EssentialAttributeMissingException if no attribute is provided for a required attribute. 
+	 */
+	public synchronized void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
 		
 		for(AbstractAttributeSet attributeSet: this.mAttributeSet){
 			// if essential is requested and nothing was selected, throw an exception
 			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
 				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
 			}
-			// if essential is requested and selected attribute is not null.
-			else if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() != null) {
-				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
-				
-			// if is essential is not set but we have a selected attribute
-			} else if(!(attributeSet.isEssentialRequested()) && attributeSet.getSelectedAttribute() != null) {
+			// if essential is requested and selected attribute is not null or  if is essential is not set but we have a selected attribute
+			else if((attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() != null) || 
+					(!(attributeSet.isEssentialRequested()) && attributeSet.getSelectedAttribute() != null)) {
 				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
 			}
 		}
-		// if there is atleast one verified attribute in the map. 
+		// if there is at least one verified attribute in the map. 
 		if(this.mVerifiedAttributeMap.size() >0) {
 			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, new VerifiedAttributeBundleCallback() {
 
@@ -291,10 +292,26 @@ public class Session {
 		mReturnStrategy.sendReturn(verifiedAttributeBundle, unverifiedAttributeBundle, callback);
 	}
 	
+	/**
+	 * 
+	 * Methods listed below are called when the authorization 
+	 * was successful and the data was returned to the RP or 
+	 * an error is returned if something went wrong with the 
+	 * authorization.
+	 *
+	 */
 	public static interface OnDoneCallback {
 		
+		/**
+		 * Called when the authorization operation was successful
+		 * @param message server message if any
+		 */
 		public void onDone(String message);
 		
+		/**
+		 * Called when something goes wrong while authorizing. 
+		 * @param e the exception.
+		 */
 		public void onError(Exception e);
 	}
 }
