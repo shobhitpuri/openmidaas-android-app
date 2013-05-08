@@ -25,8 +25,8 @@ import org.openmidaas.app.activities.ui.list.AuthorizationListAdapter;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
+import org.openmidaas.app.session.AttributeRequestObjectException;
 import org.openmidaas.app.session.EssentialAttributeMissingException;
-import org.openmidaas.app.session.ParseException;
 import org.openmidaas.app.session.Session;
 import org.openmidaas.app.session.Session.OnDoneCallback;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
@@ -136,7 +136,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
 					mHandler.sendMessage(message);
-				} catch (ParseException e) {
+				} catch (AttributeRequestObjectException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_INVALID_REQUEST;
 					mHandler.sendMessage(message);

@@ -15,12 +15,13 @@
  ******************************************************************************/
 package org.openmidaas.app.test.session;
 
+import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openmidaas.app.session.ParseException;
+import org.openmidaas.app.session.AttributeRequestObjectException;
 import org.openmidaas.app.session.Session;
 
-import junit.framework.Assert;
 import android.test.InstrumentationTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
@@ -59,7 +60,7 @@ public class SessionTest extends InstrumentationTestCase {
 			Assert.assertEquals(mState, mSession.getState());
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (ParseException e) {
+		} catch (AttributeRequestObjectException e) {
 			Assert.fail();
 		}
 	}
@@ -72,7 +73,7 @@ public class SessionTest extends InstrumentationTestCase {
 			Assert.fail();
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (ParseException e) {
+		} catch (AttributeRequestObjectException e) {
 		}
 	}
 	
@@ -83,7 +84,7 @@ public class SessionTest extends InstrumentationTestCase {
 			mSession.setRequestData(object);
 		} catch (JSONException e) {
 			Assert.fail();
-		} catch (ParseException e) {
+		} catch (AttributeRequestObjectException e) {
 			Assert.fail();
 		}
 		

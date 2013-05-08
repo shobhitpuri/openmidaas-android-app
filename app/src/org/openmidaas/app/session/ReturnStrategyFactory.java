@@ -15,14 +15,18 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
+import org.openmidaas.app.common.Logger;
+
 public class ReturnStrategyFactory {
 	
 	private final static String POSTBACK = "postback"; 
 	
 	public static ReturnStrategy getStrategyForMethodName(String method) {
 		if(method.equals(POSTBACK)) {
+			Logger.debug(ReturnStrategyFactory.class, "creating new \"postback\" strategy");
 			return new PostbackReturnStrategy();
 		} else {
+			Logger.error(ReturnStrategyFactory.class, "no strategy found for return method: " + method);
 			return null;
 		}
 	}
