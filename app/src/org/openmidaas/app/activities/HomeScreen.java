@@ -95,7 +95,7 @@ public class HomeScreen extends AbstractActivity {
 	}
 	
 	private void showQRCodeScanner() {
-		// check to see if a rear-camera is available
+		// check to see if a rear-cameHOCKEY_APP_IDra is available
 		if(mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
 			Intent intentScan = new Intent(Intents.QR_CODE_INIT_INTENT);
 			intentScan.putExtra("SCAN_MODE", "QR_CODE_MODE");
@@ -181,13 +181,13 @@ public class HomeScreen extends AbstractActivity {
 	
 	private void checkForCrashes() {
 		if(Settings.IS_HOCKEY_APP_ENABLED) {
-			CrashManager.register(this, Constants.HOCKEY_APP_ID);
+			CrashManager.register(this, Settings.HOCKEY_APP_ID);
 		}
 	}
 
 	private void checkForUpdates() {  
 		if(Settings.IS_HOCKEY_APP_ENABLED) {
-			UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+			UpdateManager.register(this, Settings.HOCKEY_APP_ID);
 		}
 	}
 	 
