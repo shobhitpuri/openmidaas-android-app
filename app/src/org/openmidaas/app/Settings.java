@@ -21,4 +21,5 @@ public class Settings {
 	public static boolean SHOULD_LOG = true;
 	public static boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
 	public static int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_ERROR;
+	public static boolean IS_HOCKEY_APP_ENABLED = false;
 }
