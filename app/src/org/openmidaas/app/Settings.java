@@ -17,9 +17,10 @@ package org.openmidaas.app;
 
 import org.openmidaas.library.MIDaaS;
 
-public class Settings {
-	public static boolean SHOULD_LOG = true;
-	public static boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
-	public static int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_ERROR;
-	public static boolean IS_HOCKEY_APP_ENABLED = false;
+public final class Settings {
+	public static final boolean SHOULD_LOG = true;
+	public static final boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
+	public static final int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_ERROR;
+	public static final boolean IS_HOCKEY_APP_ENABLED = false;
+	public static final String HOCKEY_APP_ID = "";
 }
