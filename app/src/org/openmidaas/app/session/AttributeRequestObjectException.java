@@ -15,16 +15,13 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
-public class ParseException extends Exception {
+
+public class AttributeRequestObjectException extends Exception {
+
 	
-
 	private static final long serialVersionUID = 1L;
-
-	public ParseException() {
-		super();
-	}
-
-	public ParseException(String message) {
+	
+	public AttributeRequestObjectException(String message) {
 		super(message);
 	}
 }

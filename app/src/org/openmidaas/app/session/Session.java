@@ -34,6 +34,8 @@ import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 
+import android.net.ParseException;
+
 public class Session {
 	
 	private final String CLIENT_ID = "client_id";
@@ -60,6 +62,10 @@ public class Session {
 	
 	private String mState;
 	
+	private String mVerifiedResponse = null;
+	
+	private String mUnverifiedResponse = null;
+	
 	private List<AbstractAttributeSet> mAttributeListSet;
 	
 	private Map<String, AbstractAttribute<?>> mVerifiedAttributeMap;
@@ -67,10 +73,6 @@ public class Session {
 	private Map<String, AbstractAttribute<?>> mUnverifiedAttributeMap;
 	
 	private ReturnStrategy mReturnStrategy = null;
-	
-	private String mVerifiedResponse = null;
-	
-	private String mUnverifiedResponse = null;
 	
 	public Session() {
 		mAttributeListSet = new ArrayList<AbstractAttributeSet>();
@@ -84,43 +86,52 @@ public class Session {
 	 * @param requestObject
 	 * @throws JSONException
 	 */
-	public synchronized void setRequestData(JSONObject requestObject) throws JSONException, ParseException  {
+	public synchronized void setRequestData(JSONObject requestObject) throws JSONException, AttributeRequestObjectException  {
 		JSONObject attrRequest;
 		if(requestObject == null) {
-			throw new ParseException("Ther requestObject parameter is null. ");
+			
+			Logger.error(getClass(), "The requestObject parameter is null. ");
+			throw new AttributeRequestObjectException("The requestObject parameter is null.");
 		}
 		// we need to the keys listed below to proceed. Check to see if they exist. 
 		if((!(requestObject.has(CLIENT_ID))) || (!(requestObject.has(ATTRIBUTES))) || (!(requestObject.has(RETURN)))) {
-			throw new ParseException("clientId, attrs, and/or return keys are missing in the request");
+			Logger.error(getClass(), "clientId, attrs, and/or return keys are missing in the request");
+			throw new AttributeRequestObjectException("clientId, attrs, and/or return keys are missing in the request");
 		}
 			
 		// we need values for the keys listed below to proceed. Check to see if they exist. 
 		if(requestObject.isNull(CLIENT_ID) || requestObject.isNull(ATTRIBUTES) || requestObject.isNull(RETURN)) {
-			throw new ParseException("clientId, attrs, and/or return values are missing in the request");
+			Logger.error(getClass(), "clientId, attrs, and/or return values are missing in the request");
+			throw new AttributeRequestObjectException("clientId, attrs, and/or return values are missing in the request");
 		}
 		// we need to check whether the return object has the correct keys
 		if(!(requestObject.getJSONObject(RETURN).has(RETURN_METHOD))) {
-			throw new ParseException("Return object has no return method.");
+			Logger.error(getClass(), "Return object has no return method.");
+			throw new AttributeRequestObjectException("Return object has no return method.");
 		}
 		if(!(requestObject.getJSONObject(RETURN).has(RETURN_URL))) {
-			throw new ParseException("Return object has no return url.");
+			Logger.error(getClass(), "Return object has no return url.");
+			throw new AttributeRequestObjectException("Return object has no return url.");
 		}
 		
 		// check if "attrs" value is actually a JSONObject
 		if (!(requestObject.get(ATTRIBUTES) instanceof JSONObject)) {
-			throw new ParseException("The value for \"attrs\" is not of type JSONObject.");
+			Logger.error(getClass(), "The value for \"attrs\" is not of type JSONObject.");
+			throw new AttributeRequestObjectException("The value for \"attrs\" is not of type JSONObject.");
 		}
 		attrRequest = requestObject.getJSONObject(ATTRIBUTES);
 		mClientId = requestObject.getString(CLIENT_ID);
 		
 		mReturnStrategy = ReturnStrategyFactory.getStrategyForMethodName(requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
 		if(mReturnStrategy == null) {
-			throw new ParseException("There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+			Logger.error(getClass(), "There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+			throw new AttributeRequestObjectException("There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
 		}
 		try {
 			mReturnStrategy.setReturnUrl(requestObject.getJSONObject(RETURN).getString(RETURN_URL));
 		} catch (URISyntaxException e) {
-			throw new ParseException("The return url appears to be an invalid url");
+			Logger.error(getClass(), "The return url appears to be an invalid url");
+			throw new AttributeRequestObjectException("The return url appears to be an invalid url");
 		}
 		
 		if(!(requestObject.isNull(STATE))) {
@@ -135,10 +146,12 @@ public class Session {
 				if(attrRequest.get(key) instanceof JSONObject) {
 					createAttributeSet(key, attrRequest.getJSONObject(key));
 				} else {
-					throw new ParseException("The value for the key in \"attrs\" is not of type JSONObject.");
+					Logger.error(getClass(), "The value for the key in \"attrs\" is not of type JSONObject.");
+					throw new AttributeRequestObjectException("The value for the key in \"attrs\" is not of type JSONObject.");
 				}
 			} else {
-				throw new ParseException("The value for key: " + key + " is null");
+				Logger.error(getClass(), "The value for key: " + key + " is null");
+				throw new AttributeRequestObjectException("The value for key: " + key + " is null");
 			}
 		}
 	}
@@ -151,6 +164,7 @@ public class Session {
 	 * @throws AttributeFetchException 
 	 */
 	public synchronized List<AbstractAttributeSet> getAttributeSet() throws AttributeFetchException {
+		Logger.debug(getClass(), "Fetching attributes from library");
 		for(AbstractAttributeSet attributeSet: mAttributeListSet) {
 			attributeSet.fetch();
 		}
@@ -164,19 +178,22 @@ public class Session {
 	 * @throws JSONException
 	 * @throws ParseException
 	 */
-	private void createAttributeSet(String key, JSONObject attributeItem) throws JSONException, ParseException {
+	private void createAttributeSet(String key, JSONObject attributeItem) throws JSONException, AttributeRequestObjectException {
+		Logger.debug(getClass(), "Creating attribute set");
 		String type = null;
 		if(attributeItem.has(TYPE)) {
 			if(!(attributeItem.isNull(TYPE))) {
 				type = attributeItem.getString(TYPE);
 			} else {
-				throw new ParseException("Missing value for \"type\"");
+				Logger.error(getClass(), "Missing value for \"type\"");
+				throw new AttributeRequestObjectException("Missing value for \"type\"");
 			}
 		} else {
 			if(key != null) {
 				type = key;
 			} else {
-				throw new ParseException("Key is null or not specified.");
+				Logger.error(getClass(), "Key is null or not specified.");
+				throw new AttributeRequestObjectException("Key is null or not specified.");
 			}
 		}
 		AbstractAttributeSet attributeSet = AttributeSetFactory.getAttributeSetForType(type);
@@ -251,6 +268,7 @@ public class Session {
 		for(AbstractAttributeSet attributeSet: this.mAttributeListSet){
 			// if essential is requested and nothing was selected, throw an exception
 			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
+				Logger.error(getClass(), attributeSet.getLabel() + " is essential. Please select one.");
 				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
 			}
 			// if essential is requested and selected attribute is not null or  if is essential is not set but we have a selected attribute
@@ -265,12 +283,14 @@ public class Session {
 
 				@Override
 				public void onError(MIDaaSException arg0) {
+					Logger.error(getClass(), arg0.getError().getErrorMessage());
 					onDoneCallback.onError(new Exception(arg0.getError().getErrorMessage()));
 				}
 
 				@Override
 				public void onSuccess(String response) {
 					if(response == null || response.isEmpty()) {
+						Logger.error(getClass(), "Response from server is empty.");
 						onDoneCallback.onError(new Exception("Response from server is empty"));
 					} else {
 						// set the verified/signed attribute bundle. 
@@ -280,6 +300,7 @@ public class Session {
 							// get the unverified attribute bundle. 
 							mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
 							if(mUnverifiedResponse == null) {
+								Logger.error(getClass(), "Unverified attributes could not be generated");
 								onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
 							} else { 
 								returnDataToRp(mUnverifiedResponse,mUnverifiedResponse, onDoneCallback);
@@ -294,6 +315,7 @@ public class Session {
 		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
 			mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
 			if(mUnverifiedResponse == null) {
+				Logger.error(getClass(), "Unverified attributes could not be generated");
 				onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
 			} else {
 				returnDataToRp(null,mUnverifiedResponse, onDoneCallback);
