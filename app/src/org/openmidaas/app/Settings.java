@@ -15,9 +15,10 @@
  ******************************************************************************/
 package org.openmidaas.app;
 
+import org.openmidaas.library.MIDaaS;
+
 public class Settings {
-	
 	public static boolean SHOULD_LOG = true;
 	public static boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
-
+	public static int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_ERROR;
 }
