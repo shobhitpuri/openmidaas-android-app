@@ -20,6 +20,7 @@ package org.openmidaas.app.activities;
  */
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
@@ -38,7 +39,7 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		Logger.info(this.getClass(), "activity created");
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
 		// register the app or check to see if already registered.
-		MIDaaS.setLoggingLevel(MIDaaS.LOG_LEVEL_DEBUG);
+		MIDaaS.setLoggingLevel(Settings.LIBRARY_LOG_LEVEL);
 		mProgressDialog.show();
 		MIDaaS.initialize(this, new InitializationCallback() {
 
