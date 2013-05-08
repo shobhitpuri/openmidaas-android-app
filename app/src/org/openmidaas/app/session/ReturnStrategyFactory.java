@@ -19,11 +19,11 @@ public class ReturnStrategyFactory {
 	
 	private final static String POSTBACK = "postback"; 
 	
-	public static ReturnStrategy getStrategyForMethodName(String method) throws IllegalArgumentException {
+	public static ReturnStrategy getStrategyForMethodName(String method) {
 		if(method.equals(POSTBACK)) {
 			return new PostbackReturnStrategy();
 		} else {
-			throw new IllegalArgumentException("There is no return strategy of type " + method);
+			return null;
 		}
 	}
 }
