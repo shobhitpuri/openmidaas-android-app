@@ -22,6 +22,7 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Intents;
 import org.openmidaas.app.common.Logger;
@@ -179,11 +180,15 @@ public class HomeScreen extends AbstractActivity {
 	}
 	
 	private void checkForCrashes() {
-		CrashManager.register(this, Constants.HOCKEY_APP_ID);
+		if(Settings.IS_HOCKEY_APP_ENABLED) {
+			CrashManager.register(this, Constants.HOCKEY_APP_ID);
+		}
 	}
 
 	private void checkForUpdates() {  
-		UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+		if(Settings.IS_HOCKEY_APP_ENABLED) {
+			UpdateManager.register(this, Constants.HOCKEY_APP_ID);
+		}
 	}
 	 
 	@Override
