@@ -114,7 +114,9 @@ public class Session {
 		mClientId = requestObject.getString(CLIENT_ID);
 		
 		mReturnStrategy = ReturnStrategyFactory.getStrategyForMethodName(requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
-		
+		if(mReturnStrategy == null) {
+			throw new ParseException("There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+		}
 		try {
 			mReturnStrategy.setReturnUrl(requestObject.getJSONObject(RETURN).getString(RETURN_URL));
 		} catch (URISyntaxException e) {
@@ -257,7 +259,7 @@ public class Session {
 				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
 			}
 		}
-		// if there is at least one verified attribute in the map. 
+		// if there is at least one verified attribute in the map, get the signed bundle from the server. 
 		if(this.mVerifiedAttributeMap.size() >0) {
 			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, new VerifiedAttributeBundleCallback() {
 
@@ -277,9 +279,10 @@ public class Session {
 						if(mUnverifiedAttributeMap.size() > 0) {
 							// get the unverified attribute bundle. 
 							mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
-							returnDataToRp(mUnverifiedResponse,mUnverifiedResponse, onDoneCallback);
 							if(mUnverifiedResponse == null) {
-								onDoneCallback.onDone("Unverified attributes could not be generated");
+								onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
+							} else { 
+								returnDataToRp(mUnverifiedResponse,mUnverifiedResponse, onDoneCallback);
 							}
 						} else {
 							returnDataToRp(mVerifiedResponse,null, onDoneCallback);
@@ -290,7 +293,11 @@ public class Session {
 			});
 		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
 			mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
-			returnDataToRp(null,mUnverifiedResponse, onDoneCallback);
+			if(mUnverifiedResponse == null) {
+				onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
+			} else {
+				returnDataToRp(null,mUnverifiedResponse, onDoneCallback);
+			}
 		}
 	}
 	
