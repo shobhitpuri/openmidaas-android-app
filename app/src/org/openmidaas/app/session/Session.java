@@ -60,7 +60,7 @@ public class Session {
 	
 	private String mClientId;
 	
-	private String mState;
+	private String mState = null;
 	
 	private String mVerifiedResponse = null;
 	
@@ -303,7 +303,7 @@ public class Session {
 								Logger.error(getClass(), "Unverified attributes could not be generated");
 								onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
 							} else { 
-								returnDataToRp(mUnverifiedResponse,mUnverifiedResponse, onDoneCallback);
+								returnDataToRp(mVerifiedResponse,mUnverifiedResponse, onDoneCallback);
 							}
 						} else {
 							returnDataToRp(mVerifiedResponse,null, onDoneCallback);
@@ -327,7 +327,10 @@ public class Session {
 		Logger.debug(getClass(), "Returning data to RP");
 		Logger.debug(getClass(), "verified bundle: " + verifiedAttributeBundle);
 		Logger.debug(getClass(), "unverified bundle: " + unverifiedAttributeBundle);
-		mReturnStrategy.sendReturn(verifiedAttributeBundle, unverifiedAttributeBundle, callback);
+		if(this.mState != null) {
+			Logger.debug(getClass(), "state: " + this.mState);
+		}
+		mReturnStrategy.sendReturn(verifiedAttributeBundle, unverifiedAttributeBundle, this.mState, callback);
 	}
 	
 	/**

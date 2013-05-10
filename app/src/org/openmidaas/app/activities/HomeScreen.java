@@ -24,11 +24,10 @@ import net.hockeyapp.android.UpdateManager;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.Constants;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Intents;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.common.DialogUtils;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -37,7 +36,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.RelativeLayout;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 /**
  * 
@@ -46,14 +53,29 @@ import android.view.View;
  */
 public class HomeScreen extends AbstractActivity {
 	
+	protected static final String ANIMATE_DONE = "org.openmidaas.app.activities.animate_done";
+
 	private final int SCAN_REQUEST = 102938;
 	
+	private final int SLIDE_UP_NOTIFICATION = 1;
+	
 	private Activity mActivity;
+	
+	private RelativeLayout rlDone;
+	
+	private final int SLIDE_ANIMATION_DURATION = 1500;
 	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		mActivity = this;
+		rlDone = (RelativeLayout)findViewById(R.id.rlInfoSlider);
+		if(getIntent().getBooleanExtra(ANIMATE_DONE, false) == true) {
+			animate();
+		} else {
+			rlDone.setVisibility(View.GONE);
+		}
+//		animate();
 		findViewById(R.id.btnScanCode).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -86,8 +108,30 @@ public class HomeScreen extends AbstractActivity {
 		  } else if (resultCode == RESULT_CANCELED) {
 			  Logger.debug(getClass(), "Scan cancelled");
 		  }
-	  	}
-	 }
+	   }
+	}
+	
+	private void animate() {
+		slideDown(rlDone);
+	    new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				synchronized(this) {
+					try {
+						wait(3000);
+					} catch (InterruptedException e) {
+						Logger.error(getClass(), e.getMessage());
+						this.notify();
+					}
+				}
+				Message message = new Message();
+				message.what = SLIDE_UP_NOTIFICATION;
+				mHandler.sendMessage(message);
+			}
+	    	
+	    }).start();
+	}
 	
 	private void showManageInfoScreen() {
 		startActivity(new Intent(mActivity, AttributeListActivity.class));
@@ -95,7 +139,7 @@ public class HomeScreen extends AbstractActivity {
 	}
 	
 	private void showQRCodeScanner() {
-		// check to see if a rear-cameHOCKEY_APP_IDra is available
+		// check to see if a rear-camera is available
 		if(mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
 			Intent intentScan = new Intent(Intents.QR_CODE_INIT_INTENT);
 			intentScan.putExtra("SCAN_MODE", "QR_CODE_MODE");
@@ -190,7 +234,45 @@ public class HomeScreen extends AbstractActivity {
 			UpdateManager.register(this, Settings.HOCKEY_APP_ID);
 		}
 	}
-	 
+	
+	private void slideDown(View view) {
+		Animation animation = new TranslateAnimation(
+				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+				0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+				Animation.RELATIVE_TO_SELF, 0.0f);
+		animation.setDuration(SLIDE_ANIMATION_DURATION);
+		animation.setFillAfter(true);
+		view.clearAnimation();
+		view.setAnimation(animation);
+	}
+	
+	private void slideUp(View view) {
+		Animation animation = new TranslateAnimation(
+				Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+				0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+				Animation.RELATIVE_TO_SELF, -1.0f);
+		animation.setDuration(SLIDE_ANIMATION_DURATION);
+		animation.setFillAfter(true);
+		view.clearAnimation();
+		view.setAnimation(animation);
+	}
+	
+	private Handler mHandler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			switch(msg.what) {
+				case SLIDE_UP_NOTIFICATION:
+					slideUp(rlDone);
+				break;
+				default:
+				break;
+			}
+			return true;
+		}
+		
+	});
+	
 	@Override
 	protected String getTitlebarText() {
 		return ("Home");

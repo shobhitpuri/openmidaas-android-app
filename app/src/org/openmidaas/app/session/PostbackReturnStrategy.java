@@ -32,7 +32,7 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 
 	@Override
 	public void sendReturn(String verifiedAttributeBundle,
-			String unverifiedAttributeBundle, final OnDoneCallback callback) throws NullPointerException {
+			String unverifiedAttributeBundle, String state, final OnDoneCallback callback) throws NullPointerException {
 		AsyncHttpClient client = new AsyncHttpClient();
 		if(mReturnUrl == null) {
 			Logger.error(getClass(), "URL is missing");
@@ -46,6 +46,10 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 		if(unverifiedAttributeBundle != null) {
 			if(!(unverifiedAttributeBundle.isEmpty()))
 				nameValuePairs.add(new BasicNameValuePair(PARAMETER_UNVERIFIED_ATTRIBUTE, unverifiedAttributeBundle));
+		}
+		if(state != null) {
+			if(!(state.isEmpty())) 
+				nameValuePairs.add(new BasicNameValuePair(PARAMETER_STATE, state));
 		}
 		try {
 			Logger.debug(getClass(), "Making POST request to: " + mReturnUrl.toString());

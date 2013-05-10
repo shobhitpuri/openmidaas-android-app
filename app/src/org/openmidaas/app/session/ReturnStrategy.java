@@ -39,6 +39,6 @@ public abstract class ReturnStrategy {
 		}
 	}
 	
-	public abstract void sendReturn(String verifiedAttributeBundle, String unverifiedAttributeBundle, OnDoneCallback callback);
+	public abstract void sendReturn(String verifiedAttributeBundle, String unverifiedAttributeBundle, String state, OnDoneCallback callback);
 	
 }
