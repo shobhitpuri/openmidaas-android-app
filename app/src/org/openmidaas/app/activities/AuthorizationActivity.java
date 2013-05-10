@@ -96,7 +96,8 @@ public class AuthorizationActivity extends AbstractActivity{
 				@Override
 				public void onDone(String message) {
 					dismissDialog();
-					mActivity.startActivity(new Intent(mActivity, HomeScreen.class));
+					mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+					mActivity.finish();
 				}
 	
 				@Override
