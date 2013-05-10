@@ -39,18 +39,9 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 			throw new NullPointerException("Return url is missing. ");
 		}
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		if(verifiedAttributeBundle != null) {
-			if(!verifiedAttributeBundle.isEmpty())
-				nameValuePairs.add(new BasicNameValuePair(PARAMETER_VERIFIED_ATTRIBUTE, verifiedAttributeBundle));
-		}
-		if(unverifiedAttributeBundle != null) {
-			if(!(unverifiedAttributeBundle.isEmpty()))
-				nameValuePairs.add(new BasicNameValuePair(PARAMETER_UNVERIFIED_ATTRIBUTE, unverifiedAttributeBundle));
-		}
-		if(state != null) {
-			if(!(state.isEmpty())) 
-				nameValuePairs.add(new BasicNameValuePair(PARAMETER_STATE, state));
-		}
+		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_VERIFIED_ATTRIBUTE, verifiedAttributeBundle));
+		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_UNVERIFIED_ATTRIBUTE, unverifiedAttributeBundle));
+		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_STATE, state));
 		try {
 			Logger.debug(getClass(), "Making POST request to: " + mReturnUrl.toString());
 			UrlEncodedFormEntity urlParams = new UrlEncodedFormEntity(nameValuePairs);
@@ -70,5 +61,12 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 		} catch (UnsupportedEncodingException e) {
 			callback.onError(new Exception("Error while encoding data"));
 		}
+	}
+	
+	private BasicNameValuePair getAsUrlParameter(String key, String value) {
+		if(value == null || value.isEmpty()) {
+			return new BasicNameValuePair(key, "");
+		}
+		return new BasicNameValuePair(key, value);
 	}
 }
