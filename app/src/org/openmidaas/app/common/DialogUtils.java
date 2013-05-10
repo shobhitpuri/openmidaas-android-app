@@ -27,6 +27,7 @@ import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
@@ -176,6 +177,9 @@ public final class DialogUtils {
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
+			final ProgressDialog progressDialog = new ProgressDialog(activity);
+			progressDialog.setMessage("Verifying...");
+			progressDialog.show();
 			attribute.completeVerification(value.toString(), new CompleteVerificationCallback() {
 
 				@Override
@@ -184,6 +188,9 @@ public final class DialogUtils {
 
 						@Override
 						public void run() {
+							if(progressDialog.isShowing()) {
+								progressDialog.dismiss();
+							}
 							activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 						}
 					});
@@ -192,6 +199,9 @@ public final class DialogUtils {
 
 				@Override
 				public void onError(MIDaaSException exception) {
+					if(progressDialog.isShowing()) {
+						progressDialog.dismiss();
+					}
 					DialogUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
 				}
 				
