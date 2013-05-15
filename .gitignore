@@ -11,6 +11,7 @@
 # generated files
 app/bin/
 app/gen/
+app/libs/armeabi
 tests/bin/
 tests/gen/
 tests/junit-results/junit-report.xml
@@ -23,6 +24,7 @@ tests/local.properties
 app/.classpath
 app/.project
 app/.settings
+app/lint.xml
 tests/.classpath
 tests/.project
 tests/.settings

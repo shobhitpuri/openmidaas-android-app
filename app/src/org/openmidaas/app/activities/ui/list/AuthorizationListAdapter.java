@@ -79,6 +79,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
+		
 		viewHolder.tvAttributeLabel.setText("");
 		final AbstractAttributeSet attributeSet = mAttributeSet.get(position);
 		if(attributeSet.getLabel() == null || (attributeSet.getLabel().isEmpty())) {
@@ -90,6 +91,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		} else {
 			viewHolder.tvAttributeLabel.setText(attributeSet.getLabel());
 		}
+		viewHolder.tvAttributeLabel.setTypeface(null, Typeface.NORMAL);
 		if(attributeSet.isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
 		}
