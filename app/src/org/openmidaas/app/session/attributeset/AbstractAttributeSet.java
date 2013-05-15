@@ -24,6 +24,11 @@ import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
 
+/**
+ * 
+ * Data-type for a attribute set. 
+ *
+ */
 public abstract class AbstractAttributeSet{
 	
 	protected final int TIMEOUT = 250;

@@ -184,4 +184,8 @@
     <string name= "invalidAttributeRequestMessage">The request appears to be invalid. Please try again.</string>
     <string name= "attributeSetParseErrorMessage">A fatal error just occurred. Please try again.</string>
     <string name="fatalErrorMessage">Fatal error. Please restart the app</string>
+    <string name="rpInfoText">is requesting the following information</string>
+    <string name="defaultAuthorizationInfo"><b>Bold</b> fields are required fields.</string>
+    <string name="doneText">Done</string>
+    <string name="doneImageDescription">You are done</string>
 </resources>
