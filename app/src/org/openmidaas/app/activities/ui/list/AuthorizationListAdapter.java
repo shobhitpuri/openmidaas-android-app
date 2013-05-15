@@ -80,31 +80,31 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeLabel.setText("");
-		
-		if(mAttributeSet.get(position).getLabel() == null || (mAttributeSet.get(position).getLabel().isEmpty())) {
-			if(CategoryMap.get(mAttributeSet.get(position).getType()) == null) {
-				viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getKey());
+		final AbstractAttributeSet attributeSet = mAttributeSet.get(position);
+		if(attributeSet.getLabel() == null || (attributeSet.getLabel().isEmpty())) {
+			if(CategoryMap.get(attributeSet.getType()) == null) {
+				viewHolder.tvAttributeLabel.setText(attributeSet.getKey());
 			} else {
-				viewHolder.tvAttributeLabel.setText(CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
+				viewHolder.tvAttributeLabel.setText(CategoryMap.get(attributeSet.getType()).getAttributeLabel());
 			}
 		} else {
-			viewHolder.tvAttributeLabel.setText(mAttributeSet.get(position).getLabel());
+			viewHolder.tvAttributeLabel.setText(attributeSet.getLabel());
 		}
-		if(mAttributeSet.get(position).isEssentialRequested()) {
+		if(attributeSet.isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
 		}
-		final AttributeSpinnerAdapter mSpinnerAdapter = new AttributeSpinnerAdapter(mActivity, android.R.layout.simple_spinner_item, mAttributeSet.get(position).getAttributeList());
+		final AttributeSpinnerAdapter mSpinnerAdapter = new AttributeSpinnerAdapter(mActivity, android.R.layout.simple_spinner_item, attributeSet.getAttributeList());
 		mSpinnerAdapter.setDropDownViewResource(R.layout.attribute_spinner_custom_textview);
 		
 		viewHolder.attributeSelector.setAdapter(mSpinnerAdapter);
-		viewHolder.attributeSelector.setPrompt("Select " + CategoryMap.get(mAttributeSet.get(position).getType()).getAttributeLabel());
+		viewHolder.attributeSelector.setPrompt("Select " + CategoryMap.get(attributeSet.getType()).getAttributeLabel());
 		viewHolder.attributeSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int selectedPositionInSpinner, long arg3) {
-				Logger.debug(getClass(), "Setting selected value: " + mAttributeSet.get(position).getAttributeList().get(selectedPositionInSpinner).toString());
-				mAttributeSet.get(position).setSelectedAttribute(mAttributeSet.get(position).getAttributeList().get(selectedPositionInSpinner));
+			public void onItemSelected(AdapterView<?> adapterView, View view,
+					int selectedPositionInSpinner, long id) {
+				Logger.debug(getClass(), "Setting selected value: " + attributeSet.getAttributeList().get(selectedPositionInSpinner).toString());
+				attributeSet.setSelectedAttribute(attributeSet.getAttributeList().get(selectedPositionInSpinner));
 				mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
 			}
 
