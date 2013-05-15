@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
 
 import android.app.Activity;
 
 /**
  * Implement this interface to specify  what needs to be
- * done when a single element is touched in the list
+ * done when a single element is long touched in the list
  */
-public interface OnListElementTouch {
+public interface OnListElementLongTouch {
+	
 	/**
 	 * Method that is called when a single element is
-	 * touched
+	 * long touched
 	 * in the list
 	 * @param activity the calling activity
 	 */
-	public void onTouch(Activity activity);
-	
+	public void onLongTouch(Activity activity);
+
 }
