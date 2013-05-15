@@ -190,4 +190,5 @@
     <string name="doneText">Done</string>
     <string name="doneImageDescription">You are done</string>
     <string name="enterUrl">Enter a \nURL</string>
+    <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
 </resources>
