@@ -18,7 +18,7 @@ package org.openmidaas.app.common;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.openmidaas.app.activities.listui.AbstractListCategory;
+import org.openmidaas.app.activities.ui.list.AbstractListCategory;
 
 public class CategoryManager {
 	

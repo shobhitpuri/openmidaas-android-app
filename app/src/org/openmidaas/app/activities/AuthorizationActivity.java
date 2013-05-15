@@ -21,6 +21,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ui.list.AuthorizationListAdapter;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;

@@ -22,6 +22,10 @@ public final class AttributeSetFactory {
 	public static AbstractAttributeSet getAttributeSetForType(String type) {
 		if(type.equals(Constants.AttributeNames.EMAIL)) {
 			return new EmailAttributeSet();
+		} else if(type.equals(Constants.AttributeNames.ADDRESS)) {
+			return new AddressAttributeSet();
+		} else if(type.equals(Constants.AttributeNames.CREDIT_CARD)) {
+			return new CreditCardAttributeSet();
 		} else {
 			return new GenericAttributeSet(type);
 		}

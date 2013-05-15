@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
 
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
