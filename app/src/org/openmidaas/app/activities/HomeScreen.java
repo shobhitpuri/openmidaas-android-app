@@ -127,7 +127,7 @@ public class HomeScreen extends AbstractActivity {
 	private void showUrlCollectionDialog() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(HomeScreen.this);
 
-		alert.setMessage("Enter the URL as shown on your browser ");
+		alert.setMessage(getString(R.string.enterUrlMessageBoxText));
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(HomeScreen.this);
