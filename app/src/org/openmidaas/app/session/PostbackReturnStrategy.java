@@ -42,9 +42,13 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_VERIFIED_ATTRIBUTE, verifiedAttributeBundle));
 		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_UNVERIFIED_ATTRIBUTE, unverifiedAttributeBundle));
 		nameValuePairs.add(this.getAsUrlParameter(PARAMETER_STATE, state));
+		UrlEncodedFormEntity urlParams = null;
 		try {
 			Logger.debug(getClass(), "Making POST request to: " + mReturnUrl.toString());
-			UrlEncodedFormEntity urlParams = new UrlEncodedFormEntity(nameValuePairs);
+			urlParams = new UrlEncodedFormEntity(nameValuePairs);
+		} catch (UnsupportedEncodingException e) {
+			callback.onError(new Exception("Error while encoding data"));
+		} 
 			Logger.debug(getClass(), urlParams.toString());
 			client.post(null, mReturnUrl.toString(), urlParams, "application/x-www-form-urlencoded", new AsyncHttpResponseHandler() {
 				@Override
@@ -58,9 +62,7 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 					callback.onError(new Exception (e));
 				}
 			});
-		} catch (UnsupportedEncodingException e) {
-			callback.onError(new Exception("Error while encoding data"));
-		}
+		
 	}
 	
 	private BasicNameValuePair getAsUrlParameter(String key, String value) {

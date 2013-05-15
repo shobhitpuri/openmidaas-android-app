@@ -81,16 +81,18 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		}
 		
 		viewHolder.tvAttributeLabel.setText("");
+		String attributeUserFriendlyName = null;
 		final AbstractAttributeSet attributeSet = mAttributeSet.get(position);
 		if(attributeSet.getLabel() == null || (attributeSet.getLabel().isEmpty())) {
 			if(CategoryMap.get(attributeSet.getType()) == null) {
-				viewHolder.tvAttributeLabel.setText(attributeSet.getKey());
+				attributeUserFriendlyName = attributeSet.getKey();
 			} else {
-				viewHolder.tvAttributeLabel.setText(CategoryMap.get(attributeSet.getType()).getAttributeLabel());
+				attributeUserFriendlyName = CategoryMap.get(attributeSet.getType()).getAttributeLabel();
 			}
 		} else {
-			viewHolder.tvAttributeLabel.setText(attributeSet.getLabel());
+			attributeUserFriendlyName = attributeSet.getLabel();
 		}
+		viewHolder.tvAttributeLabel.setText(attributeUserFriendlyName);
 		viewHolder.tvAttributeLabel.setTypeface(null, Typeface.NORMAL);
 		if(attributeSet.isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
@@ -99,7 +101,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		mSpinnerAdapter.setDropDownViewResource(R.layout.attribute_spinner_custom_textview);
 		
 		viewHolder.attributeSelector.setAdapter(mSpinnerAdapter);
-		viewHolder.attributeSelector.setPrompt("Select " + CategoryMap.get(attributeSet.getType()).getAttributeLabel());
+		viewHolder.attributeSelector.setPrompt("Select " + attributeUserFriendlyName);
 		viewHolder.attributeSelector.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
