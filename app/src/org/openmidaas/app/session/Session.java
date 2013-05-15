@@ -36,7 +36,7 @@ import org.openmidaas.library.model.core.MIDaaSException;
 
 import android.net.ParseException;
 
-public class Session {
+public class Session implements VerifiedAttributeBundleCallback{
 	
 	private final String CLIENT_ID = "client_id";
 	
@@ -73,6 +73,8 @@ public class Session {
 	private Map<String, AbstractAttribute<?>> mUnverifiedAttributeMap;
 	
 	private ReturnStrategy mReturnStrategy = null;
+	
+	private OnDoneCallback mOnDoneCallback = null;
 	
 	public Session() {
 		mAttributeListSet = new ArrayList<AbstractAttributeSet>();
@@ -121,14 +123,14 @@ public class Session {
 		}
 		attrRequest = requestObject.getJSONObject(ATTRIBUTES);
 		mClientId = requestObject.getString(CLIENT_ID);
-		
-		mReturnStrategy = ReturnStrategyFactory.getStrategyForMethodName(requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+		JSONObject returnObject = requestObject.getJSONObject(RETURN);
+		mReturnStrategy = ReturnStrategyFactory.getStrategyForMethodName(returnObject.getString(RETURN_METHOD));
 		if(mReturnStrategy == null) {
-			Logger.error(getClass(), "There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
-			throw new AttributeRequestObjectException("There is no return method for " + requestObject.getJSONObject(RETURN).getString(RETURN_METHOD));
+			Logger.error(getClass(), "There is no return method for " + returnObject.getString(RETURN_METHOD));
+			throw new AttributeRequestObjectException("There is no return method for " + returnObject.getString(RETURN_METHOD));
 		}
 		try {
-			mReturnStrategy.setReturnUrl(requestObject.getJSONObject(RETURN).getString(RETURN_URL));
+			mReturnStrategy.setReturnUrl(returnObject.getString(RETURN_URL));
 		} catch (URISyntaxException e) {
 			Logger.error(getClass(), "The return url appears to be an invalid url");
 			throw new AttributeRequestObjectException("The return url appears to be an invalid url");
@@ -243,28 +245,64 @@ public class Session {
 		super.finalize();
 	}
 	
+	/**
+	 * Compares the attribute set to the user-selected attribute and puts the user-selected
+	 * attribute in the appropriate map.
+	 * @param attributeSet
+	 * @param userSelectedAttribute
+	 */
 	private void putAttributeInMap(AbstractAttributeSet attributeSet, AbstractAttribute<?> userSelectedAttribute) {
-		// if is verified was requested for the selected attribute and the selected attribute state is actually verified
-		// put it in the verifiedAttributeMap. 
-		if(attributeSet.isVerifiedRequested() && userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED)) {
-			this.mVerifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
-		// if is verified was requested by the selected attribute is not verified, put the selected attribute in the unverified map. 
-		// this is on a best effort basis. 
-		} else if(attributeSet.isVerifiedRequested() && !(userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED))) {
-			 this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+		// if verified was requested for the attribute.
+		if(attributeSet.isVerifiedRequested()) {
+			// if the selected attribute is verified, put it in the verifiedAttributeMap. 
+			if(userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED)) {
+				this.mVerifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+			} else {
+				// if the selected attribute is not verified, put the selected attribute in the unverified map. 
+				// this is on a best effort basis. 
+				this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
+			} 
 		// if verified was not request, irrespective of the attribute state, the attribute is added to the unverified attribute map. 
 		} else if(!(attributeSet.isVerifiedRequested())) {
 			this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
 		}
 	}
 	
+	@Override
+	public void onError(MIDaaSException arg0) {
+		Logger.error(getClass(), arg0.getError().getErrorMessage());
+		mOnDoneCallback.onError(new Exception(arg0.getError().getErrorMessage()));
+	}
+
+	@Override
+	public void onSuccess(String response) {
+		if(response == null || response.isEmpty()) {
+			Logger.error(getClass(), "Response from server is empty.");
+			mOnDoneCallback.onError(new Exception("Response from server is empty"));
+		} else {
+			// set the verified/signed attribute bundle. 
+			mVerifiedResponse = response;
+			// if there are data elements in the unverified attribute map
+			if(mUnverifiedAttributeMap.size() > 0) {
+				// get the unverified attribute bundle. 
+				getUnverifiedBundleAndReturnToRP();
+			} else {
+				returnDataToRp(mVerifiedResponse,null, mOnDoneCallback);
+			}
+		}
+	}
+	
 	/**
-	 * Authorizes the release of attributes to the RP for this session. 
+	 * Authorizes the release of attributes to the RP for this session. First tries to get the verified bundle, then the 
+	 * unverified bundle and then returns the data to the RP. 
 	 * @param onDoneCallback the callback handler to get the status of the authorization
 	 * @throws EssentialAttributeMissingException if no attribute is provided for a required attribute. 
 	 */
 	public synchronized void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
-		
+		if(onDoneCallback == null) {
+			throw new IllegalArgumentException("OnDoneCallback required.");
+		}
+		mOnDoneCallback = onDoneCallback;
 		for(AbstractAttributeSet attributeSet: this.mAttributeListSet){
 			// if essential is requested and nothing was selected, throw an exception
 			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
@@ -272,54 +310,25 @@ public class Session {
 				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
 			}
 			// if essential is requested and selected attribute is not null or  if is essential is not set but we have a selected attribute
-			else if((attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() != null) || 
-					(!(attributeSet.isEssentialRequested()) && attributeSet.getSelectedAttribute() != null)) {
+			else if(attributeSet.getSelectedAttribute() != null) {
 				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
 			}
 		}
 		// if there is at least one verified attribute in the map, get the signed bundle from the server. 
 		if(this.mVerifiedAttributeMap.size() >0) {
-			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, new VerifiedAttributeBundleCallback() {
-
-				@Override
-				public void onError(MIDaaSException arg0) {
-					Logger.error(getClass(), arg0.getError().getErrorMessage());
-					onDoneCallback.onError(new Exception(arg0.getError().getErrorMessage()));
-				}
-
-				@Override
-				public void onSuccess(String response) {
-					if(response == null || response.isEmpty()) {
-						Logger.error(getClass(), "Response from server is empty.");
-						onDoneCallback.onError(new Exception("Response from server is empty"));
-					} else {
-						// set the verified/signed attribute bundle. 
-						mVerifiedResponse = response;
-						// if there are data elements in the unverified attribute map
-						if(mUnverifiedAttributeMap.size() > 0) {
-							// get the unverified attribute bundle. 
-							mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
-							if(mUnverifiedResponse == null) {
-								Logger.error(getClass(), "Unverified attributes could not be generated");
-								onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
-							} else { 
-								returnDataToRp(mVerifiedResponse,mUnverifiedResponse, onDoneCallback);
-							}
-						} else {
-							returnDataToRp(mVerifiedResponse,null, onDoneCallback);
-						}
-					}
-				}
-				
-			});
+			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, this);
 		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
-			mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
-			if(mUnverifiedResponse == null) {
-				Logger.error(getClass(), "Unverified attributes could not be generated");
-				onDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
-			} else {
-				returnDataToRp(null,mUnverifiedResponse, onDoneCallback);
-			}
+			getUnverifiedBundleAndReturnToRP();
+		}
+	}
+	
+	private void getUnverifiedBundleAndReturnToRP() {
+		mUnverifiedResponse = MIDaaS.getAttributeBundle(mClientId, mState, mUnverifiedAttributeMap);
+		if(mUnverifiedResponse == null) {
+			Logger.error(getClass(), "Unverified attributes could not be generated");
+			mOnDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
+		} else {
+			returnDataToRp(null,mUnverifiedResponse, mOnDoneCallback);
 		}
 	}
 	

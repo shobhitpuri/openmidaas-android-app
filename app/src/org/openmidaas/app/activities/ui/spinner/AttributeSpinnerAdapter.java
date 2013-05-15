@@ -60,8 +60,9 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 			viewHolder = (ViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeSpinnerValue.setText("");
-		if(mAttributeList.get(position).getLabel() != null && (!(mAttributeList.get(position).getLabel().isEmpty()))) {
-			viewHolder.tvAttributeSpinnerValue.setText(mAttributeList.get(position).getLabel());
+		AbstractAttribute<?> attribute = mAttributeList.get(position);
+		if(attribute.getLabel() != null && (!(attribute.getLabel().isEmpty()))) {
+			viewHolder.tvAttributeSpinnerValue.setText(attribute.getLabel());
 		} else {
 			viewHolder.tvAttributeSpinnerValue.setText("");
 		}
@@ -77,7 +78,7 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 		default:
 			break;
 		}
-		viewHolder.tvAttributeSpinnerValue.append(mAttributeList.get(position).toString());
+		viewHolder.tvAttributeSpinnerValue.append(attribute.toString());
 		if(position == mSelectedIndex) {
 			viewHolder.tvAttributeSpinnerValue.setChecked(true);
 		} else {
