@@ -68,14 +68,14 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 						Logger.info(getClass(), "email verification started successfully");
 						DialogUtils.showToast(mActivity, "An email has been sent to: "+mAttributeValue.getText().toString());
 						isInitVerificationSuccess = true;
-//						try {
-//							emailAttribute.save();
-//							
-//						} catch (MIDaaSException e) {
-//							DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
-//						} catch (InvalidAttributeValueException ex) {
-//							DialogUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
-//						}
+						try {
+							emailAttribute.save();
+							
+						} catch (MIDaaSException e) {
+							DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+						} catch (InvalidAttributeValueException ex) {
+							DialogUtils.showNeutralButtonDialog(mActivity, "Error", ex.getMessage());
+						}
 						
 						mActivity.runOnUiThread(new Runnable() {
 
