@@ -16,7 +16,10 @@
 package org.openmidaas.app.activities;
 
 import java.util.List;
+import java.util.Map;
+
 import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ui.list.AbstractListCategory;
 import org.openmidaas.app.activities.ui.list.AddressCategory;
 import org.openmidaas.app.activities.ui.list.AttributeExpandableListAdapter;
 import org.openmidaas.app.activities.ui.list.CreditCardCategory;
@@ -179,17 +182,18 @@ public class AttributeListActivity extends AbstractActivity {
 	 */
 	private void createEmptyAttributeList() {
 		try {
+			Map<String, AbstractListCategory> map = CategoryManager.getMap();
 			PersonalListCategory personalCategory = new PersonalListCategory();
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.GIVEN_NAME)));
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.MIDDLE_NAME)));
 			personalCategory.getList().add(new GenericAttributeListElement(GenericAttributeFactory.createAttribute(Constants.AttributeNames.FAMILY_NAME)));
-			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
+			map.put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
 			EmailCategory emailHeader = new EmailCategory();
-			CategoryManager.getMap().put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
+			map.put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
 			AddressCategory addressCategory = new AddressCategory();
-			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
+			map.put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
 			CreditCardCategory creditCardCategory = new CreditCardCategory();
-			CategoryManager.getMap().put(Constants.ATTRIBUTE_CATEGORY_CREDIT_CARD, creditCardCategory);
+			map.put(Constants.ATTRIBUTE_CATEGORY_CREDIT_CARD, creditCardCategory);
 		} catch (InvalidAttributeNameException e) {
 			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}
