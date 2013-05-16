@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">MIDaas App</string>
     <string name="registering_text">Registering&#8230;</string>
     <string name="registration_success_text">Registration Success!</string>
@@ -38,6 +38,7 @@
 	<string name="init_attribute_verification">Initializing verification</string>
 	<string name="noAttributesPresentText">You do not have any information.\nTry adding some by tapping the button on the top right corner.</string>
 	<style name="standardButtonStyle">
+	    <item name="android:drawablePadding">20dp</item>
    		<item name="android:layout_width">fill_parent</item>
     	<item name="android:layout_height">wrap_content</item>
     	<item name="android:textColor">#ffffff</item>
@@ -188,4 +189,6 @@
     <string name="defaultAuthorizationInfo"><b>Bold</b> fields are required fields.</string>
     <string name="doneText">Done</string>
     <string name="doneImageDescription">You are done</string>
+    <string name="enterUrl">Enter a \nURL</string>
+    <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
 </resources>

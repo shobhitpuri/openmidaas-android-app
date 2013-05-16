@@ -38,9 +38,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -75,7 +79,6 @@ public class HomeScreen extends AbstractActivity {
 		} else {
 			rlDone.setVisibility(View.GONE);
 		}
-//		animate();
 		findViewById(R.id.btnScanCode).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -91,9 +94,19 @@ public class HomeScreen extends AbstractActivity {
 				showManageInfoScreen();
 			}
 		});
+		
+		findViewById(R.id.btnEnterUrl).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showUrlCollectionDialog();
+			}
+		});
+		
 		checkForUpdates();
 	}
 
+	
 	
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -101,7 +114,7 @@ public class HomeScreen extends AbstractActivity {
 		  if (resultCode == Activity.RESULT_OK) {
 			  if(intent.getStringExtra("SCAN_RESULT") != null) {
 				  Logger.debug(getClass(), intent.getStringExtra("SCAN_RESULT"));
-				  processScanResult(intent.getStringExtra("SCAN_RESULT"));
+				  processUrl(intent.getStringExtra("SCAN_RESULT"));
 			  } else {
 				  DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");
 			  }
@@ -109,6 +122,37 @@ public class HomeScreen extends AbstractActivity {
 			  Logger.debug(getClass(), "Scan cancelled");
 		  }
 	   }
+	}
+	
+	private void showUrlCollectionDialog() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(HomeScreen.this);
+
+		alert.setMessage(getString(R.string.enterUrlMessageBoxText));
+
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(HomeScreen.this);
+		input.setText("https://");
+		input.setSelection(input.getText().toString().length());
+		alert.setView(input);
+		
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		public void onClick(DialogInterface dialog, int whichButton) {
+			Editable value = input.getText();
+			processUrl(value.toString());
+		  }
+		});
+		final AlertDialog alertDialog = alert.create();
+		input.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View arg0, boolean hasFocus) {
+				if (hasFocus) {
+					alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		        }
+			}
+			
+		});
+		alertDialog.show();
 	}
 	
 	private void animate() {
@@ -154,7 +198,7 @@ public class HomeScreen extends AbstractActivity {
 		}
 	}
 	
-	private void processScanResult(String result) {
+	private void processUrl(String result) {
 		try {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {

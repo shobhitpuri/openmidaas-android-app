@@ -18,31 +18,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <Button
-        android:id="@+id/btnScanCode"
-        style="@style/standardButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnManageInfo"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/btnManageInfo"
-        android:layout_marginTop="82dp"
-        android:background="@drawable/home_screen_button"
-        android:drawableLeft="@drawable/snap"
-        android:text="@string/scan_qr_code" />
-
-    <Button
-        android:id="@+id/btnManageInfo"
-        style="@style/standardButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/btnScanCode"
-        android:layout_marginTop="71dp"
-        android:background="@drawable/home_screen_button"
-        android:drawableLeft="@drawable/list"
-        android:text="@string/manage_info" />
-
     <RelativeLayout
         android:id="@+id/rlInfoSlider"
         android:layout_width="fill_parent"
@@ -74,5 +49,43 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
         
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnScanCode"
+        style="@style/standardButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnEnterUrl"
+        android:layout_alignRight="@+id/btnEnterUrl"
+        
+        android:layout_marginTop="67dp"
+        android:background="@drawable/home_screen_button"
+        android:drawableLeft="@drawable/snap"
+        android:text="@string/scan_qr_code" />
+
+    <Button
+        android:id="@+id/btnEnterUrl"
+        style="@style/standardButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnManageInfo"
+        android:layout_alignRight="@+id/btnManageInfo"
+        android:layout_below="@+id/btnScanCode"
+        android:layout_marginTop="53dp"
+        android:background="@drawable/home_screen_button"
+        android:drawableLeft="@drawable/enter_url"
+        android:text="@string/enterUrl" />
+
+    <Button
+        android:id="@+id/btnManageInfo"
+        style="@style/standardButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnEnterUrl"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="53dp"
+        android:background="@drawable/home_screen_button"
+        android:drawableLeft="@drawable/list"
+        android:text="@string/manage_info" />
 
 </RelativeLayout>
