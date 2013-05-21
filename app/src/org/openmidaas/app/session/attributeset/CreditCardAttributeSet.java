@@ -18,6 +18,8 @@ package org.openmidaas.app.session.attributeset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.openmidaas.app.activities.AuthorizationActivity;
+import org.openmidaas.app.activities.CreditCardActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
@@ -25,7 +27,9 @@ import org.openmidaas.library.model.CreditCardAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.CreditCardDataCallback;
+
 import android.app.Activity;
+import android.content.Intent;
 
 public class CreditCardAttributeSet extends AbstractAttributeSet {
 	private boolean mRetrievalSuccess = false;
@@ -67,8 +71,7 @@ public class CreditCardAttributeSet extends AbstractAttributeSet {
 
 	@Override
 	public void onModify(Activity activity) {
-		// TODO Auto-generated method stub
-		
+		activity.startActivityForResult(new Intent(activity, CreditCardActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
 	}
 
 }

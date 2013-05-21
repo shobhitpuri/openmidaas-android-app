@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
+import android.widget.TextView;
 
 public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> {
 	
@@ -47,48 +48,77 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 	}
 	
 	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		LabelViewHolder viewHolder;
+		if(convertView == null) {
+			LayoutInflater infalInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = infalInflater.inflate(R.layout.authorization_spinner_label, null);
+			viewHolder = new LabelViewHolder();
+			viewHolder.tvSpinnerLabel = (TextView)convertView.findViewById(R.id.tvSpinnerLabel);
+			convertView.setTag(viewHolder);
+		} else {
+			viewHolder = (LabelViewHolder) convertView.getTag();
+		}
+		viewHolder.tvSpinnerLabel.setText("");
+		if(position == 0) {
+			viewHolder.tvSpinnerLabel.setText(mContext.getString(R.string.noAttributeSelectedLabel));
+		} else {
+			viewHolder.tvSpinnerLabel.setText(mAttributeList.get(position).toString());
+		}
+		return convertView;
+	}
+	
+	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
-		
-		ViewHolder viewHolder;
+		ValueViewHolder viewHolder;
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infalInflater.inflate(R.layout.attribute_spinner_custom_textview, null);
-			 viewHolder = new ViewHolder();
+			 viewHolder = new ValueViewHolder();
 			 viewHolder.tvAttributeSpinnerValue = (CheckedTextView)convertView.findViewById(R.id.tvAttributeSpinnerValue);
 			 convertView.setTag(viewHolder);
 		} else {
-			viewHolder = (ViewHolder)convertView.getTag();
+			viewHolder = (ValueViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeSpinnerValue.setText("");
-		AbstractAttribute<?> attribute = mAttributeList.get(position);
-		if(attribute.getLabel() != null && (!(attribute.getLabel().isEmpty()))) {
-			viewHolder.tvAttributeSpinnerValue.setText(attribute.getLabel());
-		} else {
-			viewHolder.tvAttributeSpinnerValue.setText("");
-		}
-		switch (mAttributeList.get(position).getState()) {
-		case PENDING_VERIFICATION:
-			viewHolder.tvAttributeSpinnerValue.append(" (Pending Verification)\n");
-			break;
-		case VERIFIED:
-			viewHolder.tvAttributeSpinnerValue.append(" (Verified)\n");
-			break;
-		case NOT_VERIFIED:
-			viewHolder.tvAttributeSpinnerValue.append(" (Not Verified)\n");
-		default:
-			break;
-		}
-		viewHolder.tvAttributeSpinnerValue.append(attribute.toString());
 		if(position == mSelectedIndex) {
 			viewHolder.tvAttributeSpinnerValue.setChecked(true);
 		} else {
 			viewHolder.tvAttributeSpinnerValue.setChecked(false);
 		}
-		
+		if(position == 0) {
+			viewHolder.tvAttributeSpinnerValue.setText(mContext.getString(R.string.noAttributeSelectedLabel));
+		}
+		else{
+			AbstractAttribute<?> attribute = mAttributeList.get(position);
+			if(attribute.getLabel() != null && (!(attribute.getLabel().isEmpty()))) {
+				viewHolder.tvAttributeSpinnerValue.setText(attribute.getLabel());
+			} else {
+				viewHolder.tvAttributeSpinnerValue.setText("");
+			}
+			switch (mAttributeList.get(position).getState()) {
+			case PENDING_VERIFICATION:
+				viewHolder.tvAttributeSpinnerValue.append("(Pending Verification)\n");
+				break;
+			case VERIFIED:
+				viewHolder.tvAttributeSpinnerValue.append("(Verified)\n");
+				break;
+			case NOT_VERIFIED:
+				viewHolder.tvAttributeSpinnerValue.append("(Not Verified)\n");
+			default:
+				break;
+			}
+			viewHolder.tvAttributeSpinnerValue.append(attribute.toString());
+			
+		}
 		return convertView;
 	}
 	
-	private static class ViewHolder {
+	private static class ValueViewHolder {
 		private CheckedTextView tvAttributeSpinnerValue;
+	}
+	
+	private static class LabelViewHolder {
+		private TextView tvSpinnerLabel;
 	}
 }

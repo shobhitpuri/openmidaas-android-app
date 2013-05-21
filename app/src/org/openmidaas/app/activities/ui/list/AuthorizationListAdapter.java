@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -63,18 +64,24 @@ public class AuthorizationListAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int arg0) {
-		return 0;
+		return arg0;
+	}
+	
+	@Override
+	public boolean hasStableIds() {
+	    return true;
 	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup viewGroup) {
-		final ViewHolder viewHolder;
+		ViewHolder viewHolder = null;
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			 convertView = infalInflater.inflate(R.layout.authorization_view_row, null);
 			 viewHolder = new ViewHolder();
 			 viewHolder.tvAttributeLabel = (TextView)convertView.findViewById(R.id.tvAttributeLabel);
 			 viewHolder.attributeSelector = (Spinner)convertView.findViewById(R.id.attributeSelector);
+			 viewHolder.btnAddAttribute = (Button)convertView.findViewById(R.id.btnAddAttribute);
 			 convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder)convertView.getTag();
@@ -97,7 +104,7 @@ public class AuthorizationListAdapter extends BaseAdapter {
 		if(attributeSet.isEssentialRequested()) {
 			viewHolder.tvAttributeLabel.setTypeface(null, Typeface.BOLD);
 		}
-		final AttributeSpinnerAdapter mSpinnerAdapter = new AttributeSpinnerAdapter(mActivity, android.R.layout.simple_spinner_item, attributeSet.getAttributeList());
+		final AttributeSpinnerAdapter mSpinnerAdapter = new AttributeSpinnerAdapter(mActivity, R.layout.authorization_spinner_label, attributeSet.getAttributeList());
 		mSpinnerAdapter.setDropDownViewResource(R.layout.attribute_spinner_custom_textview);
 		
 		viewHolder.attributeSelector.setAdapter(mSpinnerAdapter);
@@ -107,20 +114,38 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view,
 					int selectedPositionInSpinner, long id) {
-				Logger.debug(getClass(), "Setting selected value: " + attributeSet.getAttributeList().get(selectedPositionInSpinner).toString());
-				attributeSet.setSelectedAttribute(attributeSet.getAttributeList().get(selectedPositionInSpinner));
-				mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
+				if(selectedPositionInSpinner == 0) {
+					Logger.debug(getClass(), "Setting selected value for " + attributeSet.getType() +" to " + "\"null\"");
+					attributeSet.setSelectedAttribute(null);
+					mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
+				}
+				else {
+					Logger.debug(getClass(), "Setting selected value for " +attributeSet.getType()+" to " + attributeSet.getAttributeList().get(selectedPositionInSpinner).toString());
+					attributeSet.setSelectedAttribute(null);
+					attributeSet.setSelectedAttribute(attributeSet.getAttributeList().get(selectedPositionInSpinner));
+					mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
+				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {}
 			
 		});
+		
+		viewHolder.btnAddAttribute.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				attributeSet.onModify(mActivity);
+			}
+		});
+		
 		return convertView;
 	}
 	
 	private static class ViewHolder {
 		TextView tvAttributeLabel;
 		Spinner attributeSelector;
+		Button btnAddAttribute;
 	}
 }

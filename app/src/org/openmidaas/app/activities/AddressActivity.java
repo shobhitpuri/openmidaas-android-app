@@ -81,7 +81,6 @@ public class AddressActivity extends AbstractActivity{
 	private void saveAndQuit() throws IllegalArgumentException, InvalidAttributeValueException, MIDaaSException {
 		AddressAttribute address = AddressAttributeFactory.createAttribute();
 		
-		
 		if(mStreetAddress.getText().toString() == null || mStreetAddress.getText().toString().isEmpty()) {
 			throw new IllegalArgumentException ("Street address cannot be empty");
 		}
@@ -104,6 +103,7 @@ public class AddressActivity extends AbstractActivity{
 		}
 		address.setValue(value);
 		address.save();
+		this.setResult(AuthorizationActivity.AUTHORIZATION_ACTIVITY_RESULT_OK);
 		AddressActivity.this.finish();
 	}
 }

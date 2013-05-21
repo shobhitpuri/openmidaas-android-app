@@ -14,21 +14,36 @@
   limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:background="@drawable/list_cell_bg_default"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/list_cell_bg_default"
     android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/tvAttributeLabel"
         android:layout_width="100dp"
-        android:layout_height="42dp"
-        android:textColor="#000000"
-        android:text="" />
+        android:layout_height="47dp"
+        android:text=""
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textColor="#000000" />
 
     <Spinner
         android:id="@+id/attributeSelector"
-        android:layout_width="fill_parent"
-        android:layout_height="47dp" />
+        android:layout_width="137dp"
+        android:layout_height="47dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1.04" />
+
+    <Button
+        android:id="@+id/btnAddAttribute"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.34"
+         android:background="@drawable/add_button"
+        android:focusable="false"
+        style="@style/addButtonStyle"
+         />
 
 </LinearLayout>

@@ -17,6 +17,9 @@ package org.openmidaas.app.session.attributeset;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.openmidaas.app.activities.AddressActivity;
+import org.openmidaas.app.activities.AuthorizationActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
@@ -25,6 +28,7 @@ import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.AddressDataCallback;
 import android.app.Activity;
+import android.content.Intent;
 
 public class AddressAttributeSet extends AbstractAttributeSet{
 	private boolean mRetrievalSuccess = false;
@@ -66,6 +70,6 @@ public class AddressAttributeSet extends AbstractAttributeSet{
 
 	@Override
 	public void onModify(Activity activity) {
-		
+		activity.startActivityForResult(new Intent(activity, AddressActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
 	}
 }

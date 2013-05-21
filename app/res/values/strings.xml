@@ -191,4 +191,6 @@
     <string name="doneImageDescription">You are done</string>
     <string name="enterUrl">Enter a \nURL</string>
     <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
+    <string name="noAttributeSelectedLabel">No attribute selected</string>
+    <string name="noAttributeSelectedValue"></string>
 </resources>
