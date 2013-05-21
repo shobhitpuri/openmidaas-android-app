@@ -44,6 +44,12 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	public static final String REQUEST_BUNDLE_KEY = "authorization_package_data";
 	
+	public static final int AUTHORIZATION_ACTIVITY_REQUEST_CODE = 1; 
+	
+	public static final int AUTHORIZATION_ACTIVITY_RESULT_OK = 0;
+	
+	public static final int AUTHORIZATION_ACTIVITY_RESULT_ERROR = -1;
+	
 	private ListView mAuthorizationList;
 	
 	private TextView tvRpInfo;
@@ -62,18 +68,19 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private Session mSession;
 	
+	private JSONObject mCurrentRequestData = null;
+	
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
 		tvRpInfo = (TextView)findViewById(R.id.tvRpInfo);
 		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
-		mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
 			try {
-				JSONObject requestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
+				mCurrentRequestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
 				mProgressDialog.show();
-				startSession(requestData);
+				displayAuthorizationList(mCurrentRequestData);
 			} catch(JSONException e) {
 				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error processing the request.");
 			}
@@ -123,7 +130,20 @@ public class AuthorizationActivity extends AbstractActivity{
 		return (R.layout.authorization_list_view);
 	}
 	
-	private void startSession(final JSONObject requestData) {
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == AUTHORIZATION_ACTIVITY_REQUEST_CODE) {
+			if (resultCode == AUTHORIZATION_ACTIVITY_RESULT_OK) {
+				displayAuthorizationList(mCurrentRequestData);
+			} 
+		}
+	}
+	
+	/**
+	 * Creates UI elements based on the requestData. 
+	 * @param requestData
+	 */
+	private void displayAuthorizationList(final JSONObject requestData) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -181,6 +201,7 @@ public class AuthorizationActivity extends AbstractActivity{
 						tvRpInfo.setText(mSession.getClientId() + " " + mActivity.getString(R.string.rpInfoText));
 					}
 					// refresh the authorization list
+					mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;
 				case ATTRIBUTE_SET_INVALID_REQUEST:

@@ -17,6 +17,9 @@ package org.openmidaas.app.session.attributeset;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import org.openmidaas.app.activities.AuthorizationActivity;
+import org.openmidaas.app.activities.EmailRegistrationActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
@@ -26,6 +29,7 @@ import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.EmailDataCallback;
 
 import android.app.Activity;
+import android.content.Intent;
 
 public class EmailAttributeSet extends AbstractAttributeSet {
 
@@ -68,6 +72,6 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 
 	@Override
 	public void onModify(Activity activity) {
-		
+		activity.startActivityForResult(new Intent(activity, EmailRegistrationActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
 	}
 }

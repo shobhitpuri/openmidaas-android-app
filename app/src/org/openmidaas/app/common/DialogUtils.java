@@ -287,7 +287,8 @@ public final class DialogUtils {
 				GenericAttribute attribute = GenericAttributeFactory.createAttribute(attributeName);
 				attribute.setValue(value.toString());
 				attribute.save();
-				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+				activity.finish();
+				activity.startActivity(activity.getIntent());
 			} catch (InvalidAttributeValueException e) {
 				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			} catch (MIDaaSException e) {
