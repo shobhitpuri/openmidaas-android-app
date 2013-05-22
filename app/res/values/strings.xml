@@ -213,4 +213,7 @@
 	<string name="rdBtnSmsText">SMS</string>
 	<string name="rdBtnPhoneText">Phone Call</string>
 	
+    <string name="noAttributeSelectedLabel">No attribute selected</string>
+    <string name="noAttributeSelectedValue"></string>
+
 </resources>

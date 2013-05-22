@@ -252,18 +252,22 @@ public class Session implements VerifiedAttributeBundleCallback{
 	 * @param userSelectedAttribute
 	 */
 	private void putAttributeInMap(AbstractAttributeSet attributeSet, AbstractAttribute<?> userSelectedAttribute) {
+		Logger.debug(getClass(), "User-selected attribute: " + userSelectedAttribute + " has state: " + userSelectedAttribute.getState().toString());
 		// if verified was requested for the attribute.
 		if(attributeSet.isVerifiedRequested()) {
 			// if the selected attribute is verified, put it in the verifiedAttributeMap. 
 			if(userSelectedAttribute.getState().equals(ATTRIBUTE_STATE.VERIFIED)) {
+				Logger.debug(getClass(), "Adding user-selected attribute: " + userSelectedAttribute + " to the verified attribute map");
 				this.mVerifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
 			} else {
 				// if the selected attribute is not verified, put the selected attribute in the unverified map. 
-				// this is on a best effort basis. 
+				// this is on a best effort basis.
+				Logger.debug(getClass(), "Adding user-selected attribute: " + userSelectedAttribute + " to the unverified attribute map");
 				this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
 			} 
 		// if verified was not request, irrespective of the attribute state, the attribute is added to the unverified attribute map. 
 		} else if(!(attributeSet.isVerifiedRequested())) {
+			Logger.debug(getClass(), "Adding user-selected attribute: " + userSelectedAttribute + " to the unverified attribute map");
 			this.mUnverifiedAttributeMap.put(attributeSet.getKey(), userSelectedAttribute);
 		}
 	}
@@ -280,6 +284,7 @@ public class Session implements VerifiedAttributeBundleCallback{
 			Logger.error(getClass(), "Response from server is empty.");
 			mOnDoneCallback.onError(new Exception("Response from server is empty"));
 		} else {
+			Logger.debug(getClass(), "Server response: " + response);
 			// set the verified/signed attribute bundle. 
 			mVerifiedResponse = response;
 			// if there are data elements in the unverified attribute map
@@ -316,6 +321,8 @@ public class Session implements VerifiedAttributeBundleCallback{
 		}
 		// if there is at least one verified attribute in the map, get the signed bundle from the server. 
 		if(this.mVerifiedAttributeMap.size() >0) {
+			Logger.debug(getClass(), "Bundling attibutes with AVS");
+			
 			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, this);
 		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
 			getUnverifiedBundleAndReturnToRP();
@@ -328,7 +335,7 @@ public class Session implements VerifiedAttributeBundleCallback{
 			Logger.error(getClass(), "Unverified attributes could not be generated");
 			mOnDoneCallback.onError(new Exception("Unverified attributes could not be generated"));
 		} else {
-			returnDataToRp(null,mUnverifiedResponse, mOnDoneCallback);
+			returnDataToRp(mVerifiedResponse,mUnverifiedResponse, mOnDoneCallback);
 		}
 	}
 	
