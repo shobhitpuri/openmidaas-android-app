@@ -22,6 +22,7 @@ import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.PhoneAttribute;
 import org.openmidaas.library.model.PhoneAttribute.VERIFICATION_METHOD;
 import org.openmidaas.library.model.PhoneAttributeFactory;
+import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 
@@ -34,6 +35,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 public class PhoneRegistrationActivity extends AbstractActivity{
@@ -50,12 +52,15 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 	private Button phStartVerifyButton;
 	private Button phCompleteVerifyButton;
 	
+	private ScrollView svPhoneRegister;
+	
 	private boolean isInitVerificationSuccess = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mActivity = this;
+		svPhoneRegister = (ScrollView) findViewById(R.id.svPhoneVerification);
 		phoneCountryCode = (EditText)findViewById(R.id.phCountryCode);
 		phoneNumberLocal = (EditText)findViewById(R.id.phNumber);
 		phoneVerificationCode = (EditText)findViewById(R.id.edPhVerifyCode);
@@ -72,8 +77,7 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 			public void onClick(View v) {
 				
 				try {
-					verifyEnteredAttruibutes();
-				
+					startVerifyingAttruibutes();
 				} catch (IllegalArgumentException e) {
 					DialogUtils.showNeutralButtonDialog(PhoneRegistrationActivity.this, "Error", e.getMessage());
 				} catch (InvalidAttributeValueException e) {
@@ -87,14 +91,16 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		phCompleteVerifyButton.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v) {
+				Logger.info(getClass(), "completing phone verification...");
+				mProgressDialog.setMessage("Verifying...");
+				mProgressDialog.show();
+				completeVerifyingAttruibutes();
 				
 			}
 		});
 	}
 	
-	private void verifyEnteredAttruibutes() throws IllegalArgumentException, InvalidAttributeValueException, MIDaaSException {
-		
-		
+	private void startVerifyingAttruibutes() throws IllegalArgumentException, InvalidAttributeValueException, MIDaaSException {
 		String phoneNumberValue;
 		Logger.info(getClass(), "starting phone verification");
 		try {
@@ -133,18 +139,18 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 				phoneAttribute.setValue(phoneNumberValue);
 				Logger.debug(getClass(), "Setting value of Phone Number : "+phoneNumberValue);
 			}
-			
+			mProgressDialog.show();
 			phoneAttribute.startVerification(new InitializeVerificationCallback() {
 			
 				@Override
 				public void onSuccess() {
 					Logger.info(getClass(), "phone verification started successfully");
 					if(phoneAttribute.getVerificationMethod().compareToIgnoreCase(VERIFICATION_METHOD.call.toString()) == 0){
-						DialogUtils.showToast(mActivity, "An SMS has been sent to: "+phoneAttribute.getValue().toString());
-						Logger.debug(getClass(), "SMS Sent");
-					}else{
 						DialogUtils.showToast(mActivity, "You should receive a phone call soon at : "+phoneAttribute.getValue().toString());
 						Logger.debug(getClass(), "Call sent");
+					}else{
+						DialogUtils.showToast(mActivity, "A SMS has been sent to: "+phoneAttribute.getValue().toString());
+						Logger.debug(getClass(), "SMS Sent");
 					}
 					
 					isInitVerificationSuccess = true;
@@ -169,6 +175,7 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 							}
 							phCompleteVerifyButton.setEnabled(true);
 							phStartVerifyButton.setText("Re-start Verification");
+							svPhoneRegister.scrollTo(0, svPhoneRegister.getBottom());
 							phoneVerificationCode.requestFocus();
 							getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 							phoneVerificationCode.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
@@ -189,9 +196,27 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		} catch (final InvalidAttributeValueException e) {
 			Logger.debug(getClass(), "Invalid Attribute Error: "+e.getMessage() );
 			cancelCurrentProgressDialog();
-			DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The email you entered is invalid");
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The phone you entered is invalid");
 		} 
-		PhoneRegistrationActivity.this.finish();
+	}
+
+	private void completeVerifyingAttruibutes(){
+		
+		if((!(phoneVerificationCode.getText().toString().isEmpty())) || (phoneVerificationCode.getText().toString() != null))
+			phoneAttribute.completeVerification(phoneVerificationCode.getText().toString(), new CompleteVerificationCallback() {
+			
+			@Override
+			public void onSuccess() {
+				DialogUtils.showToast(mActivity, phoneAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				PhoneRegistrationActivity.this.finish();
+			}
+
+			@Override
+			public void onError(MIDaaSException exception) {
+				cancelCurrentProgressDialog();
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
+			}
+		});
 	}
 	
 	
