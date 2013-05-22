@@ -184,6 +184,13 @@ public final class DialogUtils {
 
 				@Override
 				public void onSuccess() {
+					try {
+						attribute.save();
+					} catch (MIDaaSException e) {
+						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+					} catch (InvalidAttributeValueException e) {
+						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getMessage());
+					}
 					activity.runOnUiThread(new Runnable() {
 
 						@Override
