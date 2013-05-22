@@ -1,0 +1,190 @@
+<!--
+  Copyright 2013 SecureKey Technologies Inc.
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    
+  http://www.apache.org/licenses/LICENSE-2.0
+   
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+  <ScrollView 
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true">
+	  <RelativeLayout
+	      android:layout_width="match_parent"
+	      android:layout_height="wrap_content"
+	      android:background="@drawable/default_bg" >
+	      
+	      <TextView
+	          android:id="@+id/tvPhStep1"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:padding="5dp"
+	          android:text="@string/tvPhStep1Text"
+	          android:textAppearance="?android:attr/textAppearanceMedium"
+	          android:textColor="#000000" />
+	      
+	      <TextView
+	          android:id="@+id/tvPhoneEnterMessage"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/tvPhStep1"
+	          android:padding="5dp"
+	          android:text="@string/enterPhoneRequestMsg"
+	          android:textColor="#000000" />
+	      
+	      <LinearLayout
+	          android:id="@+id/ltPhNumberLayout"
+	          android:layout_width="match_parent"
+	          android:layout_height="wrap_content"
+	          android:layout_below="@id/tvPhoneEnterMessage"
+	          android:orientation="horizontal"
+	          android:padding="5dp" >
+	          <TextView
+	              android:layout_width="0dp"
+	              android:layout_height="wrap_content"
+	              android:layout_weight="0.1"
+	              android:text="@string/plusSign"
+	              android:textColor="#000000" />
+	          <EditText
+	              android:id="@+id/phCountryCode"
+	              android:layout_width="0dp"
+	              android:layout_height="wrap_content"
+	              android:layout_weight="0.2"
+	              android:inputType="phone"
+	              android:textColor="#000000" />
+	          <EditText
+	              android:id="@+id/phNumber"
+	              android:layout_width="0dp"
+	              android:layout_height="wrap_content"
+	              android:layout_weight="0.7"
+	              android:inputType="phone"
+	              android:textColor="#000000" />
+	      </LinearLayout>
+	      
+	      <TextView
+	          android:id="@+id/tvPhoneType"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/ltPhNumberLayout"
+	          android:padding="5dp"
+	          android:text="@string/enterPhoneTypeMsg"
+	          android:textColor="#000000" />
+	
+	      <Spinner
+	          android:id="@+id/spPhoneType"
+	          android:layout_width="match_parent"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/tvPhoneType"
+	          android:entries="@array/phone_types_array"
+	       	  android:prompt="@string/phone_type_prompt"
+	          android:padding="5dp"
+	          android:textColor="#000000" />
+	      
+	      <TextView
+	          android:id="@+id/tvPhStep2"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_marginTop="20dp"
+	          android:layout_below="@id/spPhoneType"
+	          android:padding="5dp"
+	          android:text="@string/tvPhStep2Text"
+	          android:textAppearance="?android:attr/textAppearanceMedium"
+	          android:textColor="#000000" />
+	      
+	      <TextView
+	          android:id="@+id/tvChooseVerifyMethod"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/tvPhStep2"
+	          android:padding="5dp"
+	          android:text="@string/tvPhVerifyMethodText"
+	          android:textColor="#000000" />
+	      
+	      <RadioGroup
+	          android:id="@+id/rgVerifyTypeRadio"
+	          android:layout_width="match_parent"
+	          android:layout_height="wrap_content"
+	          android:layout_below="@id/tvChooseVerifyMethod"
+	          android:orientation="horizontal"
+	          android:padding="5dp" >
+		      <RadioButton
+		           android:id="@+id/rBtnVerifySms"
+		           android:layout_width="0dp"
+		           android:layout_height="wrap_content"
+		           android:layout_weight="0.5"
+		           android:textColor="#000000" 
+		           android:text="@string/rdBtnSmsText" />
+		      <RadioButton
+		           android:id="@+id/rBtnVerifyCall"
+		           android:layout_width="0dp"
+		           android:layout_height="wrap_content"
+		           android:layout_weight="0.5"
+		           android:textColor="#000000"
+		           android:text="@string/rdBtnPhoneText" />
+		   </RadioGroup>
+	
+	       <Button
+	       android:id="@+id/btnPhoneStartVerify"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:layout_below="@+id/rgVerifyTypeRadio"
+	       android:layout_centerHorizontal="true"
+	       android:text="@string/btnStartPhVerification" />
+	
+	      <TextView
+	          android:id="@+id/tvPhStep3"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/btnPhoneStartVerify"
+	          android:padding="5dp"
+	          android:layout_marginTop="20dp"
+	          android:text="@string/tvPhStep3Text"
+	          android:textAppearance="?android:attr/textAppearanceMedium"
+	          android:textColor="#000000" />
+	
+	      <TextView
+	          android:id="@+id/tvEnterPhVerifyCode"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_alignParentLeft="true"
+	          android:layout_below="@id/tvPhStep3"
+	          android:padding="5dp"
+	          android:text="@string/enterPhVerifyCodeMsg"
+	          android:textColor="#000000" />
+	      
+		 <EditText
+	    	  android:id="@+id/edPhVerifyCode"
+	          android:layout_width="wrap_content"
+	       	  android:layout_height="wrap_content"
+	          android:layout_below="@+id/tvEnterPhVerifyCode"
+	       	  android:layout_centerHorizontal="true"
+	          android:padding="5dp"
+	       	  android:ems="12"
+		      android:inputType="text"
+	          android:textColor="#000000" />
+	    
+		 <Button
+	       	  android:id="@+id/btnPhoneCompleteVerify"
+	          android:layout_width="wrap_content"
+	          android:layout_height="wrap_content"
+	          android:layout_below="@+id/edPhVerifyCode"
+	          android:layout_centerHorizontal="true"
+	          android:text="@string/btnCompletePhVerification" />
+	 </RelativeLayout>
+  </ScrollView>
