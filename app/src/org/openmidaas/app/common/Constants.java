@@ -22,16 +22,17 @@ public final class Constants {
 		public static final String MIDDLE_NAME = "middle_name";
 		public static final String FAMILY_NAME = "family_name";
 		public static final String EMAIL = "email";
+		public static final String PHONE = "phone";
 		public static final String ADDRESS = "address";
 		public static final String CREDIT_CARD = "credit_card";
 	}
 	public static final String ATTRIBUTE_CATEGORY_PERSONAL = "Personal";
 	public static final String ATTRIBUTE_CATEGORY_EMAIL = "Email";
+	public static final String ATTRIBUTE_CATEGORY_PHONE = "Phone";
 	public static final String ATTRIBUTE_CATEGORY_ADDRESS = "Address";
 	public static final String ATTRIBUTE_CATEGORY_CREDIT_CARD = "Credit Card";
 	 public static final String ZXING_MARKET =
 			    "market://search?q=pname:com.google.zxing.client.android";
 			  public static final String ZXING_DIRECT =
 			    "https://zxing.googlecode.com/files/BarcodeScanner3.1.apk";
-	public static final String HOCKEY_APP_ID = "f1563456973bce3f6566bf26ba29ae46";
 }

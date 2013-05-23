@@ -13,31 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.session;
 
-import org.openmidaas.app.activities.AddressActivity;
-import org.openmidaas.app.common.Constants;
-import org.openmidaas.library.model.core.AbstractAttribute;
+public class EssentialAttributeMissingException extends Exception {
 
-import android.app.Activity;
-import android.content.Intent;
+	
+	private static final long serialVersionUID = 1L;
 
-public class AddressCategory extends AbstractListCategory{
-
-	public AddressCategory() {
-		mGroupName = Constants.ATTRIBUTE_CATEGORY_ADDRESS;
+	public EssentialAttributeMissingException(String message) {
+		super(message);
 	}
 	
-	@Override
-	public void onAddButtonTouch(Activity activity) {
-		activity.startActivity(new Intent(activity, AddressActivity.class));
-	}
-
-	@Override
-	public void addAttribute(AbstractAttribute<?> attribute) {
-		AddressListElement element = new AddressListElement();
-		element.setAttribute(attribute);
-		mList.add(element);
-	}
-
 }

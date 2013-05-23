@@ -67,6 +67,18 @@ public abstract class AbstractActivity extends Activity{
 	 */
 	protected abstract int getLayoutResourceId();
 	
+	protected void dismissDialog() {
+		this.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if(mProgressDialog.isShowing()) {
+					mProgressDialog.dismiss();
+				}
+			}
+		});
+	}
+	
 	@Override
 	public void onPause() {
 		super.onPause();

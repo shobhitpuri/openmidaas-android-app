@@ -13,22 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
+
+import org.openmidaas.app.activities.EmailRegistrationActivity;
+import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.content.Intent;
 
 /**
- * Implement this interface to specify  what needs to be
- * done when a single element is long touched in the list
+ * 
+ * An email category
+ *
  */
-public interface OnListElementLongTouch {
+public class EmailCategory extends AbstractListCategory {
 	
-	/**
-	 * Method that is called when a single element is
-	 * long touched
-	 * in the list
-	 * @param activity the calling activity
-	 */
-	public void onLongTouch(Activity activity);
+	public EmailCategory() {
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_EMAIL;
+	}
 
+	@Override
+	public void onAddButtonTouch(Activity activity) {
+		activity.startActivity(new Intent(activity, EmailRegistrationActivity.class));
+	}
+
+	@Override
+	public void addAttribute(AbstractAttribute<?> attribute) {
+		EmailAttributeListElement element = new EmailAttributeListElement();
+		element.setAttribute(attribute);
+		mList.add(element);
+	}
 }
