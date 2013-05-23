@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
 
-import org.openmidaas.library.model.CreditCardAttribute;
+import org.openmidaas.library.model.AddressAttribute;
 import android.app.Activity;
 
-public class CreditCardListElement extends AbstractAttributeListElement{
+public class AddressListElement extends AbstractAttributeListElement{
 
 	@Override
 	public void onTouch(Activity activity) {
@@ -27,10 +27,10 @@ public class CreditCardListElement extends AbstractAttributeListElement{
 	@Override
 	public String getRenderedAttributeValue() {
 		try {
-			CreditCardAttribute attribute = (CreditCardAttribute)mAttribute;
-			return (attribute.toString());
+			AddressAttribute attribute = (AddressAttribute)mAttribute;
+			return (attribute.getValue().getFormattedAddress());
 		} catch (ClassCastException e) {
-			return "Credit card cannot be displayed";
+			return "Address cannot be displayed";
 		}
 	}
 }

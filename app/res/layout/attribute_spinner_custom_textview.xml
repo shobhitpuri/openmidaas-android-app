@@ -17,21 +17,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <TextView
-        android:id="@+id/tvAttributeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="TextView" />
-
-    <TextView
-        android:id="@+id/tvAttributeValue"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="18dp"
-        android:layout_toRightOf="@+id/textView1"
-        android:text="TextView" />
+    <CheckedTextView 
+		android:id="@+id/tvAttributeSpinnerValue"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:paddingLeft="5dip"
+		android:textColor="#000000"
+		android:drawableRight="?android:attr/listChoiceIndicatorSingle"
+/>
 
 </RelativeLayout>

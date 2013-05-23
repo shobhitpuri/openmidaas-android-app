@@ -21,24 +21,38 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openmidaas.app.R;
+import org.openmidaas.app.activities.ui.list.AuthorizationListAdapter;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
-import org.openmidaas.app.session.InvalidRequestException;
+import org.openmidaas.app.session.AttributeRequestObjectException;
+import org.openmidaas.app.session.EssentialAttributeMissingException;
 import org.openmidaas.app.session.Session;
+import org.openmidaas.app.session.Session.OnDoneCallback;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class AuthorizationActivity extends AbstractActivity{
 	
 	public static final String REQUEST_BUNDLE_KEY = "authorization_package_data";
 	
+	public static final int AUTHORIZATION_ACTIVITY_REQUEST_CODE = 1; 
+	
+	public static final int AUTHORIZATION_ACTIVITY_RESULT_OK = 0;
+	
+	public static final int AUTHORIZATION_ACTIVITY_RESULT_ERROR = -1;
+	
 	private ListView mAuthorizationList;
+	
+	private TextView tvRpInfo;
 	
 	private AuthorizationListAdapter mAuthorizationListAdapter;
 	
@@ -54,23 +68,58 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private Session mSession;
 	
+	private JSONObject mCurrentRequestData = null;
+	
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
+		tvRpInfo = (TextView)findViewById(R.id.tvRpInfo);
 		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
-		mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
 			try {
-				JSONObject requestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
+				mCurrentRequestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
 				mProgressDialog.show();
-				startSession(requestData);
+				displayAuthorizationList(mCurrentRequestData);
 			} catch(JSONException e) {
 				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error processing the request.");
 			}
 		}
+		findViewById(R.id.bthAuthorize).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				performAuthorization();
+			}
+		});
 	}
 
+	private void performAuthorization() {
+		mProgressDialog.setMessage("Authorizing...");
+		mProgressDialog.show(); 
+		try {
+			mSession.authorizeRequest(new OnDoneCallback() {
+	
+				@Override
+				public void onDone(String message) {
+					dismissDialog();
+					mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+					mActivity.finish();
+				}
+	
+				@Override
+				public void onError(Exception e) {
+					dismissDialog();
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+				}
+				
+			});
+		} catch(EssentialAttributeMissingException e) {
+			dismissDialog();
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+		}
+	}
+	
 	@Override
 	protected String getTitlebarText() {
 		return (getString(R.string.authorization_title_text));
@@ -81,7 +130,20 @@ public class AuthorizationActivity extends AbstractActivity{
 		return (R.layout.authorization_list_view);
 	}
 	
-	private void startSession(final JSONObject requestData) {
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == AUTHORIZATION_ACTIVITY_REQUEST_CODE) {
+			if (resultCode == AUTHORIZATION_ACTIVITY_RESULT_OK) {
+				displayAuthorizationList(mCurrentRequestData);
+			} 
+		}
+	}
+	
+	/**
+	 * Creates UI elements based on the requestData. 
+	 * @param requestData
+	 */
+	private void displayAuthorizationList(final JSONObject requestData) {
 		new Thread(new Runnable() {
 
 			@Override
@@ -95,7 +157,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
 					mHandler.sendMessage(message);
-				} catch (InvalidRequestException e) {
+				} catch (AttributeRequestObjectException e) {
 					Logger.error(getClass(), e.getMessage());
 					message.what = ATTRIBUTE_SET_INVALID_REQUEST;
 					mHandler.sendMessage(message);
@@ -135,7 +197,11 @@ public class AuthorizationActivity extends AbstractActivity{
 			}
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
+					if(mSession.getClientId()!= null) {
+						tvRpInfo.setText(mSession.getClientId() + " " + mActivity.getString(R.string.rpInfoText));
+					}
 					// refresh the authorization list
+					mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;
 				case ATTRIBUTE_SET_INVALID_REQUEST:

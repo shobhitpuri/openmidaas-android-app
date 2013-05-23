@@ -18,32 +18,30 @@ package org.openmidaas.app.session.attributeset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.openmidaas.app.activities.AddressActivity;
 import org.openmidaas.app.activities.AuthorizationActivity;
-import org.openmidaas.app.activities.EmailRegistrationActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
-import org.openmidaas.library.model.EmailAttribute;
+import org.openmidaas.library.model.AddressAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
-import org.openmidaas.library.persistence.core.EmailDataCallback;
-
+import org.openmidaas.library.persistence.core.AddressDataCallback;
 import android.app.Activity;
 import android.content.Intent;
 
-public class EmailAttributeSet extends AbstractAttributeSet {
-
+public class AddressAttributeSet extends AbstractAttributeSet{
 	private boolean mRetrievalSuccess = false;
 	
-	protected EmailAttributeSet() {
-		mType = Constants.AttributeNames.EMAIL;
+	protected AddressAttributeSet() {
+		mType = Constants.AttributeNames.ADDRESS;
 	}
-	
+
 	@Override
-	public void fetch() throws AttributeFetchException{
+	public void fetch() throws AttributeFetchException {
 		mRetrievalSuccess = false;
 		final CountDownLatch MUTEX = new CountDownLatch(1);
-		AttributePersistenceCoordinator.getEmails(new EmailDataCallback() {
+		AttributePersistenceCoordinator.getAddressAttributes(new AddressDataCallback() {
 
 			@Override
 			public void onError(MIDaaSException arg0) {
@@ -52,9 +50,9 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 			}
 
 			@Override
-			public void onSuccess(List<EmailAttribute> emailList) {
+			public void onSuccess(List<AddressAttribute> addressList) {
 				mRetrievalSuccess = true;
-				mAttributeList.addAll(emailList);
+				mAttributeList.addAll(addressList);
 				MUTEX.countDown();
 			}
 			
@@ -72,6 +70,6 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 
 	@Override
 	public void onModify(Activity activity) {
-		activity.startActivityForResult(new Intent(activity, EmailRegistrationActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
+		activity.startActivityForResult(new Intent(activity, AddressActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
 	}
 }

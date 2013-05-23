@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
 
+import org.openmidaas.library.model.CreditCardAttribute;
 import android.app.Activity;
 
-/**
- * Implement this interface to specify  what needs to be
- * done when a single element is touched in the list
- */
-public interface OnListElementTouch {
-	/**
-	 * Method that is called when a single element is
-	 * touched
-	 * in the list
-	 * @param activity the calling activity
-	 */
-	public void onTouch(Activity activity);
-	
+public class CreditCardListElement extends AbstractAttributeListElement{
+
+	@Override
+	public void onTouch(Activity activity) {
+	}
+
+	@Override
+	public String getRenderedAttributeValue() {
+		try {
+			CreditCardAttribute attribute = (CreditCardAttribute)mAttribute;
+			return (attribute.toString());
+		} catch (ClassCastException e) {
+			return "Credit card cannot be displayed";
+		}
+	}
 }

@@ -66,6 +66,7 @@ public abstract class AbstractAttributeRegistrationActivity extends AbstractActi
 			
 			@Override
 			public void onClick(View v) {
+				mProgressDialog.setMessage("Verifying...");
 				mProgressDialog.show();
 				completeAttributeVerification();
 			}

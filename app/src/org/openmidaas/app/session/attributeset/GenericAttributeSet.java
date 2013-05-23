@@ -18,6 +18,7 @@ package org.openmidaas.app.session.attributeset;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
 import org.openmidaas.library.model.GenericAttribute;
@@ -68,7 +69,6 @@ public class GenericAttributeSet extends AbstractAttributeSet {
 
 	@Override
 	public void onModify(Activity activity) {
-		
+		DialogUtils.showAttributeValueCollectionDialog(activity, getType(), getLabel());
 	}
-
 }
