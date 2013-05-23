@@ -68,9 +68,11 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		phoneNumberTypeLabel = (Spinner)findViewById(R.id.spPhoneType);
 		phChooseMethod = (RadioGroup)findViewById(R.id.rgVerifyTypeRadio);
 		phChooseMethod.check(R.id.rBtnVerifySms);
+		
 		phStartVerifyButton = (Button)findViewById(R.id.btnPhoneStartVerify);
 		phCompleteVerifyButton = (Button)findViewById(R.id.btnPhoneCompleteVerify);
-
+		phCompleteVerifyButton.setEnabled(false);
+		
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		phStartVerifyButton.setOnClickListener(new View.OnClickListener(){
 			@Override
@@ -104,47 +106,60 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		String phoneNumberValue;
 		Logger.info(getClass(), "starting phone verification");
 		try {
-			if(!isInitVerificationSuccess) {
-				phoneAttribute = PhoneAttributeFactory.createAttribute();
-				
-				//Check County Code is NULL and Empty
-				if(phoneCountryCode.getText().toString() == null || phoneCountryCode.getText().toString().isEmpty()) {
-					throw new IllegalArgumentException ("Country Code cannot be empty");
-				}
-				Logger.debug(getClass(), "CountryCode not empty");
-				//Check given number NULL and Empty
-				if(phoneNumberLocal.getText().toString() == null || phoneNumberLocal.getText().toString().isEmpty()) {
-					throw new IllegalArgumentException ("Phone Number cannot be empty");
-				}
-				Logger.debug(getClass(), "Given Number not empty");
-				//Check the label. Set it if Not 'None'
-				if(phoneNumberTypeLabel.getSelectedItemPosition() != 0 && (!(phoneNumberTypeLabel.getSelectedItem().equals("None")))) {
-					phoneAttribute.setLabel(phoneNumberTypeLabel.getSelectedItem().toString());
-					Logger.debug(getClass(), "Label is: "+phoneNumberTypeLabel.getSelectedItem().toString());
-				}
-				
-				//Check method of verification
-				tempRadioButton = (RadioButton)findViewById(phChooseMethod.getCheckedRadioButtonId());
-				if(tempRadioButton.getText().toString().compareToIgnoreCase("Phone Call") == 0){ // set "Call" as method 
-					phoneAttribute.setVerificationMethod(VERIFICATION_METHOD.call.toString());
-					Logger.debug(getClass(), "Method of verification : "+VERIFICATION_METHOD.call.toString());
-				}else{ //set "sms" as method (default)
-					phoneAttribute.setVerificationMethod(VERIFICATION_METHOD.sms.toString());
-					Logger.debug(getClass(), "Method of verification : "+VERIFICATION_METHOD.sms.toString());
-				}
-				
-				//Construct a phone number in E-164 standard format
-				phoneNumberValue = "+"+phoneCountryCode.getText().toString()+phoneNumberLocal.getText().toString();
-				//Save and Check for validity of the number(else will throw Invalid Attribute Exception)
-				phoneAttribute.setValue(phoneNumberValue);
-				Logger.debug(getClass(), "Setting value of Phone Number : "+phoneNumberValue);
+			// If user asks to re-verify. It should delete the existing attribute( as user may change things like verification method and other values etc)
+			// Restart the process
+			if(isInitVerificationSuccess) {
+				phoneAttribute.delete();
 			}
-			mProgressDialog.show();
-			phoneAttribute.startVerification(new InitializeVerificationCallback() {
+			phoneAttribute = PhoneAttributeFactory.createAttribute();
 			
+			//Check County Code is NULL and Empty
+			if(phoneCountryCode.getText().toString() == null || phoneCountryCode.getText().toString().isEmpty()) {
+				throw new IllegalArgumentException ("Country Code cannot be empty");
+			}
+			Logger.debug(getClass(), "CountryCode not empty");
+			//Check given number NULL and Empty
+			if(phoneNumberLocal.getText().toString() == null || phoneNumberLocal.getText().toString().isEmpty()) {
+				throw new IllegalArgumentException ("Phone Number cannot be empty");
+			}
+			Logger.debug(getClass(), "Given Number not empty");
+			//Check the label. Set it if Not 'None'
+			if(phoneNumberTypeLabel.getSelectedItemPosition() != 0 && (!(phoneNumberTypeLabel.getSelectedItem().equals("None")))) {
+				phoneAttribute.setLabel(phoneNumberTypeLabel.getSelectedItem().toString());
+				Logger.debug(getClass(), "Label is: "+phoneNumberTypeLabel.getSelectedItem().toString());
+			}
+			
+			//Check method of verification
+			tempRadioButton = (RadioButton)findViewById(phChooseMethod.getCheckedRadioButtonId());
+			if(tempRadioButton.getText().toString().compareToIgnoreCase("Phone Call") == 0){ // set "Call" as method 
+				phoneAttribute.setVerificationMethod(VERIFICATION_METHOD.call.toString());
+				Logger.debug(getClass(), "Method of verification : "+VERIFICATION_METHOD.call.toString());
+			}else{ //set "sms" as method (default)
+				phoneAttribute.setVerificationMethod(VERIFICATION_METHOD.sms.toString());
+				Logger.debug(getClass(), "Method of verification : "+VERIFICATION_METHOD.sms.toString());
+			}
+			
+			//Construct a phone number in E-164 standard format
+			phoneNumberValue = "+"+phoneCountryCode.getText().toString()+phoneNumberLocal.getText().toString();
+
+			//Set the value and Check for validity of the phone number(else will throw Invalid Attribute Exception)
+			phoneAttribute.setValue(phoneNumberValue);
+			Logger.debug(getClass(), "Setting value of Phone Number : "+phoneNumberValue);
+
+			//saving the attribute before starting verification
+			phoneAttribute.save();
+			
+			//Start waiting dialog	
+			mProgressDialog.show();
+			
+			//Start verification of Attribute with AVS
+			phoneAttribute.startVerification(new InitializeVerificationCallback() {
 				@Override
 				public void onSuccess() {
+					// Make the flag as true on success
+					isInitVerificationSuccess = true;
 					Logger.info(getClass(), "phone verification started successfully");
+					
 					if(phoneAttribute.getVerificationMethod().compareToIgnoreCase(VERIFICATION_METHOD.call.toString()) == 0){
 						DialogUtils.showToast(mActivity, "You should receive a phone call soon at : "+phoneAttribute.getValue().toString());
 						Logger.debug(getClass(), "Call sent");
@@ -153,7 +168,6 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 						Logger.debug(getClass(), "SMS Sent");
 					}
 					
-					isInitVerificationSuccess = true;
 					try {
 						phoneAttribute.save();
 						Logger.debug(getClass(), "Attribute Saved");
@@ -166,7 +180,6 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 					}
 					
 					mActivity.runOnUiThread(new Runnable() {
-
 						@Override
 						public void run() {
 							if (mProgressDialog.isShowing()) {
@@ -178,7 +191,9 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 							svPhoneRegister.scrollTo(0, svPhoneRegister.getBottom());
 							phoneVerificationCode.requestFocus();
 							getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-							phoneVerificationCode.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+							phoneVerificationCode.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS 
+																| InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+																| InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 						}
 						
 					});
@@ -196,8 +211,11 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		} catch (final InvalidAttributeValueException e) {
 			Logger.debug(getClass(), "Invalid Attribute Error: "+e.getMessage() );
 			cancelCurrentProgressDialog();
-			DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The phone you entered is invalid");
-		} 
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The phone number you entered is invalid.");
+		} catch (MIDaaSException e) {
+			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+			Logger.debug(getClass(), "Middas Error: "+e.getError().getErrorMessage() );
+		}
 	}
 
 	private void completeVerifyingAttruibutes(){
@@ -208,6 +226,13 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 			@Override
 			public void onSuccess() {
 				DialogUtils.showToast(mActivity, phoneAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				try {
+					phoneAttribute.save();
+				} catch (MIDaaSException e) {
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getError().getErrorMessage());
+				} catch (InvalidAttributeValueException e) {
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+				}
 				PhoneRegistrationActivity.this.finish();
 			}
 
