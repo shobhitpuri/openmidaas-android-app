@@ -15,16 +15,13 @@
  ******************************************************************************/
 package org.openmidaas.app.session;
 
-public class InvalidRequestException extends Exception {
+
+public class AttributeRequestObjectException extends Exception {
+
 	
-
 	private static final long serialVersionUID = 1L;
-
-	public InvalidRequestException() {
-		super();
-	}
-
-	public InvalidRequestException(String message) {
+	
+	public AttributeRequestObjectException(String message) {
 		super(message);
 	}
 }

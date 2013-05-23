@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.common;
+package org.openmidaas.app.session;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.openmidaas.app.common.Logger;
 
-import org.openmidaas.app.activities.ui.list.AbstractListCategory;
-
-public class CategoryManager {
+public class ReturnStrategyFactory {
 	
-	private static Map<String, AbstractListCategory> mCategoryToElementMap = new LinkedHashMap<String, AbstractListCategory>();
+	private final static String POSTBACK = "postback"; 
 	
-	public static synchronized Map<String, AbstractListCategory> getMap() {
-		return mCategoryToElementMap;
+	public static ReturnStrategy getStrategyForMethodName(String method) {
+		if(method.equals(POSTBACK)) {
+			Logger.debug(ReturnStrategyFactory.class, "creating new \"postback\" strategy");
+			return new PostbackReturnStrategy();
+		} else {
+			Logger.error(ReturnStrategyFactory.class, "no strategy found for return method: " + method);
+			return null;
+		}
 	}
-
 }

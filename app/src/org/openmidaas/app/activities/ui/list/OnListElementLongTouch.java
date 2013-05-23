@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
-
-import org.openmidaas.app.common.DialogUtils;
-import org.openmidaas.library.model.GenericAttribute;
+package org.openmidaas.app.activities.ui.list;
 
 import android.app.Activity;
 
-public class GenericAttributeListElement extends AbstractAttributeListElement {
+/**
+ * Implement this interface to specify  what needs to be
+ * done when a single element is long touched in the list
+ */
+public interface OnListElementLongTouch {
+	
+	/**
+	 * Method that is called when a single element is
+	 * long touched
+	 * in the list
+	 * @param activity the calling activity
+	 */
+	public void onLongTouch(Activity activity);
 
-	public GenericAttributeListElement(GenericAttribute attribute) {
-		mAttribute = attribute;
-	}
-
-	@Override
-	public void onTouch(Activity activity) {
-		DialogUtils.showGenericAttributeModificationDialog(activity, mAttribute);
-	}
-
-	@Override
-	public String getRenderedAttributeValue() {
-		return (mAttribute.getValue().toString());
-	}
 }

@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">MIDaas App</string>
     <string name="registering_text">Registering&#8230;</string>
     <string name="registration_success_text">Registration Success!</string>
@@ -38,6 +38,7 @@
 	<string name="init_attribute_verification">Initializing verification</string>
 	<string name="noAttributesPresentText">You do not have any information.\nTry adding some by tapping the button on the top right corner.</string>
 	<style name="standardButtonStyle">
+	    <item name="android:drawablePadding">20dp</item>
    		<item name="android:layout_width">fill_parent</item>
     	<item name="android:layout_height">wrap_content</item>
     	<item name="android:textColor">#ffffff</item>
@@ -145,13 +146,20 @@
         <item>Wisconsin</item>
         <item>Wyoming</item>
     </string-array>
-     <string name="address_labels_prompt">Choose a label for this address</string>
+    <string name="address_labels_prompt">Choose a label for this address</string>
 	<string-array name="address_labels_arrays">
 	    <item>None</item>
         <item>Home</item>
         <item>Work</item>
         <item>Shipping</item>
         <item>Billing</item>
+    </string-array>
+    <string name="phone_type_prompt">Choose a label for this phone</string>
+    <string-array name="phone_types_array">
+	    <item>None</item>
+        <item>Home</item>
+        <item>Work</item>
+        <item>Mobile</item>
     </string-array>
     <string name="streetAddressHint">Street Address</string>
     <string name="cityHint">City/Town</string>
@@ -184,4 +192,28 @@
     <string name= "invalidAttributeRequestMessage">The request appears to be invalid. Please try again.</string>
     <string name= "attributeSetParseErrorMessage">A fatal error just occurred. Please try again.</string>
     <string name="fatalErrorMessage">Fatal error. Please restart the app</string>
+    <string name="rpInfoText">is requesting the following information</string>
+    <string name="defaultAuthorizationInfo"><b>Bold</b> fields are required fields.</string>
+    <string name="doneText">Done</string>
+    <string name="doneImageDescription">You are done</string>
+    <string name="enterUrl">Enter a \nURL</string>
+    <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
+    
+    <string name="plusSign"><b>+</b></string>
+    <string name="enterPhoneRequestMsg">Please enter your phone number along with country code:</string>
+    <string name="enterPhoneVerifyCodeMsg">Enter the verification code you received to finish the verification:</string>
+    <string name="tvPhStep1Text">Step 1: Enter Phone Number Details</string>
+    <string name="tvPhStep2Text">Step 2: Start Verification</string>
+    <string name="tvPhStep3Text">Step 3: Complete Verification</string>
+    <string name="tvPhVerifyMethodText">Choose a verification method:</string>
+    <string name="enterPhVerifyCodeMsg">Enter the verification code received:</string>
+    <string name="enterPhoneTypeMsg">Choose the type of phone number:</string>
+    <string name="btnStartPhVerification">Start Verification</string>
+	<string name="btnCompletePhVerification">Complete Verification</string>
+	<string name="rdBtnSmsText">SMS</string>
+	<string name="rdBtnPhoneText">Phone Call</string>
+	
+    <string name="noAttributeSelectedLabel">No attribute selected</string>
+    <string name="noAttributeSelectedValue"></string>
+
 </resources>

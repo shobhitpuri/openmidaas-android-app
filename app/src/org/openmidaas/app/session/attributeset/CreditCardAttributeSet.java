@@ -19,31 +19,30 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.openmidaas.app.activities.AuthorizationActivity;
-import org.openmidaas.app.activities.EmailRegistrationActivity;
+import org.openmidaas.app.activities.CreditCardActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
-import org.openmidaas.library.model.EmailAttribute;
+import org.openmidaas.library.model.CreditCardAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
-import org.openmidaas.library.persistence.core.EmailDataCallback;
+import org.openmidaas.library.persistence.core.CreditCardDataCallback;
 
 import android.app.Activity;
 import android.content.Intent;
 
-public class EmailAttributeSet extends AbstractAttributeSet {
-
+public class CreditCardAttributeSet extends AbstractAttributeSet {
 	private boolean mRetrievalSuccess = false;
-	
-	protected EmailAttributeSet() {
-		mType = Constants.AttributeNames.EMAIL;
+
+	protected CreditCardAttributeSet() {
+		mType = Constants.AttributeNames.CREDIT_CARD;
 	}
 	
 	@Override
-	public void fetch() throws AttributeFetchException{
+	public void fetch() throws AttributeFetchException {
 		mRetrievalSuccess = false;
 		final CountDownLatch MUTEX = new CountDownLatch(1);
-		AttributePersistenceCoordinator.getEmails(new EmailDataCallback() {
+		AttributePersistenceCoordinator.getCreditCardAttributes(new CreditCardDataCallback() {
 
 			@Override
 			public void onError(MIDaaSException arg0) {
@@ -52,9 +51,9 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 			}
 
 			@Override
-			public void onSuccess(List<EmailAttribute> emailList) {
+			public void onSuccess(List<CreditCardAttribute> creditCardList) {
 				mRetrievalSuccess = true;
-				mAttributeList.addAll(emailList);
+				mAttributeList.addAll(creditCardList);
 				MUTEX.countDown();
 			}
 			
@@ -72,6 +71,7 @@ public class EmailAttributeSet extends AbstractAttributeSet {
 
 	@Override
 	public void onModify(Activity activity) {
-		activity.startActivityForResult(new Intent(activity, EmailRegistrationActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
+		activity.startActivityForResult(new Intent(activity, CreditCardActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
 	}
+
 }

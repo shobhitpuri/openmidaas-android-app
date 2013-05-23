@@ -24,6 +24,11 @@ import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
 
+/**
+ * 
+ * Data-type for a attribute set. 
+ *
+ */
 public abstract class AbstractAttributeSet{
 	
 	protected final int TIMEOUT = 250;
@@ -43,6 +48,9 @@ public abstract class AbstractAttributeSet{
 	private AbstractAttribute<?> mSelectedAttribute;
 	
 	protected List<AbstractAttribute<?>> mAttributeList = new ArrayList<AbstractAttribute<?>>();
+	{
+		mAttributeList.add(0, null);
+	}
 	
 	public abstract void fetch() throws AttributeFetchException;
 	
@@ -100,7 +108,7 @@ public abstract class AbstractAttributeSet{
 		this.mSelectedAttribute = selectedAttribute;
 	}
 
-	public void setAttributeList(List<AbstractAttribute<?>> attributeList) {
-		this.mAttributeList = attributeList;
+	public void addToList(List<AbstractAttribute<?>> attributeList) {
+		this.mAttributeList.addAll(attributeList);
 	}
 }

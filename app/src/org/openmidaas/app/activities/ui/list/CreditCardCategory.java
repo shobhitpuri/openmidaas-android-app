@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.listui;
+package org.openmidaas.app.activities.ui.list;
 
-import org.openmidaas.library.model.AddressAttribute;
+import org.openmidaas.app.activities.CreditCardActivity;
+import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.core.AbstractAttribute;
+
 import android.app.Activity;
+import android.content.Intent;
 
-public class AddressListElement extends AbstractAttributeListElement{
+public class CreditCardCategory extends AbstractListCategory {
 
+	public CreditCardCategory() {
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_CREDIT_CARD;
+	}
+	
 	@Override
-	public void onTouch(Activity activity) {
+	public void onAddButtonTouch(Activity activity) {
+		activity.startActivity(new Intent(activity, CreditCardActivity.class));
 	}
 
 	@Override
-	public String getRenderedAttributeValue() {
-		try {
-			AddressAttribute attribute = (AddressAttribute)mAttribute;
-			return (attribute.getValue().getFormattedAddress());
-		} catch (ClassCastException e) {
-			return "Address cannot be displayed";
-		}
+	public void addAttribute(AbstractAttribute<?> attribute) {
+		CreditCardListElement element = new CreditCardListElement();
+		element.setAttribute(attribute);
+		mList.add(element);
 	}
+
 }

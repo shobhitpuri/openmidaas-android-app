@@ -13,14 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app;
+package org.openmidaas.app.activities.ui.list;
 
-import org.openmidaas.library.MIDaaS;
+import org.openmidaas.app.activities.PhoneRegistrationActivity;
+import org.openmidaas.app.common.Constants;
+import org.openmidaas.library.model.core.AbstractAttribute;
 
-public final class Settings {
-	public static final boolean SHOULD_LOG = true;
-	public static final boolean ATTRIBUTE_DIAGNOSTICS_ENABLED = true;
-	public static final int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_DEBUG;
-	public static final boolean IS_HOCKEY_APP_ENABLED = false;
-	public static final String HOCKEY_APP_ID = "";
+import android.app.Activity;
+import android.content.Intent;
+
+public class PhoneCategory extends AbstractListCategory {
+
+	public PhoneCategory() {
+		mGroupName = Constants.ATTRIBUTE_CATEGORY_PHONE;
+	}
+	
+	@Override
+	public void onAddButtonTouch(Activity activity) {
+		activity.startActivity(new Intent(activity, PhoneRegistrationActivity.class));
+	}
+
+	@Override
+	public void addAttribute(AbstractAttribute<?> attribute) {
+		PhoneAttributeListElement element = new PhoneAttributeListElement();
+		element.setAttribute(attribute);
+		mList.add(element);
+	}
+
 }

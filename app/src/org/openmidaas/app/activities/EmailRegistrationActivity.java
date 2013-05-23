@@ -59,7 +59,7 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 				if(!isInitVerificationSuccess) {
 					emailAttribute = EmailAttributeFactory.createAttribute();
 					emailAttribute.setValue(mAttributeValue.getText().toString());
-					
+					emailAttribute.save();
 				}
 				emailAttribute.startVerification(new InitializeVerificationCallback() {
 
@@ -106,6 +106,9 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			} catch (final InvalidAttributeValueException e) {
 				cancelCurrentProgressDialog();
 				DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The email you entered is invalid");
+			} catch (MIDaaSException e) {
+				cancelCurrentProgressDialog();
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error" ,"The email you entered is invalid or already exists");
 			} 
 			
 	}
@@ -122,6 +125,13 @@ public class EmailRegistrationActivity extends AbstractAttributeRegistrationActi
 			@Override
 			public void onSuccess() {
 				DialogUtils.showToast(mActivity, emailAttribute.getName()+" "+getString(R.string.verification_success_tag));
+				try {
+					emailAttribute.save();
+				} catch (MIDaaSException exception) {
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
+				} catch (InvalidAttributeValueException exception) {
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getMessage());
+				}
 				EmailRegistrationActivity.this.finish();
 			}
 

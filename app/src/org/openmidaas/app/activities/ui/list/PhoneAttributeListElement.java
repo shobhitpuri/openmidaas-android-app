@@ -4,39 +4,38 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *   
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui.list;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 
-import org.openmidaas.library.model.core.AbstractAttribute;
+import android.app.Activity;
 
-public class AttributeCategory {
-	
-	private String mCategoryName;
-	
-	private List<AbstractAttribute<?>> mAttributeList;
-	
-	public AttributeCategory(String categoryName) {
-		this.mCategoryName = categoryName;
-		this.mAttributeList = new ArrayList<AbstractAttribute<?>>();
+public class PhoneAttributeListElement extends AbstractAttributeListElement {
+
+	public PhoneAttributeListElement() {
 	}
 	
-	public List<AbstractAttribute<?>> getAttributesInCategory(){
-		return mAttributeList;
+	@Override
+	public void onTouch(Activity activity) {
+		if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
+			DialogUtils.showCodeCollectionDialog(activity, mAttribute);
+		}
+	}
+
+	@Override
+	public String getRenderedAttributeValue() {
+		return mAttribute.getValue().toString();
 	}
 	
-	public String getCategory() {
-		return mCategoryName;
-	}
 
 }

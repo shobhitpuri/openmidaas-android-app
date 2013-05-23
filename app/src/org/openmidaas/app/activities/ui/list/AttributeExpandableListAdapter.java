@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities;
+package org.openmidaas.app.activities.ui.list;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.openmidaas.app.R;
-import org.openmidaas.app.activities.listui.AbstractAttributeListElement;
-import org.openmidaas.app.activities.listui.AbstractListCategory;
 import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.library.model.core.AbstractAttribute;
