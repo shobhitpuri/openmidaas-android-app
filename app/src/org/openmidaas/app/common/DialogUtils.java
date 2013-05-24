@@ -249,7 +249,7 @@ public final class DialogUtils {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
+						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
 							AttributeRegistrationHelper.verifyAttribute(mActivity, "sending email", "email sent", attribute);
 						} else {
 							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
