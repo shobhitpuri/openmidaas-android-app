@@ -89,7 +89,7 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 		btnPhoneCompleteVerification.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Logger.info(getClass(), "completing phone verification...");
+				Logger.info(getClass(), "Completing phone verification...");
 				mProgressDialog.setMessage("Verifying...");
 				mProgressDialog.show();
 				completeVerifyingAttruibutes();
@@ -109,7 +109,8 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 			 */
 			 
 			if(isInitVerificationSuccess) {
-				phoneAttribute.delete(); 
+				if(phoneAttribute!=null)  
+					phoneAttribute.delete(); 
 			}
 			
 			phoneAttribute = PhoneAttributeFactory.createAttribute();
@@ -126,7 +127,7 @@ public class PhoneRegistrationActivity extends AbstractActivity{
 			}
 			Logger.debug(getClass(), "Given Number not empty");
 			
-			//Check the label. Set it if Not 'None'
+			//set the label
 			if(spPhoneNumberTypeLabel.getSelectedItemPosition() != 0 && (!(spPhoneNumberTypeLabel.getSelectedItem().equals("None")))) {
 				phoneAttribute.setLabel(spPhoneNumberTypeLabel.getSelectedItem().toString());
 				Logger.debug(getClass(), "Label is: "+spPhoneNumberTypeLabel.getSelectedItem().toString());
