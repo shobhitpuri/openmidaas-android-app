@@ -81,11 +81,7 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 			viewHolder = (ValueViewHolder)convertView.getTag();
 		}
 		viewHolder.tvAttributeSpinnerValue.setText("");
-		if(position == mSelectedIndex) {
-			viewHolder.tvAttributeSpinnerValue.setChecked(true);
-		} else {
-			viewHolder.tvAttributeSpinnerValue.setChecked(false);
-		}
+		toggleCheckbox(position, viewHolder.tvAttributeSpinnerValue);
 		if(position == 0) {
 			viewHolder.tvAttributeSpinnerValue.setText(mContext.getString(R.string.noAttributeSelectedLabel));
 		}
@@ -112,6 +108,14 @@ public class AttributeSpinnerAdapter extends ArrayAdapter<AbstractAttribute<?>> 
 			
 		}
 		return convertView;
+	}
+	
+	private void toggleCheckbox(int position, CheckedTextView view) {
+		if(position == mSelectedIndex) {
+			view.setChecked(true);
+		} else {
+			view.setChecked(false);
+		}
 	}
 	
 	private static class ValueViewHolder {

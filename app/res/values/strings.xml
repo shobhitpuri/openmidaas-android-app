@@ -192,5 +192,5 @@
     <string name="enterUrl">Enter a \nURL</string>
     <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
     <string name="noAttributeSelectedLabel">No attribute selected</string>
-    <string name="noAttributeSelectedValue"></string>
+    <string name="attributeAddOnFlyError">Attribute could not be added to the list. </string>
 </resources>
