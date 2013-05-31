@@ -142,6 +142,7 @@ public class Session implements VerifiedAttributeBundleCallback{
 		
 		Iterator<?> keys = requestObject.getJSONObject(ATTRIBUTES).keys();
 		// parsing through the "attrs" field now.
+		mAttributeListSet.clear();
 		while(keys.hasNext()) {
 			String key = (String)keys.next();
 			if(attrRequest.get(key) != null) {
