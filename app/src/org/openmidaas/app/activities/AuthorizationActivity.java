@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -56,7 +55,7 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private AuthorizationListAdapter mAuthorizationListAdapter;
 	
-	private List<AbstractAttributeSet> mAttributeSet = new ArrayList<AbstractAttributeSet>();
+	private List<AbstractAttributeSet> mAttributeSet;
 	
 	private final int ATTRIBUTE_SET_PARSE_SUCCESS = 1;
 	
@@ -152,7 +151,6 @@ public class AuthorizationActivity extends AbstractActivity{
 				Message message = Message.obtain();
 				try {
 					mSession.setRequestData(requestData);
-					mAttributeSet.clear();
 					mAttributeSet = mSession.getAttributeSet();
 					mAuthorizationListAdapter.setList(mAttributeSet);
 					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
@@ -169,8 +167,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					Logger.error(getClass(), e.getMessage());
 					// re-try fetching the attribute set from the persistence store again. 
 					try {
-						mAttributeSet.clear();
-						mSession.getAttributeSet().clear();
+						mSession.setRequestData(requestData);
 						mAttributeSet = mSession.getAttributeSet();
 						mAuthorizationListAdapter.setList(mAttributeSet);
 						message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
@@ -178,7 +175,11 @@ public class AuthorizationActivity extends AbstractActivity{
 					} catch (AttributeFetchException e1) {
 						Logger.error(getClass(), e.getMessage());
 						mHandler.sendMessage(message);
-					}
+					} catch (JSONException e1) {
+						Logger.error(getClass(), e1.getMessage());
+					} catch (AttributeRequestObjectException e1) {
+						Logger.error(getClass(), e1.getMessage());
+					} 
 				}
 			}
 			
