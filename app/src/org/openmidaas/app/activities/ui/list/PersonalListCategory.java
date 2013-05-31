@@ -40,32 +40,20 @@ public class PersonalListCategory extends AbstractListCategory {
 
 	@Override
 	public void addAttribute(AbstractAttribute<?> attribute) {
-		if(attribute.getName().equals(CategoryMap.GIVEN_NAME.getAttributeName())) {
-			if(mList.get(0).getAttribute().getName().equals(CategoryMap.GIVEN_NAME.getAttributeName())) {
-				GenericAttribute genericAttribute = (GenericAttribute) mList.get(0).getAttribute();
-				if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
-					mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
-				} else {
-					mList.get(0).setAttribute(attribute);
-				}
-			} 
-		}else if(attribute.getName().equals(CategoryMap.MIDDLE_NAME.getAttributeName())) {
-			GenericAttribute genericAttribute = (GenericAttribute) mList.get(1).getAttribute();
-			if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
-				mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
-			} else {
-				mList.get(1).setAttribute(attribute);
-			}
-		} else if(attribute.getName().equals(CategoryMap.FAMILY_NAME.getAttributeName())) {
-			GenericAttribute genericAttribute = (GenericAttribute) mList.get(2).getAttribute();
-			if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
-				mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
-			} else {
-				mList.get(2).setAttribute(attribute);
-			}
-		} 
-		else {
+		CategoryMap map = CategoryMap.get(attribute.getName());
+		if(map != null) {
+			addToPosition(attribute, map.ordinal());
+		} else {
 			mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
+		}
+	}
+	
+	private void addToPosition(AbstractAttribute<?> attribute, int position) {
+		GenericAttribute genericAttribute = (GenericAttribute) mList.get(position).getAttribute();
+		if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
+			mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
+		} else {
+			mList.get(position).setAttribute(attribute);
 		}
 	}
 }
