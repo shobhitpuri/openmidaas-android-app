@@ -15,12 +15,14 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.InitializeVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 
 public class AttributeRegistrationHelper {
 	
@@ -34,6 +36,14 @@ public class AttributeRegistrationHelper {
 			public void onSuccess() {
 				Logger.info(getClass(), toastText);
 				DialogUtils.showToast(activity, toastText);
+				try {
+					attribute.save();
+				} catch (MIDaaSException e) {
+					DialogUtils.showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+				} catch (InvalidAttributeValueException e) {
+					DialogUtils.showNeutralButtonDialog(activity, "Error", e.getMessage());
+				}
+				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 				activity.runOnUiThread(new Runnable() {
 
 					@Override

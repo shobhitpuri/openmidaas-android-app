@@ -28,6 +28,7 @@ import org.openmidaas.app.activities.ui.list.GenericAttributeListElement;
 import org.openmidaas.app.activities.ui.list.OnListElementLongTouch;
 import org.openmidaas.app.activities.ui.list.OnListElementTouch;
 import org.openmidaas.app.activities.ui.list.PersonalListCategory;
+import org.openmidaas.app.activities.ui.list.PhoneCategory;
 import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
@@ -190,6 +191,8 @@ public class AttributeListActivity extends AbstractActivity {
 			map.put(Constants.ATTRIBUTE_CATEGORY_PERSONAL, personalCategory);
 			EmailCategory emailHeader = new EmailCategory();
 			map.put(CategoryMap.EMAIL.getCategoryName(), emailHeader);
+			PhoneCategory phoneHeader = new PhoneCategory();
+			map.put(CategoryMap.PHONE.getCategoryName(), phoneHeader);
 			AddressCategory addressCategory = new AddressCategory();
 			map.put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
 			CreditCardCategory creditCardCategory = new CreditCardCategory();

@@ -48,6 +48,7 @@
         </activity>
         
         <activity android:name=".activities.EmailRegistrationActivity"></activity>
+        <activity android:name=".activities.PhoneRegistrationActivity"></activity>
         <activity android:name=".activities.AttributeListActivity"></activity>
         <activity android:name=".activities.GenericAttributeCollectionActivity"></activity>
         <activity android:name=".activities.HomeScreen"></activity>

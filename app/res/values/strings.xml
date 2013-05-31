@@ -146,13 +146,20 @@
         <item>Wisconsin</item>
         <item>Wyoming</item>
     </string-array>
-     <string name="address_labels_prompt">Choose a label for this address</string>
+    <string name="address_labels_prompt">Choose a label for this address</string>
 	<string-array name="address_labels_arrays">
 	    <item>None</item>
         <item>Home</item>
         <item>Work</item>
         <item>Shipping</item>
         <item>Billing</item>
+    </string-array>
+    <string name="phone_type_prompt">Choose a label for this phone</string>
+    <string-array name="phone_types_array">
+	    <item>None</item>
+        <item>Home</item>
+        <item>Work</item>
+        <item>Mobile</item>
     </string-array>
     <string name="streetAddressHint">Street Address</string>
     <string name="cityHint">City/Town</string>
@@ -191,4 +198,22 @@
     <string name="doneImageDescription">You are done</string>
     <string name="enterUrl">Enter a \nURL</string>
     <string name="enterUrlMessageBoxText">Enter the URL as shown on your browser</string>
+    
+    <string name="plusSign"><b>+</b></string>
+    <string name="enterPhoneRequestMsg">Please enter your phone number along with country code:</string>
+    <string name="enterPhoneVerifyCodeMsg">Enter the verification code you received to finish the verification:</string>
+    <string name="tvPhStep1Text">Step 1: Enter Phone Number Details</string>
+    <string name="tvPhStep2Text">Step 2: Start Verification</string>
+    <string name="tvPhStep3Text">Step 3: Complete Verification</string>
+    <string name="tvPhVerifyMethodText">Choose a verification method:</string>
+    <string name="enterPhVerifyCodeMsg">Enter the verification code received:</string>
+    <string name="enterPhoneTypeMsg">Choose the type of phone number:</string>
+    <string name="btnStartPhVerification">Start Verification</string>
+	<string name="btnCompletePhVerification">Complete Verification</string>
+	<string name="rdBtnSmsText">SMS</string>
+	<string name="rdBtnPhoneText">Phone Call</string>
+	
+    <string name="noAttributeSelectedLabel">No attribute selected</string>
+    <string name="noAttributeSelectedValue"></string>
+
 </resources>
