@@ -47,13 +47,14 @@ public class PhoneAttributeSet extends AbstractAttributeSet {
 			
 			@Override
 			public void onError(MIDaaSException exception) {
+				Logger.debug(getClass(), exception.getError().getErrorMessage());
 				mRetrievalSuccess = false;
 				MUTEX.countDown();
-				
 			}
 			
 			@Override
 			public void onSuccess(List<PhoneAttribute> phoneList) {
+				Logger.debug(getClass(), phoneList.toString());
 				mRetrievalSuccess = true;
 				mAttributeList.addAll(phoneList);
 				MUTEX.countDown();
