@@ -184,6 +184,13 @@ public final class DialogUtils {
 
 				@Override
 				public void onSuccess() {
+					try {
+						attribute.save();
+					} catch (MIDaaSException e) {
+						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+					} catch (InvalidAttributeValueException e) {
+						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getMessage());
+					}
 					activity.runOnUiThread(new Runnable() {
 
 						@Override
@@ -242,10 +249,19 @@ public final class DialogUtils {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION) {
-							AttributeRegistrationHelper.verifyAttribute(mActivity, "sending email", "email sent", attribute);
-						} else {
+						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
+							if ( attribute.getVerificationMethod()!=null)
+								AttributeRegistrationHelper.verifyAttribute(mActivity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
+							else
+								AttributeRegistrationHelper.verifyAttribute(mActivity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
+						}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
 							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
+						}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
+							Toast.makeText(mActivity, "Attribute is non verifiable", Toast.LENGTH_LONG).show();
+						}else if(attribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
+							Toast.makeText(mActivity, "Attribute state is unknown. Can't re-verify", Toast.LENGTH_LONG).show();
+						}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
+							Toast.makeText(mActivity, "Attribute has not been saved. Error re-verifying", Toast.LENGTH_LONG).show();
 						}
 					} 
 				})
@@ -287,7 +303,8 @@ public final class DialogUtils {
 				GenericAttribute attribute = GenericAttributeFactory.createAttribute(attributeName);
 				attribute.setValue(value.toString());
 				attribute.save();
-				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+				activity.finish();
+				activity.startActivity(activity.getIntent());
 			} catch (InvalidAttributeValueException e) {
 				showNeutralButtonDialog(activity, "Error", e.getMessage());
 			} catch (MIDaaSException e) {

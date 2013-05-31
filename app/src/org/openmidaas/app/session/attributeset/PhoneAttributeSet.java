@@ -19,45 +19,48 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import org.openmidaas.app.activities.AuthorizationActivity;
-import org.openmidaas.app.activities.CreditCardActivity;
+import org.openmidaas.app.activities.PhoneRegistrationActivity;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
-import org.openmidaas.library.model.CreditCardAttribute;
+import org.openmidaas.library.model.PhoneAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
-import org.openmidaas.library.persistence.core.CreditCardDataCallback;
+import org.openmidaas.library.persistence.core.PhoneNumberDataCallback;
 
 import android.app.Activity;
 import android.content.Intent;
 
-public class CreditCardAttributeSet extends AbstractAttributeSet {
-	private boolean mRetrievalSuccess = false;
+public class PhoneAttributeSet extends AbstractAttributeSet {
 
-	protected CreditCardAttributeSet() {
-		mType = Constants.AttributeNames.CREDIT_CARD;
+	private boolean mRetrievalSuccess = false;
+	
+	public PhoneAttributeSet() {
+		mType = Constants.AttributeNames.PHONE;
 	}
 	
 	@Override
 	public void fetch() throws AttributeFetchException {
 		mRetrievalSuccess = false;
 		final CountDownLatch MUTEX = new CountDownLatch(1);
-		AttributePersistenceCoordinator.getCreditCardAttributes(new CreditCardDataCallback() {
-
+		AttributePersistenceCoordinator.getPhoneNumbers(new PhoneNumberDataCallback() {
+			
 			@Override
-			public void onError(MIDaaSException arg0) {
+			public void onError(MIDaaSException exception) {
+				Logger.debug(getClass(), exception.getError().getErrorMessage());
 				mRetrievalSuccess = false;
 				MUTEX.countDown();
 			}
-
+			
 			@Override
-			public void onSuccess(List<CreditCardAttribute> creditCardList) {
+			public void onSuccess(List<PhoneAttribute> phoneList) {
+				Logger.debug(getClass(), phoneList.toString());
 				mRetrievalSuccess = true;
-				mAttributeList.addAll(creditCardList);
+				mAttributeList.addAll(phoneList);
 				MUTEX.countDown();
 			}
-			
 		});
+		
 		try {
 			MUTEX.await(TIMEOUT, TIME_UNIT);
 			if(!mRetrievalSuccess) {
@@ -67,11 +70,13 @@ public class CreditCardAttributeSet extends AbstractAttributeSet {
 			Logger.error(getClass(), e.getMessage());
 			throw new AttributeFetchException("Operation to retrieve value from persistence store timed out.");
 		}
+
 	}
 
 	@Override
 	public void onModify(Activity activity) {
-		activity.startActivityForResult(new Intent(activity, CreditCardActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
+		activity.startActivityForResult(new Intent(activity, PhoneRegistrationActivity.class),  AuthorizationActivity.AUTHORIZATION_ACTIVITY_REQUEST_CODE);
+
 	}
 
 }
