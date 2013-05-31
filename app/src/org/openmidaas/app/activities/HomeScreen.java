@@ -68,7 +68,7 @@ public class HomeScreen extends AbstractActivity {
 	private RelativeLayout rlDone;
 	
 	private final int SLIDE_ANIMATION_DURATION = 1500;
-	
+
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
