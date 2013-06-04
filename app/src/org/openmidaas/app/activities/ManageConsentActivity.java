@@ -25,6 +25,7 @@ import org.openmidaas.app.activities.ui.ConsentedDetailsDialog;
 import org.openmidaas.app.activities.ui.list.ConsentListAdapter;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Intents;
+import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.ConsentManager;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
@@ -38,6 +39,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -58,6 +61,10 @@ public class ManageConsentActivity extends AbstractActivity {
 	
 	private String[] mKeys;
 	
+	private final int REFRESH_CONSENT_LIST = 1;
+	
+	private final int ERROR_CREATING_CONSENT_LIST = -1;
+	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
@@ -67,7 +74,7 @@ public class ManageConsentActivity extends AbstractActivity {
 		mListAdapter = new ConsentListAdapter(this);
 		mActivity = this;
 		mConsentMap = new HashMap<String, ArrayList<AbstractAttribute<?>>>();
-		fetchAllAttributes();
+		fetchAllAttributesAndDisplayConsent();
 		final FragmentManager fm = getFragmentManager();
 		mConsentListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -84,20 +91,32 @@ public class ManageConsentActivity extends AbstractActivity {
 		});
 	}
 
-	private void fetchAllAttributes() {
-		AttributePersistenceCoordinator.getAllAttributes(new AttributeDataCallback() {
+	private void fetchAllAttributesAndDisplayConsent() {
+		this.mConsentMap.clear();
+		Logger.debug(getClass(), "Building consent list");
+		new Thread(new Runnable() {
 
 			@Override
-			public void onError(MIDaaSException exception) {
-				DialogUtils.showNeutralButtonDialog(mActivity, "Error", exception.getError().getErrorMessage());
-			}
+			public void run() {
+				AttributePersistenceCoordinator.getAllAttributes(new AttributeDataCallback() {
 
-			@Override
-			public void onSuccess(List<AbstractAttribute<?>> attributeList) {
-				displayConsentSummary(attributeList);
+					@Override
+					public void onError(MIDaaSException exception) {
+						Message msg = Message.obtain();
+						msg.what =ERROR_CREATING_CONSENT_LIST;
+						mHandler.sendMessage(msg);
+					}
+
+					@Override
+					public void onSuccess(List<AbstractAttribute<?>> attributeList) {
+						displayConsentSummary(attributeList);
+					}
+					
+				});
 			}
 			
-		});
+		}).start();
+		
 	}
 	
 	private void displayConsentSummary(List<AbstractAttribute<?>> attributeList) {
@@ -117,22 +136,36 @@ public class ManageConsentActivity extends AbstractActivity {
 			}
 		}
 		this.mKeys = this.mConsentMap.keySet().toArray(new String[this.mConsentMap.size()]);
-		mActivity.runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				if(!mConsentMap.isEmpty()) {
-					tvNoConsents.setVisibility(View.GONE);
-					mConsentListView.setVisibility(View.VISIBLE);
-					mListAdapter.setConsentDataList(mConsentMap);
-					mConsentListView.setAdapter(mListAdapter);
-				} else {
-					mConsentListView.setVisibility(View.GONE);
-					tvNoConsents.setVisibility(View.VISIBLE);
-				}
-			}
-		});
+		Message msg = Message.obtain();
+		msg.what =REFRESH_CONSENT_LIST;
+		mHandler.sendMessage(msg);
 	}
+	
+	private Handler mHandler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			switch(msg.what) {
+				case REFRESH_CONSENT_LIST:
+					if(!mConsentMap.isEmpty()) {
+						tvNoConsents.setVisibility(View.GONE);
+						mConsentListView.setVisibility(View.VISIBLE);
+						mListAdapter.setConsentDataList(mConsentMap);
+						mConsentListView.setAdapter(mListAdapter);
+						mListAdapter.notifyDataSetChanged();
+					} else {
+						mConsentListView.setVisibility(View.GONE);
+						tvNoConsents.setVisibility(View.VISIBLE);
+					}
+				break;
+				case ERROR_CREATING_CONSENT_LIST:
+					DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error creating consent list");
+				break;
+			}
+			return true;
+		}
+		
+	});
 	
 	@Override
 	protected String getTitlebarText() {
@@ -160,7 +193,8 @@ public class ManageConsentActivity extends AbstractActivity {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			fetchAllAttributes();
+			
+			fetchAllAttributesAndDisplayConsent();
 		}
 	};
 }
