@@ -84,7 +84,7 @@ public class ConsentedDetailsDialog extends DialogFragment implements DialogInte
 			this.dismiss();
 			DialogUtils.showNeutralButtonDialog(getActivity(), "Error", "Error revoking consent to: " + this.mClientId);
 		} else {
-			Logger.debug(getClass(), "Error revoked successfully");
+			Logger.debug(getClass(), "Revoked successfully");
 			Logger.debug(getClass(), "Refreshing consent summary list");
 			getActivity().sendBroadcast(new Intent().setAction(Intents.REFRESH_CONSENT_LIST));
 		}

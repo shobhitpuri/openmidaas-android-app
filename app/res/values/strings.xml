@@ -218,6 +218,6 @@
     <string name="consentActivityTitleText">Manage Consent</string>
     <string name="consentDetailsDialogTitle">Consent Details</string>
     <string name="btnRevokeConsent">Revoke Consent</string>
-    <string name="noConsentsPresentText">You have no saved consents.\nYou can always save consents by checking the \"Remember my selection\" when authorizing.</string>
+    <string name="noConsentsPresentText">You have no saved consents.\nYou can save consents by checking the \"Remember my selection\" when authorizing.</string>
     <string name="consentDetailsDialogInfoText">You have consented to release the following to</string>
 </resources>

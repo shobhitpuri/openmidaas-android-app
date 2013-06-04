@@ -21,12 +21,12 @@
         android:id="@+id/tvAttributeName"
         android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="" />
 
     <TextView
         android:id="@+id/tvAttributeValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="" />
 
 </LinearLayout>

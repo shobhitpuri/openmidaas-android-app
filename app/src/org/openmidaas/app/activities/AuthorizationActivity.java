@@ -196,16 +196,40 @@ public class AuthorizationActivity extends AbstractActivity{
 			//3 check for consents
 			for(AbstractAttributeSet set: mAttributeSet) {
 				List<AbstractAttribute<?>> mAttributeList = set.getAttributeList();
-				for(AbstractAttribute<?> attribute: mAttributeList) {
-					if(attribute != null) {
-						if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
-							set.setSelectedAttribute(attribute);
-						} else {
-							noConsentPresent = true;
-							break;
+				// if essential is requested
+				if(set.isEssentialRequested()) {
+					// if "no" element exists, i.e., only the null (zero-th) element (for display purposes)
+					if(mAttributeList.size() == 1 && mAttributeList.get(0) == null) {
+						noConsentPresent = true;
+						ConsentManager.revokeConsentForClient(mActivity, mSession.getClientId());
+						break;
+					} else {
+						// check if any of the attributes in the list have consent 
+						for(AbstractAttribute<?> attribute: mAttributeList) {
+							if(attribute != null) {
+								if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
+									set.setSelectedAttribute(attribute);
+								// no consent present so break.
+								} else {
+									noConsentPresent = true;
+									ConsentManager.revokeConsentForClient(mActivity, mSession.getClientId());
+									break;
+								}
+							}
+						}
+					}
+				} else {
+					for(AbstractAttribute<?> attribute: mAttributeList) {
+						if(attribute != null) {
+							if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
+								set.setSelectedAttribute(attribute);
+							} else {
+								set.setSelectedAttribute(null);
+							}
 						}
 					}
 				}
+				
 				if(noConsentPresent) {
 					break;
 				}
