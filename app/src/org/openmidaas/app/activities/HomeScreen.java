@@ -103,6 +103,15 @@ public class HomeScreen extends AbstractActivity {
 			}
 		});
 		
+		findViewById(R.id.button1).setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(HomeScreen.this, ManageConsentActivity.class));
+			}
+			
+		});
+		
 		checkForUpdates();
 	}
 

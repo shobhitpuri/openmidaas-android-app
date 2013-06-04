@@ -25,10 +25,12 @@ import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.AttributeFetchException;
 import org.openmidaas.app.session.AttributeRequestObjectException;
+import org.openmidaas.app.session.ConsentManager;
 import org.openmidaas.app.session.EssentialAttributeMissingException;
 import org.openmidaas.app.session.Session;
 import org.openmidaas.app.session.Session.OnDoneCallback;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
+import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -36,6 +38,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -53,11 +56,15 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private TextView tvRpInfo;
 	
-	private AuthorizationListAdapter mAuthorizationListAdapter;
+	private CheckBox cbUserConsent;
 	
 	private List<AbstractAttributeSet> mAttributeSet;
 	
+	private AuthorizationListAdapter mAuthorizationListAdapter;
+	
 	private final int ATTRIBUTE_SET_PARSE_SUCCESS = 1;
+	
+	private final int AUTO_AUTHORIZE = 2;
 	
 	private final int ATTRIBUTE_SET_PARSE_ERROR = -1;
 	
@@ -74,6 +81,7 @@ public class AuthorizationActivity extends AbstractActivity{
 		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
 		tvRpInfo = (TextView)findViewById(R.id.tvRpInfo);
+		cbUserConsent = (CheckBox)findViewById(R.id.cbUserConsent);
 		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
 		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
 			try {
@@ -94,6 +102,9 @@ public class AuthorizationActivity extends AbstractActivity{
 	}
 
 	private void performAuthorization() {
+		if(cbUserConsent.isChecked()) {
+			ConsentManager.saveAuthorizedAttributes(mActivity, mSession.getClientId(), this.mAttributeSet);
+		}
 		mProgressDialog.setMessage("Authorizing...");
 		mProgressDialog.show(); 
 		try {
@@ -155,40 +166,67 @@ public class AuthorizationActivity extends AbstractActivity{
 				mSession = new Session();
 				Message message = Message.obtain();
 				try {
-					mSession.setRequestData(requestData);
-					mAttributeSet = mSession.getAttributeSet();
-					mAuthorizationListAdapter.setList(mAttributeSet);
-					message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
-					mHandler.sendMessage(message);
-				} catch (AttributeRequestObjectException e) {
-					Logger.error(getClass(), e.getMessage());
-					message.what = ATTRIBUTE_SET_INVALID_REQUEST;
-					mHandler.sendMessage(message);
-				} catch (JSONException e) {
-					Logger.error(getClass(), e.getMessage());
-					message.what = ATTRIBUTE_SET_PARSE_ERROR;
-					mHandler.sendMessage(message);
+					fetchAttributeSet(message, requestData);
 				} catch (AttributeFetchException e) {
 					Logger.error(getClass(), e.getMessage());
 					// re-try fetching the attribute set from the persistence store again. 
 					try {
-						mSession.setRequestData(requestData);
-						mAttributeSet = mSession.getAttributeSet();
-						mAuthorizationListAdapter.setList(mAttributeSet);
-						message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
-						mHandler.sendMessage(message);
+						fetchAttributeSet(message, requestData);
 					} catch (AttributeFetchException e1) {
-						Logger.error(getClass(), e.getMessage());
-						mHandler.sendMessage(message);
-					} catch (JSONException e1) {
-						Logger.error(getClass(), e1.getMessage());
-					} catch (AttributeRequestObjectException e1) {
 						Logger.error(getClass(), e1.getMessage());
 					} 
 				}
 			}
-			
 		}).start();
+	}
+	
+	/**
+	 * Populates the attribute set data structure with the request. 
+	 * @param message
+	 * @param requestData
+	 * @throws AttributeFetchException
+	 */
+	private void fetchAttributeSet(Message message, JSONObject requestData) throws AttributeFetchException {
+		try {
+			boolean noConsentPresent = false;
+			//1 set the request data
+			mSession.setRequestData(requestData);
+			//2 populate the attribute set from the db (only for the RP-requested attributes)
+			mAttributeSet = mSession.getAttributeSet();
+			//3 check for consents
+			for(AbstractAttributeSet set: mAttributeSet) {
+				List<AbstractAttribute<?>> mAttributeList = set.getAttributeList();
+				for(AbstractAttribute<?> attribute: mAttributeList) {
+					if(attribute != null) {
+						if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
+							set.setSelectedAttribute(attribute);
+						} else {
+							noConsentPresent = true;
+							break;
+						}
+					}
+				}
+				if(noConsentPresent) {
+					break;
+				}
+			}
+			if(noConsentPresent) {
+				mAuthorizationListAdapter.setList(mAttributeSet);
+				message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
+				mHandler.sendMessage(message);
+			} else {
+				message.what = AUTO_AUTHORIZE;
+				mHandler.sendMessage(message);
+			}
+		}catch (AttributeRequestObjectException e) {
+			Logger.error(getClass(), e.getMessage());
+			message.what = ATTRIBUTE_SET_INVALID_REQUEST;
+			mHandler.sendMessage(message);
+		} catch (JSONException e) {
+			Logger.error(getClass(), e.getMessage());
+			message.what = ATTRIBUTE_SET_PARSE_ERROR;
+			mHandler.sendMessage(message);
+		}
 	}
 	
 	/**
@@ -209,6 +247,9 @@ public class AuthorizationActivity extends AbstractActivity{
 					// refresh the authorization list
 					mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 					mAuthorizationListAdapter.notifyDataSetChanged();
+				break;
+				case AUTO_AUTHORIZE:
+					performAuthorization();
 				break;
 				case ATTRIBUTE_SET_INVALID_REQUEST:
 					// a more specific error message. We can recover from this. 
