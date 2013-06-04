@@ -22,4 +22,7 @@ public final class Intents {
 	public static final String ATTRIBUTE_LIST_CHANGE_EVENT = BASE_INTENT_NAME + ".ATTRIBUTE_LIST_CHANGE_EVENT";
 	
 	public static final String QR_CODE_INIT_INTENT = "com.google.zxing.client.android.SCAN";
+	
+	public static final String REFRESH_CONSENT_LIST = BASE_INTENT_NAME + ".REFRESH_CONSENT_LIST";
+	
 }
