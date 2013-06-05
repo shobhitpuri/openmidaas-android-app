@@ -33,11 +33,13 @@ import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -56,7 +58,11 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private TextView tvRpInfo;
 	
+	private TextView tvAuthInfo;
+	
 	private CheckBox cbUserConsent;
+	
+	private Button btnAuthorize;
 	
 	private List<AbstractAttributeSet> mAttributeSet;
 	
@@ -76,13 +82,18 @@ public class AuthorizationActivity extends AbstractActivity{
 	
 	private JSONObject mCurrentRequestData = null;
 	
+	private String mConsentedAttributeNames = "";
+	
 	public void onCreate(Bundle savedInstance) {
 		super.onCreate(savedInstance);
 		mActivity = this;
 		mAuthorizationList = (ListView)findViewById(R.id.lvAuthorizationItems);
 		tvRpInfo = (TextView)findViewById(R.id.tvRpInfo);
+		tvAuthInfo = (TextView)findViewById(R.id.tvAuthorizationInfo);
 		cbUserConsent = (CheckBox)findViewById(R.id.cbUserConsent);
+		btnAuthorize = (Button)findViewById(R.id.bthAuthorize);
 		mAuthorizationListAdapter = new AuthorizationListAdapter(mActivity);
+		hideUI();
 		if(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY) != null) {
 			try {
 				mCurrentRequestData = new JSONObject(this.getIntent().getStringExtra(REQUEST_BUNDLE_KEY));
@@ -92,43 +103,99 @@ public class AuthorizationActivity extends AbstractActivity{
 				DialogUtils.showNeutralButtonDialog(this, "Error", "There was an error processing the request.");
 			}
 		}
-		findViewById(R.id.bthAuthorize).setOnClickListener(new View.OnClickListener() {
+		btnAuthorize.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
-				performAuthorization();
+				performAuthorization(false);
 			}
 		});
 	}
 
-	private void performAuthorization() {
+	private void performAuthorization(boolean savedConsentPresent) {
 		if(cbUserConsent.isChecked()) {
 			ConsentManager.saveAuthorizedAttributes(mActivity, mSession.getClientId(), this.mAttributeSet);
 		}
-		mProgressDialog.setMessage("Authorizing...");
-		mProgressDialog.show(); 
-		try {
-			mSession.authorizeRequest(new OnDoneCallback() {
-	
-				@Override
-				public void onDone(String message) {
-					dismissDialog();
-					mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
-					mActivity.finish();
-				}
-	
-				@Override
-				public void onError(Exception e) {
-					dismissDialog();
-					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
-				}
-				
-			});
-		} catch(EssentialAttributeMissingException e) {
-			dismissDialog();
-			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+		if(savedConsentPresent) {
+			mProgressDialog.setMessage(mActivity.getString(R.string.authorizingAlreadyPresentConsent)+": " + mConsentedAttributeNames);
+			mProgressDialog.show();
+			Handler handler = new Handler(); 
+		    handler.postDelayed(new Runnable() { 
+		         public void run() { 
+		        	 checkEssentialAndAuthorize();
+		         } 
+		    }, 2000); 
+		} else {
+			mProgressDialog.setMessage(mActivity.getString(R.string.authorizingRequest));
+			mProgressDialog.show();
+			checkEssentialAndAuthorize();
 		}
 	}
+	
+	private void checkEssentialAndAuthorize() {
+		try {
+			checkEssentialAttributesInSet();
+			authorizeSession();
+		} catch (EssentialAttributeMissingException e) {
+			// if the users presses proceed, authorize the set. 
+			DialogUtils.showEssentialAttributeMissingDialog(mActivity, e.getMessage(), new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					authorizeSession();
+				}
+			});
+		}
+	}
+	
+	private void checkEssentialAttributesInSet() throws EssentialAttributeMissingException {
+		boolean essentialAttributesMissing = false;
+		StringBuilder builder = new StringBuilder();
+		String prefix = "";
+		for(AbstractAttributeSet attributeSet: this.mAttributeSet){
+			// if essential is requested and nothing was selected, throw an exception
+			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
+				essentialAttributesMissing = true;
+				builder.append(attributeSet.getLabel());
+				builder.append(prefix);
+				prefix = ", ";
+			}
+		}
+		if(essentialAttributesMissing) {
+			throw new EssentialAttributeMissingException(builder.toString());
+		}
+	}
+	
+	private void authorizeSession() {
+		try {
+ 			mSession.authorizeRequest(new OnDoneCallback() {
+ 	
+ 				@Override
+ 				public void onDone(String message) {
+ 					dismissDialog();
+ 					mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+ 					mActivity.finish();
+ 				}
+ 	
+ 				@Override
+ 				public void onError(Exception e) {
+ 					dismissDialog();
+ 					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+ 				}
+ 				
+ 			});
+ 		} catch(EssentialAttributeMissingException e) {
+ 			dismissDialog();
+ 			DialogUtils.showEssentialAttributeMissingDialog(mActivity, e.getMessage(), new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					authorizeSession();
+				}
+			});
+ 		}
+	}
+	
 	
 	@Override
 	protected String getTitlebarText() {
@@ -187,6 +254,8 @@ public class AuthorizationActivity extends AbstractActivity{
 	 * @throws AttributeFetchException
 	 */
 	private void fetchAttributeSet(Message message, JSONObject requestData) throws AttributeFetchException {
+		StringBuilder builder = new StringBuilder();
+		String prefix = "";
 		try {
 			boolean noConsentPresent = false;
 			//1 set the request data
@@ -208,6 +277,9 @@ public class AuthorizationActivity extends AbstractActivity{
 						for(AbstractAttribute<?> attribute: mAttributeList) {
 							if(attribute != null) {
 								if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
+									builder.append(prefix);
+									prefix = ", ";
+									builder.append(set.getLabel());
 									set.setSelectedAttribute(attribute);
 								// no consent present so break.
 								} else {
@@ -222,6 +294,9 @@ public class AuthorizationActivity extends AbstractActivity{
 					for(AbstractAttribute<?> attribute: mAttributeList) {
 						if(attribute != null) {
 							if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
+								builder.append(prefix);
+								prefix = ", ";
+								builder.append(set.getLabel());
 								set.setSelectedAttribute(attribute);
 							} else {
 								set.setSelectedAttribute(null);
@@ -234,6 +309,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					break;
 				}
 			}
+			mConsentedAttributeNames = builder.toString();
 			if(noConsentPresent) {
 				mAuthorizationListAdapter.setList(mAttributeSet);
 				message.what = ATTRIBUTE_SET_PARSE_SUCCESS;
@@ -254,26 +330,33 @@ public class AuthorizationActivity extends AbstractActivity{
 	}
 	
 	/**
-	 * Create a handler to the UI thread. 
+	 * Handler to the UI thread. 
 	 */
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		
 		@Override
 		public boolean handleMessage(Message msg) {
-			if(mProgressDialog.isShowing()) {
-				mProgressDialog.dismiss();
-			}
+			mProgressDialog.dismiss();
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
 					if(mSession.getClientId()!= null) {
 						tvRpInfo.setText(mSession.getClientId() + " " + mActivity.getString(R.string.rpInfoText));
 					}
 					// refresh the authorization list
+					showUI();
 					mAuthorizationList.setAdapter(mAuthorizationListAdapter);
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;
 				case AUTO_AUTHORIZE:
-					performAuthorization();
+					mActivity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							performAuthorization(true);
+						}
+						
+					});
+					
 				break;
 				case ATTRIBUTE_SET_INVALID_REQUEST:
 					// a more specific error message. We can recover from this. 
@@ -291,4 +374,20 @@ public class AuthorizationActivity extends AbstractActivity{
 			return true;
 		}
 	});
+	
+	private void hideUI() {
+		mAuthorizationList.setVisibility(View.GONE);
+		tvRpInfo.setVisibility(View.GONE);
+		cbUserConsent.setVisibility(View.GONE);
+		btnAuthorize.setVisibility(View.GONE);
+		tvAuthInfo.setVisibility(View.GONE);
+	}
+	
+	private void showUI() {
+		mAuthorizationList.setVisibility(View.VISIBLE);
+		tvRpInfo.setVisibility(View.VISIBLE);
+		cbUserConsent.setVisibility(View.VISIBLE);
+		btnAuthorize.setVisibility(View.VISIBLE);
+		tvAuthInfo.setVisibility(View.VISIBLE);
+	}
 }

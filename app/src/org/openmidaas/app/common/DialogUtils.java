@@ -73,6 +73,27 @@ public final class DialogUtils {
 		});
 	}
 	
+	public static void showEssentialAttributeMissingDialog(final Activity activity, final String message, final DialogInterface.OnClickListener proceedButtonListener) {
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				new AlertDialog.Builder(activity)
+			    .setTitle("Missing information")
+			    .setMessage(message)
+			    .setNegativeButton("Proceed",  proceedButtonListener)
+			    .setPositiveButton("Back",  new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						
+					}
+			    })
+			    .show();
+			}
+		});
+	}
+	
 	/**
 	 * Displays a toast notification. 
 	 * @param activity the activity displaying the notification 

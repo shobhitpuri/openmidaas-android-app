@@ -218,6 +218,9 @@
     <string name="consentActivityTitleText">Manage Consent</string>
     <string name="consentDetailsDialogTitle">Consent Details</string>
     <string name="btnRevokeConsent">Revoke Consent</string>
-    <string name="noConsentsPresentText">You have no saved consents.\nYou can save consents by checking the \"Remember my selection\" when authorizing.</string>
+    <string name="noConsentsPresentText">You have no saved consents.\nYou can save consents by checking the \"Remember my selection\" box when authorizing.</string>
     <string name="consentDetailsDialogInfoText">You have consented to release the following to</string>
+    <string name="consentsSummaryInfoText">The following lists your saved consents. Tap a row to view more about the consent.</string>
+    <string name="authorizingRequest">Authorizing request</string>
+    <string name="authorizingAlreadyPresentConsent">Authorizing with already consented information</string>
 </resources>

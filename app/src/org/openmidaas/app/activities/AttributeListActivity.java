@@ -126,7 +126,7 @@ public class AttributeListActivity extends AbstractActivity {
 	
 	@Override
 	protected int getLayoutResourceId() {
-		return (R.layout.list_view);
+		return (R.layout.attribute_list_view);
 	}
 
 	@Override
