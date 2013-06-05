@@ -22,6 +22,7 @@
         android:id="@+id/lvConsentedItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:scrollbars="vertical"
         android:layout_below="@+id/tvDialogInfoText"
         >
     </ListView>

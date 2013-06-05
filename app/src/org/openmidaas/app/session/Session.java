@@ -309,25 +309,27 @@ public class Session implements VerifiedAttributeBundleCallback{
 			throw new IllegalArgumentException("OnDoneCallback required.");
 		}
 		mOnDoneCallback = onDoneCallback;
-		for(AbstractAttributeSet attributeSet: this.mAttributeListSet){
-			// if essential is requested and nothing was selected, throw an exception
-			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
-				Logger.error(getClass(), attributeSet.getLabel() + " is essential. Please select one.");
-				throw new EssentialAttributeMissingException(attributeSet.getLabel() + " is essential. Please select one.");
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				for(AbstractAttributeSet attributeSet: mAttributeListSet){
+					if(attributeSet.getSelectedAttribute() != null) {
+						putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
+					}
+				}
+				// if there is at least one verified attribute in the map, get the signed bundle from the server. 
+				if(mVerifiedAttributeMap.size() >0) {
+					Logger.debug(getClass(), "Bundling attibutes with AVS");
+					MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, Session.this);
+				} else if (mUnverifiedAttributeMap.size() > 0) { 
+					getUnverifiedBundleAndReturnToRP();
+				} else {
+					returnDataToRp(mVerifiedResponse,mUnverifiedResponse, mOnDoneCallback);
+				}
 			}
-			// if essential is requested and selected attribute is not null or  if is essential is not set but we have a selected attribute
-			else if(attributeSet.getSelectedAttribute() != null) {
-				putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
-			}
-		}
-		// if there is at least one verified attribute in the map, get the signed bundle from the server. 
-		if(this.mVerifiedAttributeMap.size() >0) {
-			Logger.debug(getClass(), "Bundling attibutes with AVS");
 			
-			MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, this);
-		} else if (this.mUnverifiedAttributeMap.size() > 0) { 
-			getUnverifiedBundleAndReturnToRP();
-		}
+		}).start();
 	}
 	
 	private void getUnverifiedBundleAndReturnToRP() {

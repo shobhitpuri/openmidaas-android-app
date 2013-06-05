@@ -41,10 +41,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ManageConsentActivity extends AbstractActivity {
@@ -148,13 +151,34 @@ public class ManageConsentActivity extends AbstractActivity {
 			switch(msg.what) {
 				case REFRESH_CONSENT_LIST:
 					if(!mConsentMap.isEmpty()) {
-						tvNoConsents.setVisibility(View.GONE);
+						tvNoConsents.setVisibility(View.VISIBLE);
 						mConsentListView.setVisibility(View.VISIBLE);
 						mListAdapter.setConsentDataList(mConsentMap);
 						mConsentListView.setAdapter(mListAdapter);
+						RelativeLayout.LayoutParams textViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+						        ViewGroup.LayoutParams.WRAP_CONTENT);
+						RelativeLayout.LayoutParams listViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+						        ViewGroup.LayoutParams.WRAP_CONTENT);
+						listViewParams.addRule(RelativeLayout.BELOW, R.id.tvNoConsentsPresent);
+						textViewParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+						textViewParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+						mConsentListView.setLayoutParams(listViewParams);
+						tvNoConsents.setTextSize(15);
+						tvNoConsents.setPadding(5, 8, 5, 12);
+						tvNoConsents.setLayoutParams(textViewParams);
+						tvNoConsents.setGravity(Gravity.LEFT);
+						tvNoConsents.setText(mActivity.getString(R.string.consentsSummaryInfoText));
 						mListAdapter.notifyDataSetChanged();
 					} else {
+						RelativeLayout.LayoutParams textViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+						        ViewGroup.LayoutParams.WRAP_CONTENT);
+						textViewParams.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+						textViewParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
+						tvNoConsents.setLayoutParams(textViewParams);
+						tvNoConsents.setGravity(Gravity.CENTER);
+						tvNoConsents.setText(mActivity.getString(R.string.noConsentsPresentText));
 						mConsentListView.setVisibility(View.GONE);
+						tvNoConsents.setTextSize(18);
 						tvNoConsents.setVisibility(View.VISIBLE);
 					}
 				break;

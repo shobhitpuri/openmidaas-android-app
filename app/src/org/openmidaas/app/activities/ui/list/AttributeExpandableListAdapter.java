@@ -89,7 +89,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.list_child_layout, null);
+            convertView = infalInflater.inflate(R.layout.attribute_list_child_layout, null);
            childViewHolder = new ChildViewHolder();
            childViewHolder.tvAttributeLabel = (TextView)convertView.findViewById(R.id.tvAttributeName);
            childViewHolder.tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
@@ -150,7 +150,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		final AbstractListCategory category = (AbstractListCategory)getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.list_group_layout, null);
+            convertView = infalInflater.inflate(R.layout.attribute_list_group_layout, null);
             groupViewHolder = new GroupViewHolder();
             groupViewHolder.tvTitle = (TextView)convertView.findViewById(R.id.tvGroupName);
             groupViewHolder.btnAdd = (Button) convertView.findViewById(R.id.btnAddMore);
