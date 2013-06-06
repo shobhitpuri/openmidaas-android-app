@@ -132,22 +132,35 @@ public class AuthorizationActivity extends AbstractActivity{
 		}
 	}
 	
+	/**
+	 * Checks if any essential attributes are missing. If not, authorization if performed on 
+	 * the current session. If essential attributes are missing, a dialog box is show informing 
+	 * the user of the missing essential attributes. 
+	 */
 	private void checkEssentialAndAuthorize() {
 		try {
 			checkEssentialAttributesInSet();
 			authorizeSession();
 		} catch (EssentialAttributeMissingException e) {
 			// if the users presses proceed, authorize the set. 
+			dismissDialog();
 			DialogUtils.showEssentialAttributeMissingDialog(mActivity, e.getMessage(), new DialogInterface.OnClickListener() {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					mProgressDialog.setMessage(mActivity.getString(R.string.authorizingRequest));
+					mProgressDialog.show();
 					authorizeSession();
 				}
 			});
 		}
 	}
 	
+	/**
+	 * Checks if essential attributes are set by the user and if not, throws an exception.
+	 * @throws EssentialAttributeMissingException exception. The message is the CSV list of the 
+	 * missing attributes. 
+	 */
 	private void checkEssentialAttributesInSet() throws EssentialAttributeMissingException {
 		boolean essentialAttributesMissing = false;
 		StringBuilder builder = new StringBuilder();
@@ -156,8 +169,8 @@ public class AuthorizationActivity extends AbstractActivity{
 			// if essential is requested and nothing was selected, throw an exception
 			if(attributeSet.isEssentialRequested() && attributeSet.getSelectedAttribute() == null) {
 				essentialAttributesMissing = true;
-				builder.append(attributeSet.getLabel());
 				builder.append(prefix);
+				builder.append(attributeSet.getLabel());
 				prefix = ", ";
 			}
 		}
@@ -166,34 +179,26 @@ public class AuthorizationActivity extends AbstractActivity{
 		}
 	}
 	
+	/**
+	 * Authorizes the current session 
+	 */
 	private void authorizeSession() {
-		try {
- 			mSession.authorizeRequest(new OnDoneCallback() {
- 	
- 				@Override
- 				public void onDone(String message) {
- 					dismissDialog();
- 					mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
- 					mActivity.finish();
- 				}
- 	
- 				@Override
- 				public void onError(Exception e) {
- 					dismissDialog();
- 					DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
- 				}
- 				
- 			});
- 		} catch(EssentialAttributeMissingException e) {
- 			dismissDialog();
- 			DialogUtils.showEssentialAttributeMissingDialog(mActivity, e.getMessage(), new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					authorizeSession();
-				}
-			});
- 		}
+		mSession.authorizeRequest(new OnDoneCallback() {
+
+			@Override
+			public void onDone(String message) {
+				dismissDialog();
+				mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+				mActivity.finish();
+			}
+
+			@Override
+			public void onError(Exception e) {
+				dismissDialog();
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+			}
+			
+		});
 	}
 	
 	
@@ -348,15 +353,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					mAuthorizationListAdapter.notifyDataSetChanged();
 				break;
 				case AUTO_AUTHORIZE:
-					mActivity.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							performAuthorization(true);
-						}
-						
-					});
-					
+					performAuthorization(true);
 				break;
 				case ATTRIBUTE_SET_INVALID_REQUEST:
 					// a more specific error message. We can recover from this. 
