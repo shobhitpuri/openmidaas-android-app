@@ -77,6 +77,12 @@ public final class DialogUtils {
 		});
 	}
 	
+	/**
+	 * Displays a list of essential attributes that are missing from an authorization. 
+	 * @param activity
+	 * @param message
+	 * @param proceedButtonListener
+	 */
 	public static void showEssentialAttributeMissingDialog(final Activity activity, final String message, final DialogInterface.OnClickListener proceedButtonListener) {
 		activity.runOnUiThread(new Runnable() {
 
@@ -137,16 +143,28 @@ public final class DialogUtils {
 			alertDialog.show();
 	}
 	
+	/**
+	 * Displays the birthday dialog. The onDateSet function is being called twice for some reason. So a flag is set to ensure that
+	 * the attribute is created and saved only once. 
+	 * @param activity
+	 * @param attribute
+	 */
 	public static void showBirthdayDatePickerDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		DatePickerDialog.OnDateSetListener dateLisenter = new DatePickerDialog.OnDateSetListener() {
-			
+			boolean hasAlreadyFired = false;
 			@Override
 			public void onDateSet(DatePicker view, int year, int monthOfYear,
 					int dayOfMonth) {
-				if(attribute != null) {
-					Utils.modifyGenericAttribute(activity, (GenericAttribute)attribute,  Utils.getFormattedDate(dayOfMonth, monthOfYear, year));
+				
+				if(hasAlreadyFired) {
+					return;
 				} else {
-					Utils.createGenericAttribute(activity, Constants.AttributeNames.BIRTHDAY, Utils.getFormattedDate(dayOfMonth, monthOfYear, year), null);
+					if(attribute != null) {
+						Utils.modifyGenericAttribute(activity, (GenericAttribute)attribute,  Utils.getFormattedDate(dayOfMonth, monthOfYear, year));
+					} else {
+						Utils.createGenericAttribute(activity, Constants.AttributeNames.BIRTHDAY, Utils.getFormattedDate(dayOfMonth, monthOfYear, year), null);
+					}
+					hasAlreadyFired = true;
 				}
 			}
 		};
@@ -156,6 +174,13 @@ public final class DialogUtils {
 		
 	}
 	
+	/**
+	 * Displays a dialog containing a list of radio items as defined by the itemsToDisplay parameter
+	 * @param activity
+	 * @param message
+	 * @param itemsToDisplay
+	 * @param listener
+	 */
 	public static void showRadioButtonDialog(final Activity activity, final String message, final String[] itemsToDisplay, final DialogInterface.OnClickListener listener) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 	    builder.setTitle(message);
@@ -204,7 +229,11 @@ public final class DialogUtils {
 		showDeleteAttributeDialog(activity,listElement, message);
 	}
 	
-	
+	/**
+	 * Displays a dialog to modify an attribute
+	 * @param activity
+	 * @param attribute
+	 */
 	public static void showGenericAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 		alert.setTitle(Utils.getAttributeDisplayLabel(attribute));
@@ -240,6 +269,11 @@ public final class DialogUtils {
 		alertDialog.show();
 	}
 	
+	/**
+	 * Displays a dialog that enables the user to enter the verification code they obtained. 
+	 * @param activity
+	 * @param attribute
+	 */
 	public static void showCodeCollectionDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
@@ -312,6 +346,12 @@ public final class DialogUtils {
 		alertDialog.show();
 	}
 	
+	/**
+	 * Dialog that asks the user whether they would like to delete an attribute 
+	 * @param activity
+	 * @param listElement
+	 * @param message
+	 */
 	public static void showDeleteAttributeDialog(final Activity activity,  final AbstractAttributeListElement listElement, final String message) {
 		final AbstractAttribute<?> attribute = listElement.getAttribute();
 		activity.runOnUiThread(new Runnable() {
@@ -360,7 +400,12 @@ public final class DialogUtils {
 		});
 	}
 	
-	
+	/**
+	 * Dialog that collects an attribute value when a list element is pressed 
+	 * @param activity
+	 * @param attributeName
+	 * @param label
+	 */
 	public static void showAttributeValueCollectionDialog( final Activity activity, final String attributeName, String label) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
