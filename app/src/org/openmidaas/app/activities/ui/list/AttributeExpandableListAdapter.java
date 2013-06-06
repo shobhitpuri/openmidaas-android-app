@@ -101,7 +101,12 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		childViewHolder.tvAttributeLabel.setText("");
 		childViewHolder.tvAttributeValue.setText("");
 		if(attribute.getLabel() == null || attribute.getLabel().isEmpty()) {	
-			childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
+			CategoryMap map = CategoryMap.get(attribute.getName());
+			if(map != null) {
+				childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
+			} else {
+				childViewHolder.tvAttributeLabel.setText(attribute.getName());
+			}
 		} else {
 			childViewHolder.tvAttributeLabel.setText(attribute.getLabel());
 		}

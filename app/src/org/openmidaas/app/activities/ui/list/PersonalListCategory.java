@@ -15,12 +15,16 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.ui.list;
 
+import org.openmidaas.app.R;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 
 /**
  * 
@@ -35,7 +39,7 @@ public class PersonalListCategory extends AbstractListCategory {
 
 	@Override
 	public void onAddButtonTouch(Activity activity) {
-		
+		showPersonalInfoChoicesDialog(activity);
 	}
 
 	@Override
@@ -55,5 +59,26 @@ public class PersonalListCategory extends AbstractListCategory {
 		} else {
 			mList.get(position).setAttribute(attribute);
 		}
+	}
+	
+	private void showPersonalInfoChoicesDialog(final Activity activity) {
+	  final String[] personalInfoNames = activity.getResources().getStringArray(R.array.additionalPersonalInfoArray);
+	  AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+      builder.setTitle(activity.getString(R.string.addMorePersonalInfo));
+      builder.setSingleChoiceItems(personalInfoNames, -1, new DialogInterface.OnClickListener() {
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			if(personalInfoNames[which].equals("Birthday")) {
+				DatePickerDialog datePicker = new DatePickerDialog(activity, null, 01, 01, 2000);
+				datePicker.setTitle("Birthday");
+				datePicker.show();
+			} else  if (personalInfoNames[which].equals("Gender")) {
+				// show gender collection
+			}
+		}
+      });
+    AlertDialog dialog = builder.create();
+    dialog.show();
 	}
 }

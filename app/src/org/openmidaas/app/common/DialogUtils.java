@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.InputType;
@@ -37,6 +38,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 /**
@@ -96,6 +98,59 @@ public final class DialogUtils {
 	}
 	
 	/**
+	 * Displays a name-value collection dialog for general attributes
+	 * @param activity
+	 */
+	public static void showNameValueCollectionDialog(final Activity activity) {
+		 final AlertDialog.Builder alert = new AlertDialog.Builder(activity);  
+		 LinearLayout lila1= new LinearLayout(activity);
+	     lila1.setOrientation(1); //1 is for vertical orientation
+	     final EditText etName = new EditText(activity); 
+	     etName.setHint("Enter a name");
+	     final EditText etValue = new EditText(activity);
+	     etValue.setHint("Enter a value");
+	     lila1.addView(etName);
+	     lila1.addView(etValue);
+	     alert.setView(lila1);
+	     alert.setTitle("Enter a name and value and tap save");
+	     alert.setNeutralButton("Save", new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				final String name = etName.getText().toString();
+				final String value = etValue.getText().toString();
+				GenericAttribute attribute;
+				try {
+					attribute = GenericAttributeFactory.createAttribute(name);
+					attribute.setValue(value);
+					attribute.save();
+					activity.finish();
+					activity.startActivity(activity.getIntent());
+				} catch (InvalidAttributeNameException e) {
+					showNeutralButtonDialog(activity, "Error", "Invalid name: " + name);
+				} catch (InvalidAttributeValueException e) {
+					showNeutralButtonDialog(activity, "Error", "Invalid value: " + value);
+				} catch (MIDaaSException e) {
+					showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+				}
+			}
+	    	 
+	     });
+	     final AlertDialog alertDialog = alert.create();
+	     etName.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+				@Override
+				public void onFocusChange(View arg0, boolean hasFocus) {
+					if (hasFocus) {
+						alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+			        }
+				}
+				
+			});
+			alertDialog.show();
+	}
+	
+	/**
 	 * Displays a toast notification. 
 	 * @param activity the activity displaying the notification 
 	 * @param message the message to be displayed
@@ -139,8 +194,12 @@ public final class DialogUtils {
 	
 	public static void showGenericAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-
-		alert.setTitle("Enter " + CategoryMap.get(attribute.getName()).getAttributeLabel());
+		CategoryMap map = CategoryMap.get(attribute.getName());
+		if(map != null) {
+			alert.setTitle("Enter " + CategoryMap.get(attribute.getName()).getAttributeLabel());
+		} else {
+			alert.setTitle(attribute.getName());
+		}
 		alert.setMessage("Enter a new value and tap save");
 
 		// Set an EditText view to get user input 

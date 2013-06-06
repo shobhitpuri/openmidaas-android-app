@@ -31,6 +31,7 @@ public final class Constants {
 	public static final String ATTRIBUTE_CATEGORY_PHONE = "Phone";
 	public static final String ATTRIBUTE_CATEGORY_ADDRESS = "Address";
 	public static final String ATTRIBUTE_CATEGORY_CREDIT_CARD = "Credit Card";
+	public static final String ATTRIBUTE_CATEGORY_GENERAL = "General";
 	 public static final String ZXING_MARKET =
 			    "market://search?q=pname:com.google.zxing.client.android";
 			  public static final String ZXING_DIRECT =
