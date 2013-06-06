@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.CategoryMap;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
@@ -96,13 +96,7 @@ public class ConsentListAdapter extends BaseAdapter {
 		for(AbstractAttribute<?> attribute: attributeList) {
 			builder.append(prefix);
 			prefix = ", ";
-			String attributeName = attribute.getName();
-			CategoryMap map = CategoryMap.get(attributeName);
-			if(map != null) {
-				builder.append(map.getAttributeLabel());
-			} else {
-				builder.append(attributeName);
-			}
+			builder.append(Utils.getAttributeDisplayLabel(attribute));
 		}
 		return builder.toString();
 	}
