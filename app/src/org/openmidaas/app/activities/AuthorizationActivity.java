@@ -134,7 +134,12 @@ public class AuthorizationActivity extends AbstractActivity{
 		if(requestCode == AUTHORIZATION_ACTIVITY_REQUEST_CODE) {
 			if (resultCode == AUTHORIZATION_ACTIVITY_RESULT_OK) {
 				displayAuthorizationList(mCurrentRequestData);
-			} 
+			} else {
+				Logger.debug(getClass(), "Error adding attributes on the fly");
+				DialogUtils.showNeutralButtonDialog(mActivity, "Error", getString(R.string.attributeAddOnFlyError));
+			}
+		}  else {
+			Logger.debug(getClass(), "Request code for onActivityResult does not match");
 		}
 	}
 	
