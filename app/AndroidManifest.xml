@@ -50,12 +50,12 @@
         <activity android:name=".activities.EmailRegistrationActivity"></activity>
         <activity android:name=".activities.PhoneRegistrationActivity"></activity>
         <activity android:name=".activities.AttributeListActivity"></activity>
-        <activity android:name=".activities.GenericAttributeCollectionActivity"></activity>
         <activity android:name=".activities.HomeScreen"></activity>
         <activity android:name=".activities.AddressActivity"></activity>
         <activity android:name=".activities.CreditCardActivity"></activity>
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity android:name=".activities.AuthorizationActivity"></activity>
+        <activity android:name=".activities.ManageConsentActivity"></activity>
     </application>
 
 </manifest>

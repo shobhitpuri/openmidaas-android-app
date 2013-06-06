@@ -212,8 +212,42 @@
 	<string name="btnCompletePhVerification">Complete Verification</string>
 	<string name="rdBtnSmsText">SMS</string>
 	<string name="rdBtnPhoneText">Phone Call</string>
-	
     <string name="noAttributeSelectedLabel">No attribute selected</string>
-    <string name="noAttributeSelectedValue"></string>
-
+    <string name="attributeAddOnFlyError">Attribute could not be added to the list. </string>
+    <string name="rememberAuthorization">Remember my selection</string>
+    <string name="consentActivityTitleText">Manage Consent</string>
+    <string name="consentDetailsDialogTitle">Consent Details</string>
+    <string name="btnRevokeConsent">Revoke Consent</string>
+    <string name="noConsentsPresentText">You have no saved consents.\nYou can save consents by checking the \"Remember my selection\" box when authorizing.</string>
+    <string name="consentDetailsDialogInfoText">You have consented to release the following to</string>
+    <string name="consentsSummaryInfoText">The following lists your saved consents. Tap a row to view more about the consent.</string>
+    <string name="authorizingRequest">Authorizing request</string>
+    <string name="authorizingAlreadyPresentConsent">Authorizing with already consented information</string>
+    <string-array name="additionalPersonalInfoArray">
+	    <item>Birthday</item>
+	    <item>Gender</item>
+	</string-array>
+	<string name="addMorePersonalInfo">Add Personal Info</string>
+	<string-array name="genders">
+	    <item>Male</item>
+	    <item>Female</item>
+	</string-array>
+	<string name="birthdayDialogTitle">Select your birthday</string>
+	<string name="genderDialogTitle">Select your gender</string>
+	<string name="unverifiableAttributeText">Attribute is non verifiable</string>
+	<string name="verifiedAttributeText">Attribute already verified</string>
+	<string name="unknownAttributeStateText">Attribute state is unknown. Cannot re-verify</string>
+	<string name="errorInAttributeSaveText">Attribute has not been saved. Error re-verifying</string>
+	<string name="enterPinText">Enter the PIN you received below</string>
+	<string name="modifyAttributeText">Enter a new value and tap save</string>
+	<string name="generalAttributeNamePrompt">Enter a name</string>
+	<string name="generalAttributeValuePrompt">Enter a value</string>
+	<string name="generalAttributeDialogCollectionTitle">Enter a name and value and tap save</string>
+	<string name="saveButtonText">Save</string>
+	<string name="okButtonText">OK</string>
+	<string name="verifyButtonText">Verify</string>
+	<string name="cancelButtonText">Cancel</string>
+	<string name="backButtonText">Back</string>
+	<string name="deleteButtonText">Delete</string>
+	<string name="defaultErrorDialogTitle">Error</string>
 </resources>

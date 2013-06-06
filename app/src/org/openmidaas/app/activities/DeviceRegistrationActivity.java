@@ -19,8 +19,11 @@ package org.openmidaas.app.activities;
  * This activity handles device registration
  */
 
+import java.net.URISyntaxException;
+
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
+import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
@@ -41,32 +44,14 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 		// register the app or check to see if already registered.
 		MIDaaS.setLoggingLevel(Settings.LIBRARY_LOG_LEVEL);
 		mProgressDialog.show();
-		MIDaaS.initialize(this, new InitializationCallback() {
-
-			@Override
-			public void onError(MIDaaSException arg0) {
-				showError();
-			}
-
-			@Override
-			public void onSuccess() {
-				registrationComplete();
-			}
-
-			@Override
-			public void onRegistering() {
-				DeviceRegistrationActivity.this.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						mProgressDialog.setMessage("Registering...");
-					}
-				});
-				
-			}
-		
-		});
+		try {
+			MIDaaS.initialize(this, Settings.SERVER_URL,new InitializationCallbackImpl());
+		} catch (URISyntaxException e) {
+			DialogUtils.showNeutralButtonDialog(this, "Error", "Server URL appears to be invalid.");
+		}
 	}
+	
+	
 
 	private void registrationComplete() {
 		this.runOnUiThread(new Runnable() {
@@ -95,6 +80,30 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 			}
 			
 		});
+	}
+	
+	private class InitializationCallbackImpl implements InitializationCallback {
+
+		@Override
+		public void onError(MIDaaSException arg0) {
+			showError();
+		}
+
+		@Override
+		public void onSuccess() {
+			registrationComplete();
+		}
+
+		@Override
+		public void onRegistering() {
+			DeviceRegistrationActivity.this.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					mProgressDialog.setMessage("Registering...");
+				}
+			});
+		}
 	}
 	
 	@Override

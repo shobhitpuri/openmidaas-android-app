@@ -84,6 +84,18 @@ public class HomeScreen extends AbstractActivity {
 			@Override
 			public void onClick(View v) {
 				showQRCodeScanner();
+				
+//				String text = "{\"client_id\": \"https://edbc.ca\",\"acr\": \"1\",\"attrs\": {"+ "\"given_name\" : { \"essential\": true },"+
+//						//"\"family_name\" : { \"essential\": true },"+
+//						//"\"middle_name\" : { \"essential\": false },"+
+//						"\"home_address\": {\"type\": \"address\", \"essential\": true, \"label\": \"Home address\", \"verified\": true}," +
+//								"\"credit_card\":{\"label\": \"Credit Card\"}," + 
+//								"\"email\": {\"essential\": true,\"label\": \"Work email\",\"verified\": true}},\"state\": \"1234\","+ 
+//								"\"return\": {\"method\": \"postback\",\"url\": \"https://edbc.ca/sess/fhyxy8209jskso\"}}\"";
+//						Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+//						intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, text);
+//						startActivity(intent);
+				
 			}
 		});
 		
@@ -101,6 +113,15 @@ public class HomeScreen extends AbstractActivity {
 			public void onClick(View v) {
 				showUrlCollectionDialog();
 			}
+		});
+		
+		findViewById(R.id.button1).setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(HomeScreen.this, ManageConsentActivity.class));
+			}
+			
 		});
 		
 		checkForUpdates();
