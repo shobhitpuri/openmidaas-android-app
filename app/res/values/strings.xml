@@ -228,4 +228,14 @@
 	    <item>Gender</item>
 	</string-array>
 	<string name="addMorePersonalInfo">Add Personal Info</string>
+	<string-array name="genders">
+	    <item>Male</item>
+	    <item>Female</item>
+	</string-array>
+	<string name="birthdayDialogTitle">Select your birthday</string>
+	<string name="genderDialogTitle">Select your gender</string>
+	<string name="unverifiableAttributeText">Attribute is non verifiable</string>
+	<string name="verifiedAttributeText">Attribute already verified</string>
+	<string name="unknownAttributeStateText">Attribute state is unknown. Cannot re-verify</string>
+	<string name="errorInAttributeSaveText">Attribute has not been saved. Error re-verifying</string>
 </resources>
