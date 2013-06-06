@@ -16,17 +16,18 @@
 package org.openmidaas.app.common;
 
 import org.json.JSONObject;
+import org.openmidaas.app.R;
 import org.openmidaas.app.activities.ui.list.AbstractAttributeListElement;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.GenericAttribute;
-import org.openmidaas.library.model.GenericAttributeFactory;
-import org.openmidaas.library.model.InvalidAttributeNameException;
 import org.openmidaas.library.model.InvalidAttributeValueException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.CompleteVerificationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -37,6 +38,7 @@ import android.util.Base64;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -119,20 +121,7 @@ public final class DialogUtils {
 			public void onClick(DialogInterface arg0, int arg1) {
 				final String name = etName.getText().toString();
 				final String value = etValue.getText().toString();
-				GenericAttribute attribute;
-				try {
-					attribute = GenericAttributeFactory.createAttribute(name);
-					attribute.setValue(value);
-					attribute.save();
-					activity.finish();
-					activity.startActivity(activity.getIntent());
-				} catch (InvalidAttributeNameException e) {
-					showNeutralButtonDialog(activity, "Error", "Invalid name: " + name);
-				} catch (InvalidAttributeValueException e) {
-					showNeutralButtonDialog(activity, "Error", "Invalid value: " + value);
-				} catch (MIDaaSException e) {
-					showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
-				}
+				Utils.createGenericAttribute(activity, name, value, null);
 			}
 	    	 
 	     });
@@ -148,6 +137,32 @@ public final class DialogUtils {
 				
 			});
 			alertDialog.show();
+	}
+	
+	public static void showBirthdayDatePickerDialog(final Activity activity, final AbstractAttribute<?> attribute) {
+		DatePickerDialog.OnDateSetListener dateLisenter = new DatePickerDialog.OnDateSetListener() {
+			
+			@Override
+			public void onDateSet(DatePicker view, int year, int monthOfYear,
+					int dayOfMonth) {
+				if(attribute != null) {
+					Utils.modifyGenericAttribute(activity, (GenericAttribute)attribute,  Utils.getFormattedDate(dayOfMonth, monthOfYear, year));
+				} else {
+					Utils.createGenericAttribute(activity, Constants.AttributeNames.BIRTHDAY, Utils.getFormattedDate(dayOfMonth, monthOfYear, year), null);
+				}
+			}
+		};
+		DatePickerDialog datePicker = new DatePickerDialog(activity, dateLisenter, 01, 01, 2000);
+		datePicker.setTitle(activity.getString(R.string.birthdayDialogTitle));
+		datePicker.show();	
+		
+	}
+	
+	public static void showRadioButtonDialog(final Activity activity, final String message, final String[] itemsToDisplay, final DialogInterface.OnClickListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+	    builder.setTitle(message);
+	    builder.setSingleChoiceItems(itemsToDisplay, -1, listener);
+	    builder.create().show();  
 	}
 	
 	/**
@@ -210,25 +225,12 @@ public final class DialogUtils {
 		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
-			try {
-				GenericAttribute generic = (GenericAttribute) attribute;
-				generic.setValue(value.toString());
-				generic.save();
-				activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
-			} catch (IllegalArgumentException e) {
-				showNeutralButtonDialog(activity, "Error", e.getMessage());
-			} catch (InvalidAttributeValueException e) {
-				showNeutralButtonDialog(activity, "Error", e.getMessage());
-			} catch (MIDaaSException e) {
-				showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
-			}
+			Utils.modifyGenericAttribute(activity, (GenericAttribute)attribute, value.toString());
 		  }
 		});
 
 		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		  public void onClick(DialogInterface dialog, int whichButton) {
-		    	
-		  }
+		  public void onClick(DialogInterface dialog, int whichButton) {}
 		});
 
 		final AlertDialog alertDialog = alert.create();
@@ -336,13 +338,13 @@ public final class DialogUtils {
 							else
 								AttributeRegistrationHelper.verifyAttribute(mActivity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
 						}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
-							Toast.makeText(mActivity, "Attribute already verified", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, mActivity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
-							Toast.makeText(mActivity, "Attribute is non verifiable", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, mActivity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
-							Toast.makeText(mActivity, "Attribute state is unknown. Can't re-verify", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, mActivity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
-							Toast.makeText(mActivity, "Attribute has not been saved. Error re-verifying", Toast.LENGTH_LONG).show();
+							Toast.makeText(mActivity, mActivity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
 						}
 					} 
 				})
@@ -380,19 +382,7 @@ public final class DialogUtils {
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
-			try {
-				GenericAttribute attribute = GenericAttributeFactory.createAttribute(attributeName);
-				attribute.setValue(value.toString());
-				attribute.save();
-				activity.finish();
-				activity.startActivity(activity.getIntent());
-			} catch (InvalidAttributeValueException e) {
-				showNeutralButtonDialog(activity, "Error", e.getMessage());
-			} catch (MIDaaSException e) {
-				showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
-			} catch (InvalidAttributeNameException e) {
-				showNeutralButtonDialog(activity, "Error", e.getMessage());
-			}
+			Utils.createGenericAttribute(activity, attributeName, value.toString(), null);
 		  }
 		});
 

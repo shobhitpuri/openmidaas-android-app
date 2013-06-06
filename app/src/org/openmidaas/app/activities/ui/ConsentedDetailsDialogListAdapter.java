@@ -16,10 +16,12 @@
 package org.openmidaas.app.activities.ui;
 
 import java.util.List;
+
 import org.openmidaas.app.R;
-import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.model.core.AbstractAttribute;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -75,13 +77,7 @@ public class ConsentedDetailsDialogListAdapter extends BaseAdapter {
 		AbstractAttribute<?> attribute = getItem(position);
 		if(attribute != null) {
 			Logger.debug(getClass(), "attribute: " + attribute.getName() + "-OK. Setting TextViews");
-			String attributeName = attribute.getName();
-			CategoryMap map = CategoryMap.get(attributeName);
-			if(map != null) {
-				viewHolder.tvAttributeName.setText(map.getAttributeLabel());
-			} else {
-				viewHolder.tvAttributeName.setText(attributeName);
-			}
+			viewHolder.tvAttributeName.setText(Utils.getAttributeDisplayLabel(attribute));
 			viewHolder.tvAttributeValue.setText(attribute.toString());
 		} else {
 			Logger.error(getClass(), "Attribute is null - not expected");
