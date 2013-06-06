@@ -65,7 +65,7 @@ public final class DialogUtils {
 				new AlertDialog.Builder(activity)
 			    .setTitle(title)
 			    .setMessage(message)
-			    .setNeutralButton("OK",  new DialogInterface.OnClickListener() {
+			    .setNeutralButton(activity.getString(R.string.okButtonText),  new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
@@ -87,12 +87,10 @@ public final class DialogUtils {
 				alert.setTitle("Missing information");
 				alert.setMessage(message);
 			    alert.setNegativeButton("Proceed",  proceedButtonListener);
-			    alert.setPositiveButton("Back",  new DialogInterface.OnClickListener() {
+			    alert.setPositiveButton(activity.getString(R.string.backButtonText),  new DialogInterface.OnClickListener() {
 
 					@Override
-					public void onClick(DialogInterface arg0, int arg1) {
-						Logger.debug(getClass(), "back pressed");
-					}
+					public void onClick(DialogInterface arg0, int arg1) {}
 			    });
 			    alert.show();
 			}
@@ -108,14 +106,14 @@ public final class DialogUtils {
 		 LinearLayout lila1= new LinearLayout(activity);
 	     lila1.setOrientation(1); //1 is for vertical orientation
 	     final EditText etName = new EditText(activity); 
-	     etName.setHint("Enter a name");
+	     etName.setHint(activity.getString(R.string.generalAttributeNamePrompt));
 	     final EditText etValue = new EditText(activity);
-	     etValue.setHint("Enter a value");
+	     etValue.setHint(activity.getString(R.string.generalAttributeValuePrompt));
 	     lila1.addView(etName);
 	     lila1.addView(etValue);
 	     alert.setView(lila1);
-	     alert.setTitle("Enter a name and value and tap save");
-	     alert.setNeutralButton("Save", new OnClickListener() {
+	     alert.setTitle(activity.getString(R.string.generalAttributeDialogCollectionTitle));
+	     alert.setNeutralButton(activity.getString(R.string.saveButtonText), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
@@ -209,27 +207,22 @@ public final class DialogUtils {
 	
 	public static void showGenericAttributeModificationDialog(final Activity activity, final AbstractAttribute<?> attribute) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-		CategoryMap map = CategoryMap.get(attribute.getName());
-		if(map != null) {
-			alert.setTitle("Enter " + CategoryMap.get(attribute.getName()).getAttributeLabel());
-		} else {
-			alert.setTitle(attribute.getName());
-		}
-		alert.setMessage("Enter a new value and tap save");
+		alert.setTitle(Utils.getAttributeDisplayLabel(attribute));
+		alert.setMessage(activity.getString(R.string.modifyAttributeText));
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(activity);
 		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		alert.setView(input);
 		
-		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(activity.getString(R.string.saveButtonText), new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			Utils.modifyGenericAttribute(activity, (GenericAttribute)attribute, value.toString());
 		  }
 		});
 
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		alert.setNegativeButton(activity.getString(R.string.cancelButtonText), new DialogInterface.OnClickListener() {
 		  public void onClick(DialogInterface dialog, int whichButton) {}
 		});
 
@@ -251,13 +244,13 @@ public final class DialogUtils {
 		AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
 		alert.setTitle("Verify " + attribute.getName());
-		alert.setMessage("Enter the PIN you received below ");
+		alert.setMessage(activity.getString(R.string.enterPinText));
 
 		// Set an EditText view to get user input 
 		final EditText input = new EditText(activity);
 		alert.setView(input);
 
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(activity.getString(R.string.okButtonText), new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			final ProgressDialog progressDialog = new ProgressDialog(activity);
@@ -270,9 +263,9 @@ public final class DialogUtils {
 					try {
 						attribute.save();
 					} catch (MIDaaSException e) {
-						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+						DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), e.getError().getErrorMessage());
 					} catch (InvalidAttributeValueException e) {
-						DialogUtils.showNeutralButtonDialog(activity, "Error", e.getMessage());
+						DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), e.getMessage());
 					}
 					activity.runOnUiThread(new Runnable() {
 
@@ -292,14 +285,14 @@ public final class DialogUtils {
 					if(progressDialog.isShowing()) {
 						progressDialog.dismiss();
 					}
-					DialogUtils.showNeutralButtonDialog(activity, "Error", exception.getError().getErrorMessage());
+					DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), exception.getError().getErrorMessage());
 				}
 				
 			});
 		  }
 		});
 
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		alert.setNegativeButton(activity.getString(R.string.cancelButtonText), new DialogInterface.OnClickListener() {
 		  public void onClick(DialogInterface dialog, int whichButton) {
 		    	
 		  }
@@ -319,14 +312,14 @@ public final class DialogUtils {
 		alertDialog.show();
 	}
 	
-	public static void showDeleteAttributeDialog(final Activity mActivity,  final AbstractAttributeListElement listElement, final String message) {
+	public static void showDeleteAttributeDialog(final Activity activity,  final AbstractAttributeListElement listElement, final String message) {
 		final AbstractAttribute<?> attribute = listElement.getAttribute();
-		mActivity.runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable() {
 
 			@Override
 			public void run() {
-				new AlertDialog.Builder(mActivity)
-			    .setTitle("Delete")
+				new AlertDialog.Builder(activity)
+			    .setTitle(activity.getString(R.string.deleteButtonText))
 			    .setMessage(message)
 			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
 					
@@ -334,28 +327,28 @@ public final class DialogUtils {
 					public void onClick(DialogInterface dialog, int which) {
 						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
 							if ( attribute.getVerificationMethod()!=null)
-								AttributeRegistrationHelper.verifyAttribute(mActivity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
+								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
 							else
-								AttributeRegistrationHelper.verifyAttribute(mActivity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
+								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
 						}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
-							Toast.makeText(mActivity, mActivity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
+							Toast.makeText(activity, activity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
-							Toast.makeText(mActivity, mActivity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
+							Toast.makeText(activity, activity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
-							Toast.makeText(mActivity, mActivity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
+							Toast.makeText(activity, activity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
 						}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
-							Toast.makeText(mActivity, mActivity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
+							Toast.makeText(activity, activity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
 						}
 					} 
 				})
-			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
+			    .setPositiveButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
 			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
 						try {
 							attribute.delete();
 						
-							mActivity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
+							activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 						} catch (MIDaaSException e) {
 							
 						}
@@ -379,14 +372,14 @@ public final class DialogUtils {
 		input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 		alert.setView(input);
 
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(activity.getString(R.string.okButtonText), new DialogInterface.OnClickListener() {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			Utils.createGenericAttribute(activity, attributeName, value.toString(), null);
 		  }
 		});
 
-		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		alert.setNegativeButton(activity.getString(R.string.cancelButtonText), new DialogInterface.OnClickListener() {
 		  public void onClick(DialogInterface dialog, int whichButton) {
 		    	
 		  }

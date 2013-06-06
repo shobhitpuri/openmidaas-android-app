@@ -38,6 +38,8 @@ public class PersonalListCategory extends AbstractListCategory {
 	
 	private Activity mActivity;
 	
+	private AlertDialog mGenderDialog = null;
+	
 	public PersonalListCategory() {
 		mGroupName = Constants.ATTRIBUTE_CATEGORY_PERSONAL;
 	}
@@ -85,12 +87,12 @@ public class PersonalListCategory extends AbstractListCategory {
 			if(personalInfoNames[which].equals("Birthday")) {
 				DialogUtils.showBirthdayDatePickerDialog(activity, null);
 			} else  if (personalInfoNames[which].equals("Gender")) {
-				DialogUtils.showRadioButtonDialog(activity, "Select your gender", genders, genderDialogListener);
+				DialogUtils.showRadioButtonDialog(activity, activity.getString(R.string.genderDialogTitle), genders, genderDialogListener);
 			}
 		}
       });
-    AlertDialog dialog = builder.create();
-    dialog.show();
+      mGenderDialog = builder.create();
+      mGenderDialog.show();
 	}
 	
 	private DialogInterface.OnClickListener genderDialogListener = new DialogInterface.OnClickListener() {
@@ -99,7 +101,7 @@ public class PersonalListCategory extends AbstractListCategory {
 		public void onClick(DialogInterface dialogInterface, int which) {
 			String gender = genders[which];
 			Utils.createGenericAttribute(mActivity, Constants.AttributeNames.GENDER, gender, null);
+			dialogInterface.dismiss();
 		}
-		
 	};
 }

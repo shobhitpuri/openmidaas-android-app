@@ -238,4 +238,16 @@
 	<string name="verifiedAttributeText">Attribute already verified</string>
 	<string name="unknownAttributeStateText">Attribute state is unknown. Cannot re-verify</string>
 	<string name="errorInAttributeSaveText">Attribute has not been saved. Error re-verifying</string>
+	<string name="enterPinText">Enter the PIN you received below</string>
+	<string name="modifyAttributeText">Enter a new value and tap save</string>
+	<string name="generalAttributeNamePrompt">Enter a name</string>
+	<string name="generalAttributeValuePrompt">Enter a value</string>
+	<string name="generalAttributeDialogCollectionTitle">Enter a name and value and tap save</string>
+	<string name="saveButtonText">Save</string>
+	<string name="okButtonText">OK</string>
+	<string name="verifyButtonText">Verify</string>
+	<string name="cancelButtonText">Cancel</string>
+	<string name="backButtonText">Back</string>
+	<string name="deleteButtonText">Delete</string>
+	<string name="defaultErrorDialogTitle">Error</string>
 </resources>

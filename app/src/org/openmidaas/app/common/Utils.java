@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import org.openmidaas.app.R;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
@@ -63,6 +64,13 @@ public final class Utils {
 		return label;
 	}
 	
+	/**
+	 * Creates a generic attribute and tries to save it
+	 * @param activity
+	 * @param name
+	 * @param value
+	 * @param label
+	 */
 	public static void createGenericAttribute(Activity activity, String name, String value, String label) {
 		try {
 			GenericAttribute attribute = GenericAttributeFactory.createAttribute(name);
@@ -71,10 +79,16 @@ public final class Utils {
 			}
 			setValueAndPersist(activity, attribute, value);
 		} catch (InvalidAttributeNameException e) {
-			DialogUtils.showNeutralButtonDialog(activity, "Error", "Invalid name" );
+			DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), "Invalid name" );
 		} 
 	}
 	
+	/**
+	 * Sets the attribute with the provided value and tries to save it
+	 * @param activity
+	 * @param attribute
+	 * @param value
+	 */
 	public static void modifyGenericAttribute(Activity activity, GenericAttribute attribute, String value) {
 		setValueAndPersist(activity, attribute, value);
 	}
@@ -85,9 +99,9 @@ public final class Utils {
 			attribute.save();
 			activity.sendBroadcast(new Intent().setAction(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));
 		} catch (InvalidAttributeValueException e) {
-			DialogUtils.showNeutralButtonDialog(activity, "Error", "Invalid value ");
+			DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), "Invalid value ");
 		} catch (MIDaaSException e) {
-			DialogUtils.showNeutralButtonDialog(activity, "Error", e.getError().getErrorMessage());
+			DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), e.getError().getErrorMessage());
 		}
 	}
 }
