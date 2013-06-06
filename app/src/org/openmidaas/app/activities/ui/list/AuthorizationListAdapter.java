@@ -66,11 +66,6 @@ public class AuthorizationListAdapter extends BaseAdapter {
 	public long getItemId(int arg0) {
 		return arg0;
 	}
-	
-	@Override
-	public boolean hasStableIds() {
-	    return true;
-	}
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup viewGroup) {
@@ -114,16 +109,11 @@ public class AuthorizationListAdapter extends BaseAdapter {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view,
 					int selectedPositionInSpinner, long id) {
-				if(selectedPositionInSpinner == 0) {
-					Logger.debug(getClass(), "Setting selected value for " + attributeSet.getType() +" to " + "\"null\"");
-					attributeSet.setSelectedAttribute(null);
-					mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
-				}
-				else {
+				attributeSet.setSelectedAttribute(null);
+				mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
+				if(selectedPositionInSpinner != 0) {
 					Logger.debug(getClass(), "Setting selected value for " +attributeSet.getType()+" to " + attributeSet.getAttributeList().get(selectedPositionInSpinner).toString());
-					attributeSet.setSelectedAttribute(null);
 					attributeSet.setSelectedAttribute(attributeSet.getAttributeList().get(selectedPositionInSpinner));
-					mSpinnerAdapter.setSelectedIndex(selectedPositionInSpinner);
 				}
 			}
 
