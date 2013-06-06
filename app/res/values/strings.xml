@@ -223,4 +223,9 @@
     <string name="consentsSummaryInfoText">The following lists your saved consents. Tap a row to view more about the consent.</string>
     <string name="authorizingRequest">Authorizing request</string>
     <string name="authorizingAlreadyPresentConsent">Authorizing with already consented information</string>
+    <string-array name="additionalPersonalInfoArray">
+	    <item>Birthday</item>
+	    <item>Gender</item>
+	</string-array>
+	<string name="addMorePersonalInfo">Add Personal Info</string>
 </resources>
