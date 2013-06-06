@@ -302,9 +302,8 @@ public class Session implements VerifiedAttributeBundleCallback{
 	 * Authorizes the release of attributes to the RP for this session. First tries to get the verified bundle, then the 
 	 * unverified bundle and then returns the data to the RP. 
 	 * @param onDoneCallback the callback handler to get the status of the authorization
-	 * @throws EssentialAttributeMissingException if no attribute is provided for a required attribute. 
 	 */
-	public synchronized void authorizeRequest(final OnDoneCallback onDoneCallback) throws EssentialAttributeMissingException {
+	public synchronized void authorizeRequest(final OnDoneCallback onDoneCallback) {
 		if(onDoneCallback == null) {
 			throw new IllegalArgumentException("OnDoneCallback required.");
 		}

@@ -78,18 +78,19 @@ public final class DialogUtils {
 
 			@Override
 			public void run() {
-				new AlertDialog.Builder(activity)
-			    .setTitle("Missing information")
-			    .setMessage(message)
-			    .setNegativeButton("Proceed",  proceedButtonListener)
-			    .setPositiveButton("Back",  new DialogInterface.OnClickListener() {
+				
+				AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+				alert.setTitle("Missing information");
+				alert.setMessage(message);
+			    alert.setNegativeButton("Proceed",  proceedButtonListener);
+			    alert.setPositiveButton("Back",  new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
-						
+						Logger.debug(getClass(), "back pressed");
 					}
-			    })
-			    .show();
+			    });
+			    alert.show();
 			}
 		});
 	}

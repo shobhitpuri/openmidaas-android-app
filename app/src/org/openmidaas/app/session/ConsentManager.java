@@ -31,6 +31,13 @@ public class ConsentManager {
 	
 	private static final String CONSENT_PERSISTENCE_STORE_NAME = "org.openmidaas.app.consent_persistence_store";
 	
+	/**
+	 * Saves a list of attributes as consented attributes
+	 * @param context
+	 * @param clientId the clientId that maps to a list of consented attributes
+	 * @param attributeSet the attribute set to save the consent. 
+	 * @return true if the save was successful, false otherwise
+	 */
 	public static synchronized boolean saveAuthorizedAttributes(Context context, String clientId, List<AbstractAttributeSet> attributeSet) {
 		if(context == null) {
 			throw new IllegalArgumentException("Context cannot be null");
@@ -43,11 +50,10 @@ public class ConsentManager {
 		}
 		Set<String> attributeIdSet = new TreeSet<String>();
 		for(AbstractAttributeSet element: attributeSet){
-			if(element.getSelectedAttribute() != null) {
-				if(element.getSelectedAttribute().getId() >= 0) {
-					attributeIdSet.add(String.valueOf(element.getSelectedAttribute().getId()));
-				} else {
-					
+			AbstractAttribute<?> selectedAttribute = element.getSelectedAttribute();
+			if(selectedAttribute != null) {
+				if(selectedAttribute.getId() >= 0) {
+					attributeIdSet.add(String.valueOf(selectedAttribute.getId()));
 				}
 			}
 		}
@@ -83,7 +89,8 @@ public class ConsentManager {
 	/**
 	 * Returns the map of client id to a set of attribute ids
 	 * @param context
-	 * @return
+	 * @return the list of all currently saved client ids that the user
+	 * has consented to. 
 	 */
 	public static synchronized List<String> getAllConsents(Context context) {
 		if(context == null) {
@@ -104,6 +111,12 @@ public class ConsentManager {
 		return null;
 	}
 	
+	/**
+	 * Revokes a consent for the specified client id
+	 * @param context
+	 * @param clientId the client id to revoke the consent
+	 * @return true if the consent was revoked successfully. 
+	 */
 	public static synchronized boolean revokeConsentForClient(Context context, String clientId) {
 		SharedPreferences prefs = context.getSharedPreferences(
 				CONSENT_PERSISTENCE_STORE_NAME, Context.MODE_PRIVATE);
@@ -114,11 +127,11 @@ public class ConsentManager {
 	}
 
 	/**
-	 * Checks if the attribute maps to a consent by rpID. 
+	 * Checks if the attribute maps to a consent by client id. 
 	 * @param context
 	 * @param clientId
 	 * @param attribute
-	 * @return
+	 * @return true if a consent is present for the attribute, false otherwise. 
 	 */
 	public static boolean checkConsent(Context context, String clientId, AbstractAttribute<?> attribute) {
 		List<String> consentSet = loadAuthorizedAttributes(context, clientId);

@@ -62,6 +62,8 @@ public class ManageConsentActivity extends AbstractActivity {
 	
 	private Map<String, ArrayList<AbstractAttribute<?>>> mConsentMap;
 	
+	private final FragmentManager fm = getFragmentManager();
+	
 	private String[] mKeys;
 	
 	private final int REFRESH_CONSENT_LIST = 1;
@@ -78,7 +80,6 @@ public class ManageConsentActivity extends AbstractActivity {
 		mActivity = this;
 		mConsentMap = new HashMap<String, ArrayList<AbstractAttribute<?>>>();
 		fetchAllAttributesAndDisplayConsent();
-		final FragmentManager fm = getFragmentManager();
 		mConsentListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -95,6 +96,8 @@ public class ManageConsentActivity extends AbstractActivity {
 	}
 
 	private void fetchAllAttributesAndDisplayConsent() {
+		mProgressDialog.setMessage("Loading consents...");
+		mProgressDialog.show();
 		this.mConsentMap.clear();
 		Logger.debug(getClass(), "Building consent list");
 		new Thread(new Runnable() {
@@ -148,6 +151,7 @@ public class ManageConsentActivity extends AbstractActivity {
 
 		@Override
 		public boolean handleMessage(Message msg) {
+			dismissDialog();
 			switch(msg.what) {
 				case REFRESH_CONSENT_LIST:
 					if(!mConsentMap.isEmpty()) {
@@ -188,7 +192,6 @@ public class ManageConsentActivity extends AbstractActivity {
 			}
 			return true;
 		}
-		
 	});
 	
 	@Override
