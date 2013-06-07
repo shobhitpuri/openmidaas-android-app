@@ -13,19 +13,20 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/tvSpinnerLabel"
-        android:layout_width="fill_parent"
+        android:id="@+id/tvAttributeName"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textColor="#000000"
-        android:ellipsize="marquee"
-        android:singleLine="true"
         android:text="" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/tvAttributeValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+
+</LinearLayout>

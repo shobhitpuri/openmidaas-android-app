@@ -13,19 +13,33 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:background="@drawable/default_bg"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <TextView
-        android:id="@+id/tvSpinnerLabel"
-        android:layout_width="fill_parent"
+    <ListView
+        android:id="@+id/lvConsents"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentTop="true" >
+    </ListView>
+
+    <TextView
+        android:id="@+id/tvNoConsentsPresent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:textColor="#000000"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:text="" />
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="@string/noConsentsPresentText"
+        android:textSize="18sp" />
+
 
 </RelativeLayout>
+

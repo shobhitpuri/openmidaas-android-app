@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.common;
+package org.openmidaas.app.activities.ui.list;
 
-public final class Intents {
-	
-	private static final String BASE_INTENT_NAME = "org.openmidaas.app";
-	
-	public static final String ATTRIBUTE_LIST_CHANGE_EVENT = BASE_INTENT_NAME + ".ATTRIBUTE_LIST_CHANGE_EVENT";
-	
-	public static final String QR_CODE_INIT_INTENT = "com.google.zxing.client.android.SCAN";
-	
-	public static final String REFRESH_CONSENT_LIST = BASE_INTENT_NAME + ".REFRESH_CONSENT_LIST";
-	
+import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.library.model.GenericAttribute;
+
+import android.app.Activity;
+
+public class GenderListElement extends GenericAttributeListElement{
+
+	public GenderListElement(GenericAttribute attribute) {
+		super(attribute);
+	}
+
+	@Override
+	public void onTouch(Activity activity) {
+		DialogUtils.showBirthdayDatePickerDialog(activity, mAttribute);
+	}
 }
