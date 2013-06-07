@@ -140,7 +140,14 @@ public class ConsentManager {
 		return false;
 	}
 
-	
+	/**
+	 * Checks whether a attribute consent exists for a client id with key
+	 * @param context
+	 * @param key
+	 * @param clientId
+	 * @param attributeList
+	 * @return
+	 */
 	public static AbstractAttribute<?> checkConsentWithSetKey(Context context, String key, String clientId, List<AbstractAttribute<?>> attributeList) {
 		JSONObject consentSet = loadAuthorizedAttributes(context, clientId);
 		if(attributeList == null) {
@@ -165,6 +172,13 @@ public class ConsentManager {
 		return null;
 	}
 	
+	/**
+	 * Checks if an attribute has consent for the givent client id
+	 * @param context
+	 * @param clientId
+	 * @param attribute
+	 * @return
+	 */
 	public static boolean checkConsent(Context context, String clientId, AbstractAttribute<?> attribute) {
 		JSONObject consentSet = loadAuthorizedAttributes(context, clientId);
 		Iterator<?> keys = consentSet.keys();
