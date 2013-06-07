@@ -15,12 +15,17 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.ui.list;
 
+import org.openmidaas.app.R;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
+import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 /**
  * 
@@ -29,13 +34,19 @@ import android.app.Activity;
  */
 public class PersonalListCategory extends AbstractListCategory {
 	
+	private String[] genders = null;
+	
+	private Activity mActivity;
+	
+	private AlertDialog mGenderDialog = null;
+	
 	public PersonalListCategory() {
 		mGroupName = Constants.ATTRIBUTE_CATEGORY_PERSONAL;
 	}
 
 	@Override
 	public void onAddButtonTouch(Activity activity) {
-		
+		showPersonalInfoChoicesDialog(activity);
 	}
 
 	@Override
@@ -49,11 +60,48 @@ public class PersonalListCategory extends AbstractListCategory {
 	}
 	
 	private void addToPosition(AbstractAttribute<?> attribute, int position) {
-		GenericAttribute genericAttribute = (GenericAttribute) mList.get(position).getAttribute();
-		if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
-			mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
+		if(attribute.getName().equals(Constants.AttributeNames.BIRTHDAY)) {
+			mList.add(new BirthdayListElement((GenericAttribute) attribute));
+		} else if (attribute.getName().equals(Constants.AttributeNames.GENDER)) {
+			mList.add(new GenderListElement((GenericAttribute) attribute));
 		} else {
-			mList.get(position).setAttribute(attribute);
+			GenericAttribute genericAttribute = (GenericAttribute) mList.get(position).getAttribute();
+			if(genericAttribute.getValue() != null && !(genericAttribute.getValue().isEmpty())) {
+				mList.add(new GenericAttributeListElement((GenericAttribute) attribute));
+			} else {
+				mList.get(position).setAttribute(attribute);
+			}
 		}
 	}
+	
+	private void showPersonalInfoChoicesDialog(final Activity activity) {
+	  mActivity = activity;
+	  final String[] personalInfoNames = activity.getResources().getStringArray(R.array.additionalPersonalInfoArray);
+	  genders = activity.getResources().getStringArray(R.array.genders);
+	  AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+      builder.setTitle(activity.getString(R.string.addMorePersonalInfo));
+      builder.setSingleChoiceItems(personalInfoNames, -1, new DialogInterface.OnClickListener() {
+		
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			if(personalInfoNames[which].equals("Birthday")) {
+				DialogUtils.showBirthdayDatePickerDialog(activity, null);
+			} else  if (personalInfoNames[which].equals("Gender")) {
+				DialogUtils.showRadioButtonDialog(activity, activity.getString(R.string.genderDialogTitle), genders, genderDialogListener);
+			}
+		}
+      });
+      mGenderDialog = builder.create();
+      mGenderDialog.show();
+	}
+	
+	private DialogInterface.OnClickListener genderDialogListener = new DialogInterface.OnClickListener() {
+
+		@Override
+		public void onClick(DialogInterface dialogInterface, int which) {
+			String gender = genders[which];
+			Utils.createGenericAttribute(mActivity, Constants.AttributeNames.GENDER, gender, null);
+			dialogInterface.dismiss();
+		}
+	};
 }

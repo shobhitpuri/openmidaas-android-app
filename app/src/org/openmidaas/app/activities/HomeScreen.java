@@ -83,7 +83,7 @@ public class HomeScreen extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
-				showQRCodeScanner();
+				showQRCodeScanner();				
 			}
 		});
 		
@@ -101,6 +101,15 @@ public class HomeScreen extends AbstractActivity {
 			public void onClick(View v) {
 				showUrlCollectionDialog();
 			}
+		});
+		
+		findViewById(R.id.button1).setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				startActivity(new Intent(HomeScreen.this, ManageConsentActivity.class));
+			}
+			
 		});
 		
 		checkForUpdates();

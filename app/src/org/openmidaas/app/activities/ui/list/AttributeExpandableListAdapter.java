@@ -17,10 +17,12 @@ package org.openmidaas.app.activities.ui.list;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.CategoryManager;
-import org.openmidaas.app.common.CategoryMap;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.model.core.AbstractAttribute;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -50,26 +52,6 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		super.notifyDataSetChanged();
 	}
 	
-	
-	/**
-	 * 
-	 * View holder implementation for the group and 
-	 * child view to support smooth scrolling so as 
-	 * to avoid finding the view element every time
-	 * a pass in made through the data set. 
-	 * For addition info, see:
-	 * http://developer.android.com/training/improving-layouts/smooth-scrolling.html
-	 */
-	static class GroupViewHolder {
-		TextView tvTitle;
-		Button btnAdd;
-	}
-	
-	static class ChildViewHolder {
-		TextView tvAttributeLabel;
-		TextView tvAttributeValue;
-	}
-	
 	@Override
 	public Object getChild(int arg0, int arg1) {
 		return mGroupHeaders.get(arg0).getList().get(arg1);
@@ -89,7 +71,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		if(convertView == null) {
 			LayoutInflater infalInflater = (LayoutInflater) mActivity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.list_child_layout, null);
+            convertView = infalInflater.inflate(R.layout.attribute_list_child_layout, null);
            childViewHolder = new ChildViewHolder();
            childViewHolder.tvAttributeLabel = (TextView)convertView.findViewById(R.id.tvAttributeName);
            childViewHolder.tvAttributeValue = (TextView)convertView.findViewById(R.id.etAttributeValue);
@@ -100,11 +82,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 			
 		childViewHolder.tvAttributeLabel.setText("");
 		childViewHolder.tvAttributeValue.setText("");
-		if(attribute.getLabel() == null || attribute.getLabel().isEmpty()) {	
-			childViewHolder.tvAttributeLabel.setText(CategoryMap.get(attribute.getName()).getAttributeLabel());
-		} else {
-			childViewHolder.tvAttributeLabel.setText(attribute.getLabel());
-		}
+		childViewHolder.tvAttributeLabel.setText(Utils.getAttributeDisplayLabel(attribute));
 		if(attribute.getValue() != null) {
 			childViewHolder.tvAttributeValue.setText(listElement.getRenderedAttributeValue());
 		}
@@ -150,7 +128,7 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 		final AbstractListCategory category = (AbstractListCategory)getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.list_group_layout, null);
+            convertView = infalInflater.inflate(R.layout.attribute_list_group_layout, null);
             groupViewHolder = new GroupViewHolder();
             groupViewHolder.tvTitle = (TextView)convertView.findViewById(R.id.tvGroupName);
             groupViewHolder.btnAdd = (Button) convertView.findViewById(R.id.btnAddMore);
@@ -178,5 +156,24 @@ public class AttributeExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public boolean isChildSelectable(int arg0, int arg1) {
 		return true;
+	}
+	
+	/**
+	 * 
+	 * View holder implementation for the group and 
+	 * child view to support smooth scrolling so as 
+	 * to avoid finding the view element every time
+	 * a pass in made through the data set. 
+	 * For addition info, see:
+	 * http://developer.android.com/training/improving-layouts/smooth-scrolling.html
+	 */
+	private static class GroupViewHolder {
+		TextView tvTitle;
+		Button btnAdd;
+	}
+	
+	private static class ChildViewHolder {
+		TextView tvAttributeLabel;
+		TextView tvAttributeValue;
 	}
 }

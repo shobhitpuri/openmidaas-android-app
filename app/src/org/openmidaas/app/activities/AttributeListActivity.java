@@ -24,6 +24,7 @@ import org.openmidaas.app.activities.ui.list.AddressCategory;
 import org.openmidaas.app.activities.ui.list.AttributeExpandableListAdapter;
 import org.openmidaas.app.activities.ui.list.CreditCardCategory;
 import org.openmidaas.app.activities.ui.list.EmailCategory;
+import org.openmidaas.app.activities.ui.list.GeneralCategory;
 import org.openmidaas.app.activities.ui.list.GenericAttributeListElement;
 import org.openmidaas.app.activities.ui.list.OnListElementLongTouch;
 import org.openmidaas.app.activities.ui.list.OnListElementTouch;
@@ -126,7 +127,7 @@ public class AttributeListActivity extends AbstractActivity {
 	
 	@Override
 	protected int getLayoutResourceId() {
-		return (R.layout.list_view);
+		return (R.layout.attribute_list_view);
 	}
 
 	@Override
@@ -166,7 +167,13 @@ public class AttributeListActivity extends AbstractActivity {
 				createEmptyAttributeList();
 				for(AbstractAttribute<?> attribute:attributeList) {
 					// reverse lookup: attribute name -> category name -> category list
-					CategoryManager.getMap().get(CategoryMap.get(attribute.getName()).getCategoryName()).addAttribute(attribute);
+					CategoryMap map = CategoryMap.get(attribute.getName());
+					// if we have a map definition
+					if(map != null) {
+						CategoryManager.getMap().get(map.getCategoryName()).addAttribute(attribute);
+					} else {
+						CategoryManager.getMap().get(Constants.ATTRIBUTE_CATEGORY_GENERAL).addAttribute(attribute);
+					}
 				} 
 				mHandler.sendEmptyMessage(1);
 			}
@@ -197,6 +204,8 @@ public class AttributeListActivity extends AbstractActivity {
 			map.put(Constants.ATTRIBUTE_CATEGORY_ADDRESS, addressCategory);
 			CreditCardCategory creditCardCategory = new CreditCardCategory();
 			map.put(Constants.ATTRIBUTE_CATEGORY_CREDIT_CARD, creditCardCategory);
+			GeneralCategory generalCategory = new GeneralCategory();
+			map.put(Constants.ATTRIBUTE_CATEGORY_GENERAL, generalCategory);
 		} catch (InvalidAttributeNameException e) {
 			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 		}

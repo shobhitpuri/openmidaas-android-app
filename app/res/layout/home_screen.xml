@@ -88,4 +88,12 @@
         android:drawableLeft="@drawable/list"
         android:text="@string/manage_info" />
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Magic" />
+
 </RelativeLayout>
