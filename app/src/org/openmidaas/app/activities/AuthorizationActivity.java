@@ -116,20 +116,18 @@ public class AuthorizationActivity extends AbstractActivity{
 		if(cbUserConsent.isChecked()) {
 			ConsentManager.saveAuthorizedAttributes(mActivity, mSession.getClientId(), this.mAttributeSet);
 		}
+		String message = "";
 		if(savedConsentPresent) {
-			mProgressDialog.setMessage(mActivity.getString(R.string.authorizingAlreadyPresentConsent)+": " + mConsentedAttributeNames);
-			mProgressDialog.show();
-			Handler handler = new Handler(); 
-		    handler.postDelayed(new Runnable() { 
-		         public void run() { 
-		        	 checkEssentialAndAuthorize();
-		         } 
-		    }, 2000); 
+			message = mActivity.getString(R.string.authorizingAlreadyPresentConsent)+": " + mConsentedAttributeNames;
+			
 		} else {
-			mProgressDialog.setMessage(mActivity.getString(R.string.authorizingRequest));
+			message = mActivity.getString(R.string.authorizingRequest);
 			mProgressDialog.show();
 			checkEssentialAndAuthorize();
 		}
+		mProgressDialog.setMessage(message);
+		mProgressDialog.show();
+		checkEssentialAndAuthorize();
 	}
 	
 	/**
@@ -148,6 +146,7 @@ public class AuthorizationActivity extends AbstractActivity{
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
 					mProgressDialog.setMessage(mActivity.getString(R.string.authorizingRequest));
 					mProgressDialog.show();
 					authorizeSession();
@@ -278,36 +277,26 @@ public class AuthorizationActivity extends AbstractActivity{
 						ConsentManager.revokeConsentForClient(mActivity, mSession.getClientId());
 						break;
 					} else {
-						// check if any of the attributes in the list have consent 
-						for(AbstractAttribute<?> attribute: mAttributeList) {
-							if(attribute != null) {
-								if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
-									builder.append(prefix);
-									prefix = ", ";
-									builder.append(set.getLabel());
-									set.setSelectedAttribute(attribute);
-								// no consent present so break.
-								} else {
-									noConsentPresent = true;
-									ConsentManager.revokeConsentForClient(mActivity, mSession.getClientId());
-									break;
-								}
-							}
+						AbstractAttribute<?> consentedAttribute = ConsentManager.checkConsentWithSetKey(mActivity, set.getKey(), mSession.getClientId(), mAttributeList);
+						if(consentedAttribute != null) {
+							builder.append(prefix);
+							prefix = ", ";
+							builder.append(set.getLabel());
+							set.setSelectedAttribute(consentedAttribute);
+						} else {
+							noConsentPresent = true;
+							ConsentManager.revokeConsentForClient(mActivity, mSession.getClientId());
+							break;
 						}
 					}
 				} else {
-					for(AbstractAttribute<?> attribute: mAttributeList) {
-						if(attribute != null) {
-							if(ConsentManager.checkConsent(mActivity, mSession.getClientId(), attribute)) {
-								builder.append(prefix);
-								prefix = ", ";
-								builder.append(set.getLabel());
-								set.setSelectedAttribute(attribute);
-							} else {
-								set.setSelectedAttribute(null);
-							}
-						}
-					}
+					AbstractAttribute<?> consentedAttribute = ConsentManager.checkConsentWithSetKey(mActivity, set.getKey(), mSession.getClientId(), mAttributeList);
+					if(consentedAttribute != null) {
+						builder.append(prefix);
+						prefix = ", ";
+						builder.append(set.getLabel());
+					} 
+					set.setSelectedAttribute(consentedAttribute);
 				}
 				
 				if(noConsentPresent) {
