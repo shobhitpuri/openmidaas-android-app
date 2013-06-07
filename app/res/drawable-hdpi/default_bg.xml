@@ -27,9 +27,9 @@
         android:type="linear" />
   
      <corners 
-        android:radius="2dp"
-		android:bottomRightRadius="15dp"
-		android:bottomLeftRadius="15dp"
+        android:radius="0dp"
+		android:bottomRightRadius="0dp"
+		android:bottomLeftRadius="0dp"
 		android:topLeftRadius="0dp"
 		android:topRightRadius="0dp"/>
 </shape>

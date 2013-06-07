@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.openmidaas.app.activities.ui.list;
 
+
+import org.openmidaas.app.R;
 import org.openmidaas.app.common.AttributeRegistrationHelper;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Intents;
@@ -60,9 +62,9 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 		//Adding heading for choosing method
 		TextView tvMethodHeading = new TextView(activity);
 		tvMethodHeading.setText("Choose method to re-verify:");
-		tvMethodHeading.setTextSize(3*tvMethodHeading.getTextSize()/4);
-		tvMethodHeading.setTextColor(Color.WHITE);
-		tvMethodHeading.setPadding(20, 0, 0, 0);
+		tvMethodHeading.setTextAppearance(activity, android.R.attr.textAppearanceMedium);
+		tvMethodHeading.setTextColor(Color.BLACK);
+		tvMethodHeading.setPadding(30, 0, 0, 0);
 		
 		//Adding TextView to Layout 
 		llChooseMethod.addView(tvMethodHeading);
@@ -70,10 +72,10 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 		//Adding radio buttons to choose the method
 		RadioButton rbPhoneCall = new RadioButton(activity);
 		rbPhoneCall.setId(0);
-		rbPhoneCall.setText("Phone Call ");
+		rbPhoneCall.setText(activity.getResources().getString(R.string.radioButtonPhoneVerifyText));
 		RadioButton rbSms = new RadioButton(activity);
 		rbSms.setId(1);
-		rbSms.setText("SMS");		
+		rbSms.setText(activity.getResources().getString(R.string.radioButtonSMSVerifyText));		
 		
 		//Adding the radio buttons to button group
 		final RadioGroup rgMethod = new RadioGroup(activity);
@@ -90,10 +92,10 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 			@Override
 			public void run() {
 				new AlertDialog.Builder(activity)
-			    .setTitle("Attribute Details:")
+			    .setTitle(activity.getResources().getString(R.string.title_phone_dialog_box))
 			    .setMessage(message)
 			    .setView(llChooseMethod)
-			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
+			    .setNegativeButton(activity.getResources().getString(R.string.reVerifyButtonText), new DialogInterface.OnClickListener() {
 					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -117,7 +119,7 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 						}
 					} 
 				})
-			    .setPositiveButton("Delete",  new DialogInterface.OnClickListener() {
+			    .setPositiveButton(activity.getResources().getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
 			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
