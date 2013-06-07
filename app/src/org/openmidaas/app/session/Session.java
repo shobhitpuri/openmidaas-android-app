@@ -252,7 +252,8 @@ public class Session implements VerifiedAttributeBundleCallback{
 	 * @param attributeSet
 	 * @param userSelectedAttribute
 	 */
-	private void putAttributeInMap(AbstractAttributeSet attributeSet, AbstractAttribute<?> userSelectedAttribute) {
+	private void putAttributeInMap(AbstractAttributeSet attributeSet) {
+		 AbstractAttribute<?> userSelectedAttribute = attributeSet.getSelectedAttribute();
 		Logger.debug(getClass(), "User-selected attribute: " + userSelectedAttribute + " has state: " + userSelectedAttribute.getState().toString());
 		// if verified was requested for the attribute.
 		if(attributeSet.isVerifiedRequested()) {
@@ -315,12 +316,11 @@ public class Session implements VerifiedAttributeBundleCallback{
 				try {
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.error(getClass(), e.getMessage());
 				}
 				for(AbstractAttributeSet attributeSet: mAttributeListSet){
 					if(attributeSet.getSelectedAttribute() != null) {
-						putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
+						putAttributeInMap(attributeSet);
 					}
 				}
 				// if there is at least one verified attribute in the map, get the signed bundle from the server. 
