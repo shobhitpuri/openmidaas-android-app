@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D8DCE3"
+    android:id="@+id/rlSplash"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/splashScreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/home_image_icon" />
+    <RelativeLayout
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerInParent="true"
+	    android:layout_toLeftOf="@id/splashScreen">
+	    
+	    <TextView
+	        android:id="@+id/tvHomeUrl"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/tvHomeHeading"
+	        android:layout_below="@+id/tvDescription"
+	        android:paddingTop="5dp"
+	        android:text="@string/openMIDaas_url"
+	        android:autoLink="web"
+	        android:textColor="@android:color/holo_blue_light"
+	        android:textSize="16sp" />
+	
+	    <TextView
+	        android:id="@+id/tvDescription"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/tvHomeHeading"
+	        android:layout_toLeftOf="@+id/splashScreen"
+	        android:text="@string/openMIDaas_full_form"
+	        android:textSize="16sp" />
+	
+	    <TextView
+	        android:id="@+id/tvHomeHeading"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/tvDescription"
+	        android:layout_alignTop="@+id/splashScreen"
+	        android:layout_marginLeft="19dp"
+	        android:layout_marginTop="18dp"
+	        android:text="@string/about_us_heading"
+	        android:textSize="24sp" />
+	
+	    <TextView
+	        android:id="@+id/tvVersion"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/tvHomeUrl"
+	        android:layout_centerHorizontal="true"
+	        android:paddingTop="5dp"
+	        android:textIsSelectable="false"
+	        android:textSize="13sp" />
+    	
+   	</RelativeLayout>
+
+	<ProgressBar
+	    android:id="@+id/progressBar"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/splashScreen"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="50dp" />
+	
+	 <TextView
+        android:id="@+id/tvRegistering"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progressBar"
+        android:layout_centerHorizontal="true"
+        android:textIsSelectable="false"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+</RelativeLayout>

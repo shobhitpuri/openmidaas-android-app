@@ -188,7 +188,7 @@ public class AuthorizationActivity extends AbstractActivity{
 			@Override
 			public void onDone(String message) {
 				dismissDialog();
-				mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+				mActivity.startActivity(new Intent(mActivity, MainTabActivity.class).putExtra(MainTabActivity.ANIMATE_DONE, true));
 				mActivity.finish();
 			}
 
@@ -196,6 +196,7 @@ public class AuthorizationActivity extends AbstractActivity{
 			public void onError(Exception e) {
 				dismissDialog();
 				DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+				mActivity.finish();
 			}
 			
 		});

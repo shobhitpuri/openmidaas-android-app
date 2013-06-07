@@ -33,14 +33,15 @@ import org.openmidaas.app.activities.ui.list.PhoneCategory;
 import org.openmidaas.app.common.CategoryManager;
 import org.openmidaas.app.common.CategoryMap;
 import org.openmidaas.app.common.Constants;
-import org.openmidaas.app.common.Intents;
 import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.Intents;
 import org.openmidaas.library.model.GenericAttributeFactory;
 import org.openmidaas.library.model.InvalidAttributeNameException;
 import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 import org.openmidaas.library.persistence.AttributePersistenceCoordinator;
 import org.openmidaas.library.persistence.core.AttributeDataCallback;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -48,31 +49,39 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
-public class AttributeListActivity extends AbstractActivity {
+public class AttributeListActivity extends Fragment {
 
 	private ExpandableListView mAttributeListView;
 	
-	private static AttributeListActivity mActivity;
+	private RelativeLayout rl;
 	
 	private AttributeExpandableListAdapter mAdapter;
 	
+	private FragmentActivity fa;
+	
 	@Override
-	public void onCreate(Bundle savedInstance) {
-		super.onCreate(savedInstance);
-		mAttributeListView = (ExpandableListView)findViewById(R.id.listViewAttributes);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		
+		fa = (FragmentActivity)super.getActivity();
+		rl = (RelativeLayout) inflater.inflate(R.layout.attribute_list_view, container, false);
+		mAttributeListView = (ExpandableListView)rl.findViewById(R.id.listViewAttributes);
 		mAttributeListView.setClickable(true);
 		mAttributeListView.setItemsCanFocus(true);
-		mActivity = this;
-		mAttributeListView.setGroupIndicator(null);
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		mAdapter = new AttributeExpandableListAdapter(mActivity);
+		mAdapter = new AttributeExpandableListAdapter(fa);
 		mAttributeListView.setAdapter(mAdapter);
 		
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
@@ -80,7 +89,7 @@ public class AttributeListActivity extends AbstractActivity {
 	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
 				 OnListElementTouch element = (OnListElementTouch) mAdapter.getChild(groupPosition, childPosition);
 				 if(element != null) {
-					 element.onTouch(mActivity);
+					 element.onTouch(fa);
 				 }
 				
 				return false;
@@ -96,7 +105,7 @@ public class AttributeListActivity extends AbstractActivity {
 						OnListElementLongTouch element =  (OnListElementLongTouch) 
 								mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id));
 						if(element != null) {
-							element.onLongTouch(mActivity);
+							element.onLongTouch(fa);
 							
 						}
 					return true;
@@ -104,6 +113,12 @@ public class AttributeListActivity extends AbstractActivity {
 				return false;
 			}
 		});
+		return rl;
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstance) {
+		super.onCreate(savedInstance);
 	}
 	
 	@Override
@@ -115,24 +130,14 @@ public class AttributeListActivity extends AbstractActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		registerReceiver(attributeEvent, new IntentFilter(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));	
+		getActivity().registerReceiver(attributeEvent, new IntentFilter(Intents.ATTRIBUTE_LIST_CHANGE_EVENT));	
 		refreshAttributeList();
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
-		unregisterReceiver(attributeEvent);
-	}
-	
-	@Override
-	protected int getLayoutResourceId() {
-		return (R.layout.attribute_list_view);
-	}
-
-	@Override
-	protected String getTitlebarText() {
-		return ("Your Information");
+		getActivity().unregisterReceiver(attributeEvent);
 	}
 	
 	/**
@@ -148,7 +153,7 @@ public class AttributeListActivity extends AbstractActivity {
 
 			@Override
 			public void onError(MIDaaSException exception) {
-				DialogUtils.showNeutralButtonDialog(AttributeListActivity.this, "Error", exception.getError().getErrorMessage());
+				DialogUtils.showNeutralButtonDialog(fa, "Error", exception.getError().getErrorMessage());
 			}
 			
 		});
@@ -207,7 +212,7 @@ public class AttributeListActivity extends AbstractActivity {
 			GeneralCategory generalCategory = new GeneralCategory();
 			map.put(Constants.ATTRIBUTE_CATEGORY_GENERAL, generalCategory);
 		} catch (InvalidAttributeNameException e) {
-			DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+			DialogUtils.showNeutralButtonDialog(fa, "Error", e.getMessage());
 		}
 		
 	}
@@ -239,9 +244,4 @@ public class AttributeListActivity extends AbstractActivity {
 		}
 	});
 	
-	@Override
-	public void onBackPressed() {
-		startActivity(new Intent(mActivity, HomeScreen.class));
-		finish();
-	}
 }
