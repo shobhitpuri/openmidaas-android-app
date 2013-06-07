@@ -29,6 +29,8 @@ public enum CategoryMap {
 	GIVEN_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.GIVEN_NAME, "Given Name"),
 	MIDDLE_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.MIDDLE_NAME, "Middle Name"),
 	FAMILY_NAME(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.FAMILY_NAME, "Family Name"),
+	BIRTHDAY(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.BIRTHDAY, "Birthday"),
+	GENDER(Constants.ATTRIBUTE_CATEGORY_PERSONAL, Constants.AttributeNames.GENDER, "Gender"),
 	EMAIL(Constants.ATTRIBUTE_CATEGORY_EMAIL, Constants.AttributeNames.EMAIL, "Email"),
 	PHONE(Constants.ATTRIBUTE_CATEGORY_PHONE, Constants.AttributeNames.PHONE, "Phone"),
     ADDRESS(Constants.ATTRIBUTE_CATEGORY_ADDRESS, Constants.AttributeNames.ADDRESS, "Address"),

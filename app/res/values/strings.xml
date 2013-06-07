@@ -212,8 +212,71 @@
 	<string name="btnCompletePhVerification">Complete Verification</string>
 	<string name="rdBtnSmsText">SMS</string>
 	<string name="rdBtnPhoneText">Phone Call</string>
-	
     <string name="noAttributeSelectedLabel">No attribute selected</string>
-    <string name="noAttributeSelectedValue"></string>
-
+    <string name="attributeAddOnFlyError">Attribute could not be added to the list. </string>
+    <string name="rememberAuthorization">Remember my selection</string>
+    <string name="consentActivityTitleText">Manage Consent</string>
+    <string name="consentDetailsDialogTitle">Consent Details</string>
+    <string name="btnRevokeConsent">Revoke Consent</string>
+    <string name="noConsentsPresentText">You have no saved consents.\nYou can save consents by checking the \"Remember my selection\" box when authorizing.</string>
+    <string name="consentDetailsDialogInfoText">You have consented to release the following to</string>
+    <string name="consentsSummaryInfoText">The following lists your saved consents. Tap a row to view more about the consent.</string>
+    <string name="authorizingRequest">Authorizing request</string>
+    <string name="authorizingAlreadyPresentConsent">Authorizing with already consented information</string>
+    <string-array name="additionalPersonalInfoArray">
+	    <item>Birthday</item>
+	    <item>Gender</item>
+	</string-array>
+	<string name="addMorePersonalInfo">Add Personal Info</string>
+	<string-array name="genders">
+	    <item>Male</item>
+	    <item>Female</item>
+	</string-array>
+	<string name="birthdayDialogTitle">Select your birthday</string>
+	<string name="genderDialogTitle">Select your gender</string>
+	<string name="unverifiableAttributeText">Attribute is non verifiable</string>
+	<string name="verifiedAttributeText">Attribute already verified</string>
+	<string name="unknownAttributeStateText">Attribute state is unknown. Cannot re-verify</string>
+	<string name="errorInAttributeSaveText">Attribute has not been saved. Error re-verifying</string>
+	<string name="enterPinText">Enter the PIN you received below</string>
+	<string name="modifyAttributeText">Enter a new value and tap save</string>
+	<string name="generalAttributeNamePrompt">Enter a name</string>
+	<string name="generalAttributeValuePrompt">Enter a value</string>
+	<string name="generalAttributeDialogCollectionTitle">Enter a name and value and tap save</string>
+	<string name="saveButtonText">Save</string>
+	<string name="okButtonText">OK</string>
+	<string name="verifyButtonText">Verify</string>
+	<string name="cancelButtonText">Cancel</string>
+	<string name="backButtonText">Back</string>
+	<string name="deleteButtonText">Delete</string>
+	<string name="defaultErrorDialogTitle">Error</string>
+	<string name="clearButtonText">CLEAR</string>
+	<string name="reVerifyButtonText">Re-Verify</string>
+	<string name="radioButtonPhoneVerifyText">Phone Call </string>
+	<string name="radioButtonSMSVerifyText">SMS</string>
+	
+	<string name="help">Help</string>
+	<string name="about_us">About us</string>
+	<string name="revoke_permission">Revoke Concent</string>
+	<string name="help_text">Help text goes here!</string>
+	<string name="about_us_heading">{open}MIDaaS</string>
+    <string name="openMIDaas_full_form">Mobile Identity as a Service</string>
+    <string name="about_us_text">
+		<![CDATA[
+		<html>
+		 <head></head>
+		 <body style="text-align:justify;color:black;background-color:#D8DCE3;">
+			<p> It is annoying when you have to manage your profile at every online service, isn\'t it? You might have tried using cloud services like Google and Facebook. Although there is nothing wrong with using those cloud services, but your profile information is yours, so shouldn\'t you be in complete control of it? Why not leverage something you are most likely have with you all the time, to hold this information securely? Why not use this tool to control how the online world gets your personal information? 
+			No more passwords. No more account information fill out forms. No more eCommerce forms.</p> 
+			<p> OpenMIDaas is a open source project that aids at providing Mobile Identity as a Service. The main idea is to make your mobile device the center of your authentication and user profile world. You can read more about it on <a href="http://openmidaas.org">www.openmidaas.org</a>.</p> 
+			<p> You can also checkout our projects on GitHub: <a href="https://github.com/securekey/">https://github.com/securekey/</a>. The source code is licensed under Apache License, Version 2.0. </p>
+		</body>
+		</html>
+		]]>
+	</string>
+	<string name="enter_url_dialog">Enter the URL as shown on your browser</string>
+	<string name="enter_url_hint">Enter Here</string>
+	<string name="openMIDaas_url">http://openmidaas.org</string>
+	
+	
 </resources>
