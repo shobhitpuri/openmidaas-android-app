@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
-import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.app.activities.ui.list.AbstractAttributeListElement;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
@@ -34,7 +33,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.InputType;
-import android.util.Base64;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
@@ -209,24 +207,7 @@ public final class DialogUtils {
 	 */
 	public static void showAttributeDetails(Activity activity, AbstractAttributeListElement listElement) {
 		AbstractAttribute<?> attribute = listElement.getAttribute();
-		String message = "Name: " + attribute.getName() + "\n" +
-				 "Value: " + attribute.toString() + "\n"; 
-		String[] jwsParams = null;
-		JSONObject object = null;
-		if(attribute.getSignedToken() != null) {
-			jwsParams = attribute.getSignedToken().split("\\."); 
-			try {
-				object = new JSONObject(new String(Base64.decode(jwsParams[1], Base64.NO_WRAP), "UTF-8"));
-				if(object != null) {
-					message += "Audience: " + object.getString("aud") + "\n";
-					message += "Issuer: " + object.getString("iss") + "\n";
-					message += "Subject: " + object.getString("sub") + "\n";
-					message += "Signature: " + jwsParams[2];
-				}
-			} catch(Exception e) {
-			}
-		}
-		showDeleteAttributeDialog(activity,listElement, message);
+		showDeleteAttributeDialog(activity,listElement, Utils.getAttributeDetailsLabel(attribute));
 	}
 	
 	/**
@@ -358,30 +339,34 @@ public final class DialogUtils {
 
 			@Override
 			public void run() {
-				new AlertDialog.Builder(activity)
-			    .setTitle(activity.getString(R.string.deleteButtonText))
-			    .setMessage(message)
-			    .setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
-							if ( attribute.getVerificationMethod()!=null)
-								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
-							else
-								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
-						}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
-							Toast.makeText(activity, activity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
-						}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
-							Toast.makeText(activity, activity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
-						}else if(attribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
-							Toast.makeText(activity, activity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
-						}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
-							Toast.makeText(activity, activity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
-						}
-					} 
-				})
-			    .setPositiveButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				
+			    builder.setTitle(activity.getString(R.string.deleteButtonText));
+			    builder.setMessage(message);
+			    if(attribute.getState() != ATTRIBUTE_STATE.VERIFIED){
+				
+				    builder.setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
+								if ( attribute.getVerificationMethod()!=null)
+									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
+								else
+									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
+							}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
+								Toast.makeText(activity, activity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
+							}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
+								Toast.makeText(activity, activity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
+							}else if(attribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
+								Toast.makeText(activity, activity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
+							}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
+								Toast.makeText(activity, activity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
+							}
+						} 
+					});
+			    }
+			    builder.setPositiveButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
 			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
@@ -393,8 +378,9 @@ public final class DialogUtils {
 							
 						}
 					}
-			    })	
-			     .show();
+			    });	
+			    AlertDialog dialog = builder.create();
+			    dialog.show();
 			}
 			
 		});
@@ -421,6 +407,9 @@ public final class DialogUtils {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			Utils.createGenericAttribute(activity, attributeName, value.toString(), null);
+			activity.startActivity(activity.getIntent());
+			activity.finish();
+			activity.overridePendingTransition(0, 0);
 		  }
 		});
 

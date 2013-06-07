@@ -20,6 +20,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.common.AttributeRegistrationHelper;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Intents;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.common.Constants.ATTRIBUTE_STATE;
 import org.openmidaas.library.model.PhoneAttribute.VERIFICATION_METHOD;
 import org.openmidaas.library.model.core.MIDaaSException;
@@ -49,9 +50,6 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 
 	@Override
 	public void onLongTouch(final Activity activity) {
-		
-		final String message = "Name: " + mAttribute.getName() + "\n" +
-				 "Value: " + mAttribute.toString(); 
 		
 		//Defined Layout for Dialog box 
 		final LinearLayout llChooseMethod = new LinearLayout (activity);
@@ -91,35 +89,41 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 		activity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				new AlertDialog.Builder(activity)
-			    .setTitle(activity.getResources().getString(R.string.title_phone_dialog_box))
-			    .setMessage(message)
-			    .setView(llChooseMethod)
-			    .setNegativeButton(activity.getResources().getString(R.string.reVerifyButtonText), new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
-							if (rgMethod.getCheckedRadioButtonId()==0){
-								mAttribute.setVerificationMethod(VERIFICATION_METHOD.call.toString());
-								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+mAttribute.getName() +" verification...", "You should receive a phone call soon at : "+getRenderedAttributeValue(), mAttribute);
-								
-							}else{
-								mAttribute.setVerificationMethod(VERIFICATION_METHOD.sms.toString());
-								AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+mAttribute.getName() +" verification...", "Verification code sent to "+getRenderedAttributeValue()+" via SMS", mAttribute);
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				
+			    builder.setTitle(activity.getString(R.string.deleteButtonText));
+			    builder.setMessage(Utils.getAttributeDetailsLabel(mAttribute));
+			    builder.setView(llChooseMethod);
+			    if(mAttribute.getState() != ATTRIBUTE_STATE.VERIFIED){
+				
+				    builder.setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
+						
+				    	@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
+								if (rgMethod.getCheckedRadioButtonId()==0){
+									mAttribute.setVerificationMethod(VERIFICATION_METHOD.call.toString());
+									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+mAttribute.getName() +" verification...", "You should receive a phone call soon at : "+getRenderedAttributeValue(), mAttribute);
+									
+								}else{
+									mAttribute.setVerificationMethod(VERIFICATION_METHOD.sms.toString());
+									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+mAttribute.getName() +" verification...", "Verification code sent to "+getRenderedAttributeValue()+" via SMS", mAttribute);
+								}
+							}else if(mAttribute.getState() == ATTRIBUTE_STATE.VERIFIED){
+								Toast.makeText(activity, "Attribute already verified", Toast.LENGTH_LONG).show();
+							}else if(mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
+								Toast.makeText(activity, "Attribute is non verifiable", Toast.LENGTH_LONG).show();
+							}else if(mAttribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
+								Toast.makeText(activity, "Attribute state is unknown. Can't re-verify", Toast.LENGTH_LONG).show();
+							}else if(mAttribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
+								Toast.makeText(activity, "Attribute has not been saved. Error re-verifying", Toast.LENGTH_LONG).show();
 							}
-						}else if(mAttribute.getState() == ATTRIBUTE_STATE.VERIFIED){
-							Toast.makeText(activity, "Attribute already verified", Toast.LENGTH_LONG).show();
-						}else if(mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
-							Toast.makeText(activity, "Attribute is non verifiable", Toast.LENGTH_LONG).show();
-						}else if(mAttribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
-							Toast.makeText(activity, "Attribute state is unknown. Can't re-verify", Toast.LENGTH_LONG).show();
-						}else if(mAttribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
-							Toast.makeText(activity, "Attribute has not been saved. Error re-verifying", Toast.LENGTH_LONG).show();
-						}
-					} 
-				})
-			    .setPositiveButton(activity.getResources().getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
+						} 
+					});
+			    }
+			    
+			    builder.setPositiveButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
 			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
@@ -131,12 +135,12 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 							
 						}
 					}
-			    })	
-			     .show();
+			    });	
+			    AlertDialog dialog = builder.create();
+			    dialog.show();
 			}
 			
 		});
-		
 	}
 	
 	@Override

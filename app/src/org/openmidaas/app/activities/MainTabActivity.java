@@ -38,7 +38,6 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -55,8 +54,6 @@ public class MainTabActivity extends FragmentActivity {
 	
 	AttributeListActivity fragment1;
 	EnterURLDialogFragment fragment3;
-	
-	protected static final String ANIMATE_DONE = "org.openmidaas.app.activities.animate_done";
 		
 	Intent intentScan;
 	private final int SCAN_REQUEST = 65534;
@@ -90,10 +87,6 @@ public class MainTabActivity extends FragmentActivity {
         //initializing tabs
         initializeTab();
         checkForUpdates();
-       
-		if(getIntent().getBooleanExtra(ANIMATE_DONE, false) == true) {
-			Toast.makeText(getApplicationContext(), "Attributes Successfully Sent", Toast.LENGTH_LONG).show();
-		}
 	}
 
 	@Override
@@ -279,6 +272,7 @@ public class MainTabActivity extends FragmentActivity {
 		  if (resultCode == Activity.RESULT_OK) {
 			  if(intent.getStringExtra("SCAN_RESULT") != null) {
 				  Logger.debug(getClass(), intent.getStringExtra("SCAN_RESULT"));
+				//  EnterURLDialogFragment fragment = getFragmentManager().findFragmentById(android.R.id.tabcontent);
 				  processUrl(intent.getStringExtra("SCAN_RESULT"));
 			  } else {
 				  DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");
@@ -289,7 +283,7 @@ public class MainTabActivity extends FragmentActivity {
 	   }
 	}
 	
-	private void processUrl(String result) {
+	public void processUrl(String result) {
 		try {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {
@@ -306,7 +300,6 @@ public class MainTabActivity extends FragmentActivity {
 							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 							startActivity(intent);
-							mActivity.finish();
 					    }
 						
 						@Override
