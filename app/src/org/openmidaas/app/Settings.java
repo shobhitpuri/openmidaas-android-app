@@ -23,4 +23,5 @@ public final class Settings {
 	public static final int LIBRARY_LOG_LEVEL = MIDaaS.LOG_LEVEL_DEBUG;
 	public static final boolean IS_HOCKEY_APP_ENABLED = false;
 	public static final String HOCKEY_APP_ID = "";
+	public static final String SERVER_URL = "https://midaas-avp.securekeylabs.com";
 }

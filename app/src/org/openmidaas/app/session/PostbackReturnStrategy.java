@@ -59,7 +59,7 @@ public class PostbackReturnStrategy extends ReturnStrategy {
 				@Override
 				public void onFailure(Throwable e, String response){
 					Logger.error(getClass(), e.getMessage() + response);
-					callback.onError(new Exception (e));
+					callback.onError(new Exception ("Error sending response to server. "));
 				}
 			});
 		
