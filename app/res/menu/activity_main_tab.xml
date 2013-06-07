@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/revoke_concent"
+        android:orderInCategory="100"
+        android:title="@string/revoke_permission"
+        android:showAsAction="collapseActionView"/>
+     <item
+        android:id="@+id/help"
+        android:orderInCategory="100"
+        android:title="@string/help"
+        android:showAsAction="collapseActionView"/>
+      <item
+        android:id="@+id/about_us"
+        android:orderInCategory="100"
+        android:title="@string/about_us"
+        android:showAsAction="collapseActionView"/>
+
+</menu>

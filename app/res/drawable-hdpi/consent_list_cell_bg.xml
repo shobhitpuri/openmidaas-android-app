@@ -14,22 +14,24 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-  
-    <padding android:left="0dp" android:top="0dp" 
-            android:right="0dp" android:bottom="0dp" /> 
-            
-    <gradient
-        android:startColor="#ffffff"
-        android:endColor="#CED6D6"
-        android:angle="-90"
-        android:type="linear" />
-  
-     <corners 
-        android:radius="0dp"
-		android:bottomRightRadius="0dp"
-		android:bottomLeftRadius="0dp"
-		android:topLeftRadius="0dp"
-		android:topRightRadius="0dp"/>
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" >
+        <shape android:shape="rectangle">
+              <gradient
+		      android:startColor="#757585"
+		      android:centerColor="#757585"
+		      android:endColor="#999799"
+		      android:angle="270" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+              <gradient
+      android:startColor="#f1f1f2"
+      android:centerColor="#e7e7e8"
+      android:endColor="#cfcfcf"
+      android:angle="270" />
+          
+        </shape>
+    </item>
+</selector>
