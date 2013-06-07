@@ -421,6 +421,9 @@ public final class DialogUtils {
 		public void onClick(DialogInterface dialog, int whichButton) {
 			Editable value = input.getText();
 			Utils.createGenericAttribute(activity, attributeName, value.toString(), null);
+			activity.startActivity(activity.getIntent());
+			activity.finish();
+			activity.overridePendingTransition(0, 0);
 		  }
 		});
 
