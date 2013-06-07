@@ -277,7 +277,6 @@
 	<string name="enter_url_dialog">Enter the URL as shown on your browser</string>
 	<string name="enter_url_hint">Enter Here</string>
 	<string name="openMIDaas_url">http://openmidaas.org</string>
-	<string name="title_phone_dialog_box">Delete/Re-Verify</string>
 	
 	
 </resources>

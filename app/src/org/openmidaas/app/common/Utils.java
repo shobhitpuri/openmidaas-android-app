@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.openmidaas.app.common;
 
+import org.json.JSONObject;
 import org.openmidaas.app.R;
 import org.openmidaas.library.model.GenericAttribute;
 import org.openmidaas.library.model.GenericAttributeFactory;
@@ -25,6 +26,7 @@ import org.openmidaas.library.model.core.MIDaaSException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Base64;
 
 public final class Utils {
 	
@@ -91,6 +93,26 @@ public final class Utils {
 	 */
 	public static void modifyGenericAttribute(Activity activity, GenericAttribute attribute, String value) {
 		setValueAndPersist(activity, attribute, value);
+	}
+	public static String getAttributeDetailsLabel(AbstractAttribute<?> attribute){
+		String message = "Name: " + attribute.getName() + "\n" +
+				 "Value: " + attribute.toString() + "\n"; 
+		String[] jwsParams = null;
+		JSONObject object = null;
+		if(attribute.getSignedToken() != null) {
+			jwsParams = attribute.getSignedToken().split("\\."); 
+			try {
+				object = new JSONObject(new String(Base64.decode(jwsParams[1], Base64.NO_WRAP), "UTF-8"));
+				if(object != null) {
+					message += "Audience: " + object.getString("aud") + "\n";
+					message += "Issuer: " + object.getString("iss") + "\n";
+					message += "Subject: " + object.getString("sub") + "\n";
+					message += "Signature: " + jwsParams[2];
+				}
+			} catch(Exception e) {
+			}
+		}
+		return message;
 	}
 	
 	private static void setValueAndPersist(Activity activity, GenericAttribute attribute, String value) {

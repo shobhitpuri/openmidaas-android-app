@@ -16,11 +16,13 @@
 package org.openmidaas.app.session;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
@@ -48,25 +50,29 @@ public class ConsentManager {
 		if(attributeSet == null) {
 			throw new IllegalArgumentException("Attribute list cannot be null");
 		}
-		Set<String> attributeIdSet = new TreeSet<String>();
+		JSONObject keyToAidMap = new JSONObject();
 		for(AbstractAttributeSet element: attributeSet){
 			AbstractAttribute<?> selectedAttribute = element.getSelectedAttribute();
 			if(selectedAttribute != null) {
 				if(selectedAttribute.getId() >= 0) {
-					attributeIdSet.add(String.valueOf(selectedAttribute.getId()));
+					try {
+						keyToAidMap.put(element.getKey(), String.valueOf(selectedAttribute.getId()));
+					} catch (JSONException e) {
+						Logger.debug(ConsentManager.class, e.getMessage());
+					}
 				}
 			}
 		}
 		SharedPreferences prefs = context.getSharedPreferences(
 				CONSENT_PERSISTENCE_STORE_NAME, Context.MODE_PRIVATE);
 		if(prefs != null) {
-			return (prefs.edit().putStringSet(clientId, attributeIdSet).commit());
+			return (prefs.edit().putString(clientId, keyToAidMap.toString()).commit());
 		}
 		return false;
 	}
 	
 	
-	private static List<String> loadAuthorizedAttributes(Context context, String clientId) {
+	private static JSONObject loadAuthorizedAttributes(Context context, String clientId) {
 		if(context == null) {
 			throw new IllegalArgumentException("context cannot be null");
 		}
@@ -75,15 +81,23 @@ public class ConsentManager {
 		}
 		SharedPreferences prefs = context.getSharedPreferences(
 				CONSENT_PERSISTENCE_STORE_NAME, Context.MODE_PRIVATE);
-		List<String> list = new ArrayList<String>();
 		if(prefs != null) {
-			Set<String> attributeIdSet = prefs.getStringSet(clientId, null);
-			if(attributeIdSet != null) {
-				list.addAll(attributeIdSet);
-				return list;
+			JSONObject consentMap;
+			try {
+				String mappedData = prefs.getString(clientId, null);
+				if(mappedData == null) {
+					return null;
+				}
+				consentMap = new JSONObject(mappedData);
+				if(consentMap != null) {
+					return consentMap;
+				}
+			} catch (JSONException e) {
+				Logger.debug(ConsentManager.class, e.getMessage());
 			}
+			
 		}
-		return list;
+		return null;
 	}
 	
 	/**
@@ -127,21 +141,59 @@ public class ConsentManager {
 	}
 
 	/**
-	 * Checks if the attribute maps to a consent by client id. 
+	 * Checks whether a attribute consent exists for a client id with key
+	 * @param context
+	 * @param key
+	 * @param clientId
+	 * @param attributeList
+	 * @return
+	 */
+	public static AbstractAttribute<?> checkConsentWithSetKey(Context context, String key, String clientId, List<AbstractAttribute<?>> attributeList) {
+		JSONObject consentSet = loadAuthorizedAttributes(context, clientId);
+		if(attributeList == null) {
+			return null;
+		}
+		if(consentSet == null) {
+			return null;
+		}
+		try {
+			long consentedAttributeId = Long.parseLong(consentSet.getString(key));
+			for(AbstractAttribute<?> attribute: attributeList) {
+				if(attribute != null) {
+					if(attribute.getId() == consentedAttributeId) {
+						return attribute;
+					}
+				}
+			}
+			return null;
+		}catch(JSONException e) {
+			Logger.debug(ConsentManager.class, e.getMessage());
+		}
+		return null;
+	}
+	
+	/**
+	 * Checks if an attribute has consent for the givent client id
 	 * @param context
 	 * @param clientId
 	 * @param attribute
-	 * @return true if a consent is present for the attribute, false otherwise. 
+	 * @return
 	 */
 	public static boolean checkConsent(Context context, String clientId, AbstractAttribute<?> attribute) {
-		List<String> consentSet = loadAuthorizedAttributes(context, clientId);
-		if(attribute == null) {
-			return false;
+		JSONObject consentSet = loadAuthorizedAttributes(context, clientId);
+		Iterator<?> keys = consentSet.keys();
+		try {
+			while( keys.hasNext() ){
+	            String key = (String)keys.next();
+	            long consentedAttributeId = Long.parseLong(consentSet.getString(key));
+	            if(consentedAttributeId == attribute.getId()) {
+	            	return true;
+	            }
+	        }
+		} catch(JSONException e) {
+			Logger.debug(ConsentManager.class, e.getMessage());
 		}
-		if(consentSet.size() == 0) {
-			return false;
-		}
-		return consentSet.indexOf(String.valueOf(attribute.getId())) != -1 ? true : false;
+		return false;
 	}
 }
 
