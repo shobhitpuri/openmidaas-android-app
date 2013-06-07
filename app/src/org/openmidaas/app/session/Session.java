@@ -312,6 +312,12 @@ public class Session implements VerifiedAttributeBundleCallback{
 
 			@Override
 			public void run() {
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				for(AbstractAttributeSet attributeSet: mAttributeListSet){
 					if(attributeSet.getSelectedAttribute() != null) {
 						putAttributeInMap(attributeSet, attributeSet.getSelectedAttribute());
