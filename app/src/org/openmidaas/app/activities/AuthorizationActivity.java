@@ -122,8 +122,6 @@ public class AuthorizationActivity extends AbstractActivity{
 			
 		} else {
 			message = mActivity.getString(R.string.authorizingRequest);
-			mProgressDialog.show();
-			checkEssentialAndAuthorize();
 		}
 		mProgressDialog.setMessage(message);
 		mProgressDialog.show();

@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.openmidaas.app.activities;
 
+import org.openmidaas.app.R;
+
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -22,13 +25,17 @@ import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.openmidaas.app.R;
-
 public class AboutUsActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_us);
+        
+        //Showing back button on Action Bar
+		ActionBar actionBar = getActionBar();
+		actionBar.setTitle(getResources().getString(R.string.about_us));
+		actionBar.setDisplayHomeAsUpEnabled(true);
+        
 		//Set the version number
         try {
 			String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -38,11 +45,9 @@ public class AboutUsActivity extends Activity {
 			
 		}
         WebView view = new WebView(this);
-        //view.setVerticalScrollBarEnabled(false);
 
         LinearLayout layoutAboutUs = ((LinearLayout)findViewById(R.id.llAboutUs));
         layoutAboutUs.addView(view);
-
         view.loadData(getString(R.string.about_us_text), "text/html", "utf-8");
 	}
 }

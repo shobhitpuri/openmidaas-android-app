@@ -45,6 +45,7 @@ public abstract class AbstractActivity extends Activity{
 		mProgressDialog.setCanceledOnTouchOutside(false);
 		ActionBar actionBar = getActionBar();
 		actionBar.setTitle(getTitlebarText());
+		actionBar.setDisplayHomeAsUpEnabled(true);
 	}
 	
 	/**
