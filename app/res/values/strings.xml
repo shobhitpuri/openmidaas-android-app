@@ -257,7 +257,7 @@
 	
 	<string name="help">Help</string>
 	<string name="about_us">About us</string>
-	<string name="revoke_permission">Revoke Concent</string>
+	<string name="revoke_permission">Revoke Consent</string>
 	<string name="help_text">Help text goes here!</string>
 	<string name="about_us_heading">{open}MIDaaS</string>
     <string name="openMIDaas_full_form">Mobile Identity as a Service</string>
@@ -275,7 +275,7 @@
 		]]>
 	</string>
 	<string name="enter_url_dialog">Enter the URL as shown on your browser</string>
-	<string name="enter_url_hint">Enter Here</string>
+	<string name="enter_url_hint">https://</string>
 	<string name="openMIDaas_url">http://openmidaas.org</string>
 	
 	

@@ -36,7 +36,7 @@
         android:allowBackup="true"
         android:launchMode="singleInstance"
         android:screenOrientation="portrait"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/home_image_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         >        
@@ -50,17 +50,16 @@
         </activity>
         <activity android:name=".activities.EmailRegistrationActivity"></activity>
         <activity android:name=".activities.PhoneRegistrationActivity"></activity>
-        <activity android:name=".activities.HomeScreen"></activity>
         <activity android:name=".activities.AddressActivity"></activity>
         <activity android:name=".activities.CreditCardActivity"></activity>
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity android:name=".activities.AuthorizationActivity"></activity>
         <activity android:name=".activities.ManageConsentActivity"></activity>
-        <activity android:name=".activities.MainTabActivity"> </activity>
+        <activity android:name=".activities.MainTabActivity"
+            android:screenOrientation="portrait"> </activity>
         <activity android:name=".activities.AboutUsActivity"
-            android:label="@string/about_us"> </activity>
-        <activity android:name=".activities.HelpActivity"
-            android:label="@string/help"> </activity>
+            android:label="@string/about_us"
+            android:screenOrientation="portrait"> </activity>
     </application>
 
 </manifest>

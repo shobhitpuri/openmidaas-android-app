@@ -125,12 +125,6 @@ public class MainTabActivity extends FragmentActivity {
 		        this.startActivity(intent);
 		        break;
 		        
-			case R.id.help:
-				intent = new Intent(this, HelpActivity.class);
-		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		        startActivity(intent);
-		        break;
-		        
 			case R.id.about_us:
 				intent = new Intent(this, AboutUsActivity.class);
 		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
