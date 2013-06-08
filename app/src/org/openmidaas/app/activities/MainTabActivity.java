@@ -35,6 +35,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -50,6 +51,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -74,7 +76,7 @@ public class MainTabActivity extends FragmentActivity {
 	private final int SCAN_REQUEST = 65534;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -125,12 +127,6 @@ public class MainTabActivity extends FragmentActivity {
 		        this.startActivity(intent);
 		        break;
 		        
-			case R.id.help:
-				intent = new Intent(this, HelpActivity.class);
-		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		        startActivity(intent);
-		        break;
-		        
 			case R.id.about_us:
 				intent = new Intent(this, AboutUsActivity.class);
 		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -168,7 +164,7 @@ public class MainTabActivity extends FragmentActivity {
                 return findViewById(android.R.id.tabcontent);
             }
         });
-        spec.setIndicator(createTabView(TAB_A, R.drawable.profiletab));
+        spec.setIndicator(createTabView(TAB_A, R.drawable.profiletab_i));
         mTabHost.addTab(spec);
 
 
@@ -187,7 +183,7 @@ public class MainTabActivity extends FragmentActivity {
                 return findViewById(android.R.id.tabcontent);
             }
         });
-        spec.setIndicator(createTabView(TAB_C, R.drawable.linktab));
+        spec.setIndicator(createTabView(TAB_C, R.drawable.linktab_i));
         mTabHost.addTab(spec);
 	}
 	
@@ -208,6 +204,10 @@ public class MainTabActivity extends FragmentActivity {
 	TabHost.OnTabChangeListener listener = new TabHost.OnTabChangeListener() {
 
 		public void onTabChanged(String tabId) {
+			//Hide he keyboard while changing tabs
+	        InputMethodManager imgr = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+	        imgr.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
+	        
 			/*Set current tab..*/
 	        if(tabId.equals(TAB_A)){
 	        	currentTab = TAB_A; 
@@ -215,7 +215,6 @@ public class MainTabActivity extends FragmentActivity {
 	        
 	        }else if(tabId.equals(TAB_B)){
 	        	showQRCodeScanner();
-	        
 	        }else if(tabId.equals(TAB_C)){
 	        	currentTab = TAB_C; 
 	        	pushFragments(tabId, fragment3);
@@ -287,7 +286,6 @@ public class MainTabActivity extends FragmentActivity {
 		  if (resultCode == Activity.RESULT_OK) {
 			  if(intent.getStringExtra("SCAN_RESULT") != null) {
 				  Logger.debug(getClass(), intent.getStringExtra("SCAN_RESULT"));
-				//  EnterURLDialogFragment fragment = getFragmentManager().findFragmentById(android.R.id.tabcontent);
 				  processUrl(intent.getStringExtra("SCAN_RESULT"));
 			  } else {
 				  DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");

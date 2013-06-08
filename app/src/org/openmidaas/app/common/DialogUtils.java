@@ -343,18 +343,13 @@ public final class DialogUtils {
 				
 			    builder.setTitle(activity.getString(R.string.deleteButtonText));
 			    builder.setMessage(message);
-			    if(attribute.getState() != ATTRIBUTE_STATE.VERIFIED){
+			    if( (attribute.getState() != ATTRIBUTE_STATE.VERIFIED) && (attribute.getState() != ATTRIBUTE_STATE.NOT_VERIFIABLE) ){
 				
 				    builder.setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
 						
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
-								if ( attribute.getVerificationMethod()!=null)
-									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "You should receive a "+attribute.getVerificationMethod()+" soon at : "+listElement.getRenderedAttributeValue(), attribute);
-								else
-									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "Verification code sent to "+listElement.getRenderedAttributeValue(), attribute);
-							}else if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
+							if(attribute.getState() == ATTRIBUTE_STATE.VERIFIED){
 								Toast.makeText(activity, activity.getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
 							}else if(attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
 								Toast.makeText(activity, activity.getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
@@ -362,6 +357,11 @@ public final class DialogUtils {
 								Toast.makeText(activity, activity.getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
 							}else if(attribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
 								Toast.makeText(activity, activity.getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
+							}else if(attribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || attribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
+								if ( attribute.getVerificationMethod()!=null && !attribute.getVerificationMethod().isEmpty())
+									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+attribute.getName() +" verification...", "Verification code has been sent to "+listElement.getRenderedAttributeValue(), attribute);
+								else
+									DialogUtils.showToast(activity, "Verification method is not known. Cannot be verified.");
 							}
 						} 
 					});

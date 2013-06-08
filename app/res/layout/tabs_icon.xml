@@ -17,7 +17,7 @@
     android:layout_width="match_parent"
 	android:layout_height="0dip"
 	android:layout_weight="1"
-	android:background="#FAEBD7" 
+	android:background="#C9CDD4" 
 	>
 	<LinearLayout 
 		android:id="@+id/tabsLayout" 
@@ -31,6 +31,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:id="@+id/tab_icon" 
+	        android:contentDescription="@string/tabs"
 	        />
 	    <TextView
 		    android:id="@+id/tab_text"
@@ -39,6 +40,7 @@
 		    android:textColor="#000000"
 		    android:paddingTop="5dp"
 		    android:paddingBottom="2dp"
+		    android:textIsSelectable="false"
 		    android:textSize="14sp"
 		/>
 	</LinearLayout>
