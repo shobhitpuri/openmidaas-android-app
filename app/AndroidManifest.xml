@@ -58,7 +58,6 @@
         <activity android:name=".activities.MainTabActivity"
             android:screenOrientation="portrait"> </activity>
         <activity android:name=".activities.AboutUsActivity"
-            android:label="@string/about_us"
             android:screenOrientation="portrait"> </activity>
     </application>
 
