@@ -24,21 +24,13 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
-import org.openmidaas.app.common.Intents;
-import org.openmidaas.app.common.Logger;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -61,18 +53,18 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 public class MainTabActivity extends FragmentActivity {
 	
 	/* Tab identifiers */
-	private static String TAB_A;
-	private static String TAB_B;
-	private static String TAB_C;
+	private static String tabProfile;
+	private static String tabScan;
+	private static String tabInputURL;
 	String currentTab;
 	
 	TabHost mTabHost;
 	
 	AttributeListFragment mAttributeListFragment;
 	EnterURLDialogFragment mUrlInputFragment;
+	ScanFragment mScanFragment;
 		
 	Intent intentScan;
-	private final int SCAN_REQUEST = 65534;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
 
@@ -83,9 +75,9 @@ public class MainTabActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main_tab);
 		
 		//Get the text
-		TAB_A = getResources().getString(R.string.profileTabtext);
-		TAB_B = getResources().getString(R.string.scanTabtext);
-		TAB_C = getResources().getString(R.string.urlTabtext);
+		tabProfile = getResources().getString(R.string.profileTabtext);
+		tabScan = getResources().getString(R.string.scanTabtext);
+		tabInputURL = getResources().getString(R.string.urlTabtext);
 		
 		//Enabling action bar
 		ActionBar actionBar = getActionBar();
@@ -100,6 +92,7 @@ public class MainTabActivity extends FragmentActivity {
         
 		mAttributeListFragment = new AttributeListFragment();
 		mUrlInputFragment = new EnterURLDialogFragment();
+		mScanFragment = new ScanFragment();
 		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
@@ -139,6 +132,7 @@ public class MainTabActivity extends FragmentActivity {
 		}
 		return true;
 	}
+	
 	/*
 	 * To show the overflow button on the Action Bar
 	 */
@@ -155,39 +149,39 @@ public class MainTabActivity extends FragmentActivity {
 	        e.printStackTrace();
 	    }
 	}
+	
 	/*
 	 * Initialize the tabs and set views and identifiers for the tabs
 	 */
-	public void initializeTab() {
+	private void initializeTab() {
 		
-        TabHost.TabSpec spec    =   mTabHost.newTabSpec(TAB_A);
+        TabHost.TabSpec spec    =   mTabHost.newTabSpec(tabProfile);
         mTabHost.setCurrentTab(0);
-        currentTab = TAB_A;
+        currentTab = tabProfile;
         spec.setContent(new TabHost.TabContentFactory() {
             public View createTabContent(String tag) {
                 return findViewById(android.R.id.tabcontent);
             }
         });
-        spec.setIndicator(createTabView(TAB_A, R.drawable.profiletab_i));
+        spec.setIndicator(createTabView(tabProfile, R.drawable.profiletab_i));
         mTabHost.addTab(spec);
 
-
-        spec =   mTabHost.newTabSpec(TAB_B);
+        spec =   mTabHost.newTabSpec(tabScan);
         spec.setContent(new TabHost.TabContentFactory() {
             public View createTabContent(String tag) {
                 return findViewById(android.R.id.tabcontent);
             }
         });
-        spec.setIndicator(createTabView(TAB_B, R.drawable.qrcodetab));
+        spec.setIndicator(createTabView(tabScan, R.drawable.qrcodetab));
         mTabHost.addTab(spec);
         
-        spec =   mTabHost.newTabSpec(TAB_C);
+        spec =   mTabHost.newTabSpec(tabInputURL);
         spec.setContent(new TabHost.TabContentFactory() {
             public View createTabContent(String tag) {
                 return findViewById(android.R.id.tabcontent);
             }
         });
-        spec.setIndicator(createTabView(TAB_C, R.drawable.linktab_i));
+        spec.setIndicator(createTabView(tabInputURL, R.drawable.linktab_i));
         mTabHost.addTab(spec);
 	}
 	
@@ -213,13 +207,16 @@ public class MainTabActivity extends FragmentActivity {
 	        imgr.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
 	        
 			/*Set current tab..*/
-	        if(tabId.equals(TAB_A)){
-	        	currentTab = TAB_A; 
+	        if(tabId.equals(tabProfile)){
+	        	currentTab = tabProfile; 
 	        	pushFragments(tabId, mAttributeListFragment);
-	        }else if(tabId.equals(TAB_B)){
-	        	showQRCodeScanner();
-	        }else if(tabId.equals(TAB_C)){
-	        	currentTab = TAB_C; 
+	        }else if(tabId.equals(tabScan)){
+	        	pushFragments(tabId, mScanFragment);
+	        	//mTabHost.setCurrentTabByTag(TAB_B);
+	        	
+	        	//showQRCodeScanner();
+	        }else if(tabId.equals(tabInputURL)){
+	        	currentTab = tabInputURL; 
 	        	pushFragments(tabId, mUrlInputFragment);
 		      }
 	      }
@@ -228,7 +225,7 @@ public class MainTabActivity extends FragmentActivity {
 	/*
 	 * adds the fragment to the FrameLayout
 	 */
-	public void pushFragments(String tag, Fragment fragment){
+	private void pushFragments(String tag, Fragment fragment){
 	    
 	    FragmentManager manager = getSupportFragmentManager();
 	    FragmentTransaction ft = manager.beginTransaction();
@@ -236,69 +233,6 @@ public class MainTabActivity extends FragmentActivity {
 	    ft.commit();
 	}
 
-
-	private void showQRCodeScanner() {
-		// check to see if a rear-camera is available
-		if(mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-			Intent intentScan = new Intent(Intents.QR_CODE_INIT_INTENT);
-			intentScan.putExtra("SCAN_MODE", "QR_CODE_MODE");
-			intentScan.putExtra("SAVE_HISTORY", false);
-		    try {
-		      startActivityForResult(intentScan, SCAN_REQUEST);
-		      mTabHost.setCurrentTabByTag(currentTab);
-		    } catch (ActivityNotFoundException error) {
-		    	showNoQRCodeScannersPresentDialog();
-		    }
-		} else {
-			showNoBackCameraPresentDialog();
-		}
-	}
-	
-	private void showNoQRCodeScannersPresentDialog() {
-		AlertDialog.Builder dlBuilder = new AlertDialog.Builder(mActivity);
-        dlBuilder.setTitle(R.string.no_qrcode_dialog_title);
-        dlBuilder.setMessage(R.string.no_qrcode_dialog_message);
-        dlBuilder.setIcon(android.R.drawable.ic_dialog_alert);
-        dlBuilder.setPositiveButton(R.string.install_button,
-            new DialogInterface.OnClickListener() {
-              @Override
-              public void onClick(DialogInterface dialog, int whichButton) {
-                Intent intent = new Intent(Intent.ACTION_VIEW,
-                                           Uri.parse(Constants.ZXING_MARKET));
-                try {
-                  startActivity(intent);
-                }
-                catch (ActivityNotFoundException e) { 
-                  intent = new Intent(Intent.ACTION_VIEW,
-                                      Uri.parse(Constants.ZXING_DIRECT));
-                  startActivity(intent);
-                }
-              }
-            }
-        );
-        dlBuilder.setNegativeButton(R.string.cancel, null);
-        dlBuilder.show();
-	}
-	
-	private void showNoBackCameraPresentDialog() {
-		DialogUtils.showNeutralButtonDialog(mActivity, "Problem", getString(R.string.rear_camera_not_present_text));
-	}
-	
-	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-	  if (requestCode == SCAN_REQUEST) {
-		  if (resultCode == Activity.RESULT_OK) {
-			  if(intent.getStringExtra("SCAN_RESULT") != null) {
-				  Logger.debug(getClass(), intent.getStringExtra("SCAN_RESULT"));
-				  processUrl(intent.getStringExtra("SCAN_RESULT"));
-			  } else {
-				  DialogUtils.showNeutralButtonDialog(mActivity, "Error", "Error in scan");
-			  }
-		  } else if (resultCode == Activity.RESULT_CANCELED) {
-			  Logger.debug(getClass(), "Scan cancelled");
-		  }
-	   }
-	}
-	
 	void processUrl(String result) {
 		try {
 			URI uri = new URI(result);
@@ -316,8 +250,7 @@ public class MainTabActivity extends FragmentActivity {
 							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 							startActivity(intent);
-					    }
-						
+					    }	
 						@Override
 					    public void onFailure(Throwable e, String response) {
 							if(mProgressDialog.isShowing()) {
