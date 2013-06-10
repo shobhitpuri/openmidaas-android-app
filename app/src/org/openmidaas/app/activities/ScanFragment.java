@@ -83,6 +83,7 @@ public class ScanFragment extends Fragment {
 		  } else if (resultCode == Activity.RESULT_CANCELED) {
 			  Logger.debug(getClass(), "Scan cancelled");
 		  }
+		  //Setting the tab back to precious tab 
 		  ((MainTabActivity)getActivity()).mTabHost.setCurrentTabByTag(((MainTabActivity)getActivity()).currentTab);
 	   }
 	}
