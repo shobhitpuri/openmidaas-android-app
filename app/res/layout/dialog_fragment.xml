@@ -35,7 +35,7 @@
 	 	    android:layout_width="wrap_content"
 	 	    android:layout_centerHorizontal="true"
 	 	    android:textAppearance="?android:attr/textAppearanceMedium"
-	 	    android:text="@string/enter_url_dialog" 
+	 	    android:text="@string/enterUrlDialog" 
 	 	    />
 	 	<EditText 
 	 	    android:id="@+id/edDialogFragment"
@@ -44,7 +44,7 @@
 	 	    android:layout_below="@id/tvDialogFragment"
 	 	    android:inputType="textUri"
 	 	    android:layout_marginTop="10dp"
-	 	    android:text="@string/enter_url_hint"
+	 	    android:text="@string/enterUrlHint"
 	 	    />
 	 	<LinearLayout 
 	 	    android:id="@+id/llDialogFragment"

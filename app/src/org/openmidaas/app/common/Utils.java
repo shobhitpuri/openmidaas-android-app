@@ -25,6 +25,7 @@ import org.openmidaas.library.model.core.AbstractAttribute;
 import org.openmidaas.library.model.core.MIDaaSException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Base64;
 
@@ -53,14 +54,12 @@ public final class Utils {
 		String label = "";
 		if(attribute != null) {
 			CategoryMap map = CategoryMap.get(attribute.getName());
-			if(map != null) {
+			if(attribute.getLabel() != null && !attribute.getLabel().isEmpty()) {
+				label = attribute.getLabel();
+			}else if(map!=null){
 				label = map.getAttributeLabel();
-			} else {
-				if(attribute.getLabel() == null || attribute.getLabel().isEmpty()) {
-					label = attribute.getName();
-				} else {
-					label = attribute.getLabel();
-				}
+			}else{
+				label = attribute.getName();
 			}
 		} 
 		return label;
@@ -99,14 +98,26 @@ public final class Utils {
 				 "Value: " + attribute.toString() + "\n"; 
 		String[] jwsParams = null;
 		JSONObject object = null;
+		String audience = "";
+		String issuer = "";
+		String subject = "";
 		if(attribute.getSignedToken() != null) {
 			jwsParams = attribute.getSignedToken().split("\\."); 
 			try {
 				object = new JSONObject(new String(Base64.decode(jwsParams[1], Base64.NO_WRAP), "UTF-8"));
 				if(object != null) {
-					message += "Audience: " + object.getString("aud") + "\n";
-					message += "Issuer: " + object.getString("iss") + "\n";
-					message += "Subject: " + object.getString("sub") + "\n";
+					if (object.getString("aud")!=null)
+						audience = object.getString("aud");
+					message += "Audience: " + audience + "\n";
+					
+					if (object.getString("iss")!=null)
+						issuer = object.getString("iss");
+					message += "Issuer: " + issuer + "\n";
+					
+					if (object.getString("sub")!=null)
+						subject = object.getString("sub");
+					message += "Subject: " + subject + "\n";
+					
 					message += "Signature: " + jwsParams[2];
 				}
 			} catch(Exception e) {
@@ -126,4 +137,22 @@ public final class Utils {
 			DialogUtils.showNeutralButtonDialog(activity, activity.getString(R.string.defaultErrorDialogTitle), e.getError().getErrorMessage());
 		}
 	}
+	
+	/**
+	 * To get the version number from Manifest
+	 */
+	public static String getVersionNumber(Context context ){
+		
+		String versionName;
+        try {
+			versionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+			return versionName;
+		} catch (Exception e) {
+			Logger.error(Utils.class , e);
+			Logger.error(Utils.class, "Version number unknown");
+		}
+        return "Unknown";
+	}
+	
+	
 }

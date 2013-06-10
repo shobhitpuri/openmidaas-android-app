@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.openmidaas.app.activities.ui.fragments;
+package org.openmidaas.app.activities;
 import org.openmidaas.app.R;
-import org.openmidaas.app.activities.MainTabActivity;
 
 import android.app.Activity;
 import android.content.Context;

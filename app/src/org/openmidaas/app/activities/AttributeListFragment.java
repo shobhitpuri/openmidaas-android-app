@@ -61,27 +61,27 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-public class AttributeListActivity extends Fragment {
+public class AttributeListFragment extends Fragment {
 
 	private ExpandableListView mAttributeListView;
 	
-	private RelativeLayout rl;
+	private RelativeLayout mRelativeLayout;
 	
 	private AttributeExpandableListAdapter mAdapter;
 	
-	private FragmentActivity fa;
+	private FragmentActivity mFragmentActiviy;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		fa = (FragmentActivity)super.getActivity();
-		rl = (RelativeLayout) inflater.inflate(R.layout.attribute_list_view, container, false);
-		mAttributeListView = (ExpandableListView)rl.findViewById(R.id.listViewAttributes);
+		mFragmentActiviy = (FragmentActivity)super.getActivity();
+		mRelativeLayout = (RelativeLayout) inflater.inflate(R.layout.attribute_list_view, container, false);
+		mAttributeListView = (ExpandableListView)mRelativeLayout.findViewById(R.id.listViewAttributes);
 		mAttributeListView.setClickable(true);
 		mAttributeListView.setItemsCanFocus(true);
 		mAttributeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		mAdapter = new AttributeExpandableListAdapter(fa);
+		mAdapter = new AttributeExpandableListAdapter(mFragmentActiviy);
 		mAttributeListView.setAdapter(mAdapter);
 		
 		mAttributeListView.setOnChildClickListener(new OnChildClickListener() {
@@ -89,7 +89,7 @@ public class AttributeListActivity extends Fragment {
 	            public boolean onChildClick(ExpandableListView arg0, View arg1, int groupPosition, int childPosition, long id) {
 				 OnListElementTouch element = (OnListElementTouch) mAdapter.getChild(groupPosition, childPosition);
 				 if(element != null) {
-					 element.onTouch(fa);
+					 element.onTouch(mFragmentActiviy);
 				 }
 				
 				return false;
@@ -105,7 +105,7 @@ public class AttributeListActivity extends Fragment {
 						OnListElementLongTouch element =  (OnListElementLongTouch) 
 								mAdapter.getChild(ExpandableListView.getPackedPositionGroup(id), ExpandableListView.getPackedPositionChild(id));
 						if(element != null) {
-							element.onLongTouch(fa);
+							element.onLongTouch(mFragmentActiviy);
 							
 						}
 					return true;
@@ -113,7 +113,7 @@ public class AttributeListActivity extends Fragment {
 				return false;
 			}
 		});
-		return rl;
+		return mRelativeLayout;
 	}
 	
 	@Override
@@ -153,7 +153,7 @@ public class AttributeListActivity extends Fragment {
 
 			@Override
 			public void onError(MIDaaSException exception) {
-				DialogUtils.showNeutralButtonDialog(fa, "Error", exception.getError().getErrorMessage());
+				DialogUtils.showNeutralButtonDialog(mFragmentActiviy, "Error", exception.getError().getErrorMessage());
 			}
 			
 		});
@@ -212,7 +212,7 @@ public class AttributeListActivity extends Fragment {
 			GeneralCategory generalCategory = new GeneralCategory();
 			map.put(Constants.ATTRIBUTE_CATEGORY_GENERAL, generalCategory);
 		} catch (InvalidAttributeNameException e) {
-			DialogUtils.showNeutralButtonDialog(fa, "Error", e.getMessage());
+			DialogUtils.showNeutralButtonDialog(mFragmentActiviy, "Error", e.getMessage());
 		}
 		
 	}
