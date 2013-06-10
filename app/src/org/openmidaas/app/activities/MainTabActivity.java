@@ -212,9 +212,6 @@ public class MainTabActivity extends FragmentActivity {
 	        	pushFragments(tabId, mAttributeListFragment);
 	        }else if(tabId.equals(tabScan)){
 	        	pushFragments(tabId, mScanFragment);
-	        	//mTabHost.setCurrentTabByTag(TAB_B);
-	        	
-	        	//showQRCodeScanner();
 	        }else if(tabId.equals(tabInputURL)){
 	        	currentTab = tabInputURL; 
 	        	pushFragments(tabId, mUrlInputFragment);
