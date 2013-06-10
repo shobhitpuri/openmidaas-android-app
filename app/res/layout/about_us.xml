@@ -31,7 +31,7 @@
 	    	android:layout_height="wrap_content"
 	    	android:layout_gravity="center_horizontal"
 	    	android:layout_marginTop="15dp"
-	    	android:text="@string/about_us_heading"
+	    	android:text="@string/aboutUsHeading"
 	    	android:textAppearance="?android:attr/textAppearanceLarge"
 	    />
 		<TextView
@@ -39,7 +39,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_gravity="center_horizontal"
-		        android:text="@string/openMIDaas_full_form"
+		        android:text="@string/openMIDaasFullForm"
 		        android:textAppearance="?android:attr/textAppearanceMedium" />
 		
 		<TextView

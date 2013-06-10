@@ -24,7 +24,6 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.activities.ui.fragments.EnterURLDialogFragment;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Intents;
@@ -62,15 +61,15 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 public class MainTabActivity extends FragmentActivity {
 	
 	/* Tab identifiers */
-	static String TAB_A = "Profile";
-	static String TAB_B = "Scan";
-	static String TAB_C = "Enter URL";
+	private static String TAB_A;
+	private static String TAB_B;
+	private static String TAB_C;
 	String currentTab;
 	
 	TabHost mTabHost;
 	
-	AttributeListActivity fragment1;
-	EnterURLDialogFragment fragment3;
+	AttributeListFragment mAttributeListFragment;
+	EnterURLDialogFragment mUrlInputFragment;
 		
 	Intent intentScan;
 	private final int SCAN_REQUEST = 65534;
@@ -83,6 +82,11 @@ public class MainTabActivity extends FragmentActivity {
 		getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 		setContentView(R.layout.activity_main_tab);
 		
+		//Get the text
+		TAB_A = getResources().getString(R.string.profileTabtext);
+		TAB_B = getResources().getString(R.string.scanTabtext);
+		TAB_C = getResources().getString(R.string.urlTabtext);
+		
 		//Enabling action bar
 		ActionBar actionBar = getActionBar();
         actionBar.setTitle(null);
@@ -94,8 +98,8 @@ public class MainTabActivity extends FragmentActivity {
         mActivity = this;
         mProgressDialog = new ProgressDialog(mActivity);
         
-		fragment1 = new AttributeListActivity();
-		fragment3 = new EnterURLDialogFragment();
+		mAttributeListFragment = new AttributeListFragment();
+		mUrlInputFragment = new EnterURLDialogFragment();
 		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
@@ -211,13 +215,12 @@ public class MainTabActivity extends FragmentActivity {
 			/*Set current tab..*/
 	        if(tabId.equals(TAB_A)){
 	        	currentTab = TAB_A; 
-	        	pushFragments(tabId, fragment1);
-	        
+	        	pushFragments(tabId, mAttributeListFragment);
 	        }else if(tabId.equals(TAB_B)){
 	        	showQRCodeScanner();
 	        }else if(tabId.equals(TAB_C)){
 	        	currentTab = TAB_C; 
-	        	pushFragments(tabId, fragment3);
+	        	pushFragments(tabId, mUrlInputFragment);
 		      }
 	      }
 	    };
@@ -296,7 +299,7 @@ public class MainTabActivity extends FragmentActivity {
 	   }
 	}
 	
-	public void processUrl(String result) {
+	void processUrl(String result) {
 		try {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {
@@ -325,13 +328,13 @@ public class MainTabActivity extends FragmentActivity {
 					    }
 					});
 				} else {
-					DialogUtils.showNeutralButtonDialog(mActivity, "Non http/https URI type", result);
+					DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURIType), result);
 				}
 			} else {
-				DialogUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Either relative URI or unknown format: " + result);
+				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.unknownURIFormat) + " " + result);
 			}
 		} catch (URISyntaxException e) {
-			DialogUtils.showNeutralButtonDialog(mActivity, "Invalid URI", "Invalid URI: " + result);
+			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.invalidURI) + " " + result);
 		}
 	}
 	

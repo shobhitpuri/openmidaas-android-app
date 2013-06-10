@@ -185,7 +185,7 @@ public class AuthorizationActivity extends AbstractActivity{
 			@Override
 			public void onDone(String message) {
 				dismissDialog();
-				DialogUtils.showToast(mActivity, "Attributes Successfully Sent");
+				DialogUtils.showToast(mActivity, getResources().getString(R.string.attrSentSuccess));
 				mActivity.finish();
 			}
 

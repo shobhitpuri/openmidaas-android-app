@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <string name="app_name">MIDaas App</string>
+    <string name="appName">MIDaas App</string>
     <string name="registering_text">Registering&#8230;</string>
     <string name="registration_success_text">Registration Success!</string>
     <string name="checking_registration">Checking registration&#8230;</string>
@@ -256,12 +256,11 @@
 	<string name="radioButtonSMSVerifyText">SMS</string>
 	
 	<string name="help">Help</string>
-	<string name="about_us">About</string>
-	<string name="revoke_permission">Revoke Consent</string>
-	<string name="help_text">Help text goes here!</string>
-	<string name="about_us_heading">{open}MIDaaS</string>
-    <string name="openMIDaas_full_form">Mobile Identity as a Service</string>
-    <string name="about_us_text">
+	<string name="aboutUs">About</string>
+	<string name="revokePermission">Revoke Consent</string>
+	<string name="aboutUsHeading">{open}MIDaaS</string>
+    <string name="openMIDaasFullForm">Mobile Identity as a Service</string>
+    <string name="aboutUsText">
 		<![CDATA[
 		<html>
 		 <head></head>
@@ -274,10 +273,18 @@
 		</html>
 		]]>
 	</string>
-	<string name="enter_url_dialog">Enter the URL as shown on your browser</string>
-	<string name="enter_url_hint">https://</string>
-	<string name="openMIDaas_url">http://openmidaas.org</string>
+	<string name="enterUrlDialog">Enter the URL as shown on your browser</string>
+	<string name="enterUrlHint">https://</string>
+	<string name="openMIDaasUrl">http://openmidaas.org</string>
 	<string name="tabs">Tabs</string>
+	<string name="profileTabtext">Profile</string>
+	<string name="scanTabtext">Scan</string>
+	<string name="urlTabtext">Enter URL</string>
+	<string name="attrSentSuccess">Attributes Successfully Sent.</string>
+	
+	<string name="invalidURIType">Non http/https URI type</string>
+	<string name="unknownURIFormat">Either relative URI or unknown format:</string>
+	<string name="invalidURI">Invalid URI</string>
 	
 	
 </resources>

@@ -16,38 +16,43 @@
 package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
+import org.openmidaas.app.common.Utils;
 
 import android.app.ActionBar;
-import android.app.Activity;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class AboutUsActivity extends Activity {
+public class AboutUsActivity extends AbstractActivity {
+	TextView tvVersionName;
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_us);
-        
+		tvVersionName = (TextView)findViewById(R.id.tvVersion);
         //Showing back button on Action Bar
 		ActionBar actionBar = getActionBar();
-		actionBar.setTitle(getResources().getString(R.string.about_us));
 		actionBar.setDisplayHomeAsUpEnabled(true);
         
-		//Set the version number
-        try {
-			String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-			TextView tvVersionName = (TextView)findViewById(R.id.tvVersion);
-			tvVersionName.setText("Version: "+versionName);
-		} catch (NameNotFoundException e) {
-			
-		}
-        WebView view = new WebView(this);
+		//Get the version number
+		String versionNumber = Utils.getVersionNumber(getApplicationContext());
+		tvVersionName.setText("Version: "+versionNumber);
+        
+		WebView view = new WebView(this);
 
         LinearLayout layoutAboutUs = ((LinearLayout)findViewById(R.id.llAboutUs));
         layoutAboutUs.addView(view);
-        view.loadData(getString(R.string.about_us_text), "text/html", "utf-8");
+        view.loadData(getString(R.string.aboutUsText), "text/html", "utf-8");
+	}
+
+	@Override
+	protected String getTitlebarText() {
+		return (getResources().getString(R.string.aboutUs));
+	}
+
+	@Override
+	protected int getLayoutResourceId() {
+		return (R.layout.about_us);
 	}
 }

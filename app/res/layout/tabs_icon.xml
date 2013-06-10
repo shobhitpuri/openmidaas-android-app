@@ -18,6 +18,7 @@
 	android:layout_height="0dip"
 	android:layout_weight="1"
 	android:background="#C9CDD4" 
+	android:id="@+id/llTabIcon"
 	>
 	<LinearLayout 
 		android:id="@+id/tabsLayout" 
