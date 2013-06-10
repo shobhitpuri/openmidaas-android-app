@@ -94,11 +94,12 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 				
 			    builder.setTitle(activity.getString(R.string.deleteButtonText));
 			    builder.setMessage(Utils.getAttributeDetailsLabel(mAttribute));
-			    builder.setView(llChooseMethod);
 			    if(mAttribute.getState() != ATTRIBUTE_STATE.VERIFIED){
-				
-				    builder.setNegativeButton("Re-verify", new DialogInterface.OnClickListener() {
-						
+			    	//show the radio group for choosing verification method
+			    	builder.setView(llChooseMethod);
+			    	//set re-verify button
+				    builder.setPositiveButton("Re-verify", new DialogInterface.OnClickListener() {
+				    	
 				    	@Override
 						public void onClick(DialogInterface dialog, int which) {
 							if(mAttribute.getState() == ATTRIBUTE_STATE.PENDING_VERIFICATION || mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIED) {
@@ -111,19 +112,19 @@ public class PhoneAttributeListElement extends AbstractAttributeListElement {
 									AttributeRegistrationHelper.verifyAttribute(activity, "Starting "+mAttribute.getName() +" verification...", "Verification code sent to "+getRenderedAttributeValue()+" via SMS", mAttribute);
 								}
 							}else if(mAttribute.getState() == ATTRIBUTE_STATE.VERIFIED){
-								Toast.makeText(activity, "Attribute already verified", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, activity.getResources().getString(R.string.verifiedAttributeText), Toast.LENGTH_LONG).show();
 							}else if(mAttribute.getState() == ATTRIBUTE_STATE.NOT_VERIFIABLE){
-								Toast.makeText(activity, "Attribute is non verifiable", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, activity.getResources().getString(R.string.unverifiableAttributeText), Toast.LENGTH_LONG).show();
 							}else if(mAttribute.getState() == ATTRIBUTE_STATE.UNKNOWN){
-								Toast.makeText(activity, "Attribute state is unknown. Can't re-verify", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, activity.getResources().getString(R.string.unknownAttributeStateText), Toast.LENGTH_LONG).show();
 							}else if(mAttribute.getState() == ATTRIBUTE_STATE.ERROR_IN_SAVE){
-								Toast.makeText(activity, "Attribute has not been saved. Error re-verifying", Toast.LENGTH_LONG).show();
+								Toast.makeText(activity, activity.getResources().getString(R.string.errorInAttributeSaveText), Toast.LENGTH_LONG).show();
 							}
 						} 
 					});
 			    }
 			    
-			    builder.setPositiveButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
+			    builder.setNegativeButton(activity.getString(R.string.deleteButtonText),  new DialogInterface.OnClickListener() {
 			    	
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {
