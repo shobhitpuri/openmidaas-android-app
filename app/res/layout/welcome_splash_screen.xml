@@ -29,7 +29,7 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="25dp"
         android:layout_marginBottom="10dp"
-        android:contentDescription="@string/app_name"
+        android:contentDescription="@string/appName"
         android:src="@drawable/home_image_icon" />
     <RelativeLayout
 	    android:layout_width="wrap_content"
@@ -44,7 +44,7 @@
 	        android:layout_alignLeft="@+id/tvHomeHeading"
 	        android:layout_below="@+id/tvDescription"
 	        android:paddingTop="5dp"
-	        android:text="@string/openMIDaas_url"
+	        android:text="@string/openMIDaasUrl"
 	        android:autoLink="web"
 	        android:textColor="@android:color/holo_blue_light"
 	        android:textSize="16sp" />
@@ -55,7 +55,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/tvHomeHeading"
 	        android:layout_toLeftOf="@+id/splashScreen"
-	        android:text="@string/openMIDaas_full_form"
+	        android:text="@string/openMIDaasFullForm"
 	        android:textSize="16sp" />
 	
 	    <TextView
@@ -66,7 +66,7 @@
 	        android:layout_alignTop="@+id/splashScreen"
 	        android:layout_marginLeft="19dp"
 	        android:layout_marginTop="18dp"
-	        android:text="@string/about_us_heading"
+	        android:text="@string/aboutUsHeading"
 	        android:textSize="24sp" />
 	
 	    <TextView
