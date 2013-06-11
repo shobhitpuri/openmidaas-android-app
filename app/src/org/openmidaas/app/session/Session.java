@@ -38,6 +38,8 @@ import android.net.ParseException;
 
 public class Session implements VerifiedAttributeBundleCallback{
 	
+	private final String ACR = "acr";
+	
 	private final String CLIENT_ID = "client_id";
 	
 	private final String ATTRIBUTES = "attrs";
@@ -57,6 +59,8 @@ public class Session implements VerifiedAttributeBundleCallback{
 	private final String ESSENTIAL = "essential";
 	
 	private final String VERIFIED = "verified";
+	
+	private int mAcrLevel = 1;
 	
 	private String mClientId;
 	
@@ -105,6 +109,9 @@ public class Session implements VerifiedAttributeBundleCallback{
 		if(requestObject.isNull(CLIENT_ID) || requestObject.isNull(ATTRIBUTES) || requestObject.isNull(RETURN)) {
 			Logger.error(getClass(), "clientId, attrs, and/or return values are missing in the request");
 			throw new AttributeRequestObjectException("clientId, attrs, and/or return values are missing in the request");
+		}
+		if(!(requestObject.isNull(ACR))) {
+			mAcrLevel = requestObject.getInt(ACR);
 		}
 		// we need to check whether the return object has the correct keys
 		if(!(requestObject.getJSONObject(RETURN).has(RETURN_METHOD))) {
@@ -323,12 +330,14 @@ public class Session implements VerifiedAttributeBundleCallback{
 						putAttributeInMap(attributeSet);
 					}
 				}
-				// if there is at least one verified attribute in the map, get the signed bundle from the server. 
-				if(mVerifiedAttributeMap.size() >0) {
-					Logger.debug(getClass(), "Bundling attibutes with AVS");
-					MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, Session.this);
-				}else{
-					MIDaaS.getVerifiedAttributeBundle(mClientId, mState, null, Session.this);
+
+				if(mAcrLevel == 1) {
+					if(mVerifiedAttributeMap.size() >0) {
+						MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, Session.this);
+					} else {
+						MIDaaS.getVerifiedAttributeBundle(mClientId, mState, null, Session.this);
+					}
+
 				}
 			}
 			
