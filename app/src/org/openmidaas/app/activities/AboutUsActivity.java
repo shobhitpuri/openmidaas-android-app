@@ -18,7 +18,6 @@ package org.openmidaas.app.activities;
 import org.openmidaas.app.R;
 import org.openmidaas.app.common.Utils;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
@@ -29,12 +28,10 @@ public class AboutUsActivity extends AbstractActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.about_us);
 		tvVersionName = (TextView)findViewById(R.id.tvVersion);
-        //Showing back button on Action Bar
-		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayHomeAsUpEnabled(true);
-        
+       
 		//Get the version number
 		String versionNumber = Utils.getVersionNumber(getApplicationContext());
 		tvVersionName.setText("Version: "+versionNumber);
