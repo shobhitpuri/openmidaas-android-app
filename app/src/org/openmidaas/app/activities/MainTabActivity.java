@@ -82,7 +82,6 @@ public class MainTabActivity extends FragmentActivity {
 		//Enabling action bar
 		ActionBar actionBar = getActionBar();
         actionBar.setTitle(null);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST|ActionBar.DISPLAY_SHOW_TITLE);
         actionBar.show();
         getOverflowMenu();
@@ -284,5 +283,13 @@ public class MainTabActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		checkForCrashes();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		//Hide he keyboard while changing tabs
+        InputMethodManager imgr = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imgr.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
 	}
 }
