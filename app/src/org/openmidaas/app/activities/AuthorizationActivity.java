@@ -122,8 +122,6 @@ public class AuthorizationActivity extends AbstractActivity{
 			
 		} else {
 			message = mActivity.getString(R.string.authorizingRequest);
-			mProgressDialog.show();
-			checkEssentialAndAuthorize();
 		}
 		mProgressDialog.setMessage(message);
 		mProgressDialog.show();
@@ -187,7 +185,7 @@ public class AuthorizationActivity extends AbstractActivity{
 			@Override
 			public void onDone(String message) {
 				dismissDialog();
-				mActivity.startActivity(new Intent(mActivity, HomeScreen.class).putExtra(HomeScreen.ANIMATE_DONE, true));
+				DialogUtils.showToast(mActivity, getResources().getString(R.string.attrSentSuccess));
 				mActivity.finish();
 			}
 

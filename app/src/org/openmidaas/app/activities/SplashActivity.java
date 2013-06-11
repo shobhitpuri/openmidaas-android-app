@@ -25,25 +25,43 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.common.Utils;
 import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class DeviceRegistrationActivity extends AbstractActivity {
+public class SplashActivity extends AbstractActivity {
 	
 	private TextView tvRegistrationStatus;
+	private ProgressBar pb;
+	Intent intent;
+	private TextView tvVersionNumber;
 	
 	@Override
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		Logger.info(this.getClass(), "activity created");
-		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistrationStatus);
+		
+		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistering);
+		
 		// register the app or check to see if already registered.
 		MIDaaS.setLoggingLevel(Settings.LIBRARY_LOG_LEVEL);
-		mProgressDialog.show();
+		
+		// Make sure the progress bar is visible
+        pb = (ProgressBar)findViewById(R.id.progressBar);
+        pb.setVisibility(View.VISIBLE);
+        
+        //Set the version number
+		String versionNumber = Utils.getVersionNumber(getApplicationContext());
+		tvVersionNumber = (TextView)findViewById(R.id.tvVersion);
+		tvVersionNumber.setText("Version: "+versionNumber);
+        
 		try {
 			MIDaaS.initialize(this, Settings.SERVER_URL,new InitializationCallbackImpl());
 		} catch (URISyntaxException e) {
@@ -58,11 +76,10 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
-				if(mProgressDialog.isShowing()) {
-					mProgressDialog.dismiss();
-				}
-				startActivity(new Intent(DeviceRegistrationActivity.this, HomeScreen.class));
-				DeviceRegistrationActivity.this.finish();
+				tvRegistrationStatus.setText("");
+				pb.setVisibility(View.GONE);
+				startActivity(new Intent(SplashActivity.this, MainTabActivity.class));
+				SplashActivity.this.finish();
 			}
 		});
 		
@@ -73,9 +90,6 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 			@Override
 			public void run() {
-				if(mProgressDialog.isShowing()) {
-					mProgressDialog.dismiss();
-				}
 				tvRegistrationStatus.setText(getString(R.string.registration_error_text));
 			}
 			
@@ -96,11 +110,11 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 
 		@Override
 		public void onRegistering() {
-			DeviceRegistrationActivity.this.runOnUiThread(new Runnable() {
+			SplashActivity.this.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
-					mProgressDialog.setMessage("Registering...");
+					tvRegistrationStatus.setText("Registering...");
 				}
 			});
 		}
@@ -108,11 +122,11 @@ public class DeviceRegistrationActivity extends AbstractActivity {
 	
 	@Override
 	public int getLayoutResourceId() {
-		return (R.layout.device_registration_view);
+		return (R.layout.welcome_splash_screen);
 	}
 
 	@Override
 	protected String getTitlebarText() {
-		return ("Home");
+		return ("");
 	}
 }

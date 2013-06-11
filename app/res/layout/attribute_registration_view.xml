@@ -43,15 +43,23 @@
 	        android:textColor="#000000"
 	        android:text="@string/tvDefaultStartVerificationInfoText" />
 	
-	    <Button
-	        android:id="@+id/btnCompleteAttributeVerification"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
+	    <LinearLayout 
+	        android:id="@+id/llbtnCompleteVerification"
 	        android:layout_below="@+id/etVerificationCode"
-	        android:layout_centerHorizontal="true"
-	        android:layout_marginTop="30dp"
-	        android:text="@string/btnCompleteVerification" />
-	
+	        android:weightSum="1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+		    android:gravity="center_horizontal">
+	    	<Button
+		        android:id="@+id/btnCompleteAttributeVerification"
+		        android:layout_width="0dp"
+		        android:layout_weight="0.65"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="30dp"
+		        android:text="@string/btnCompleteVerification" />
+	        
+	    </LinearLayout>
+	    	
 	    <TextView
 	        android:id="@+id/tvCompleteVerificationInfo"
 	        android:layout_width="wrap_content"
@@ -77,21 +85,30 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
-	        android:layout_below="@+id/btnStartAttributeVerification"
+	        android:layout_below="@+id/llbtnStartAttributeVerify"
 	        android:layout_marginTop="23dp"
 	        android:text="@string/tvStep2Text"
 	        android:textColor="#000000"
 	        android:padding="5dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium" />
 	
-	    <Button
-	        android:id="@+id/btnStartAttributeVerification"
-	        android:layout_width="wrap_content"
+	    <LinearLayout 
+	        android:id="@+id/llbtnStartAttributeVerify"
+	        android:orientation="horizontal"
 	        android:layout_height="wrap_content"
+	        android:layout_width="match_parent"
+	        android:weightSum="1"
 	        android:layout_below="@+id/etAttributeValue"
-	        android:layout_centerHorizontal="true"
-	        android:layout_marginTop="30dp"
-	        android:text="@string/btnStartVerification" />
+		    android:gravity="center_horizontal">
+	    	<Button
+		        android:id="@+id/btnStartAttributeVerification"
+		        android:layout_width="0dp"
+		        android:layout_weight="0.65"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="30dp"
+		        android:text="@string/btnStartVerification" />    
+	    </LinearLayout>
+	    
 	
 	    <EditText
 	        android:id="@+id/etAttributeValue"
