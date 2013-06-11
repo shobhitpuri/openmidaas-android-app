@@ -14,7 +14,7 @@
   limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <string name="appName">MIDaas App</string>
+    <string name="appName">OpenMIDaaS</string>
     <string name="registering_text">Registering&#8230;</string>
     <string name="registration_success_text">Registration Success!</string>
     <string name="checking_registration">Checking registration&#8230;</string>
@@ -22,11 +22,11 @@
     <string name="registration_error_text">Registration Error!</string>
     <string name="tvDefaultAttributeName">Name: </string>
 	<string name="tvVerificationPin">Verification Code: </string>
-	<string name="btnStartVerification">Verify</string>
+	<string name="btnStartVerification">Send Verification Code</string>
 	<string name="resendVerificationText">Resend Code</string>
-	<string name="btnCompleteVerification">Send Code</string>
-	<string name="tvDefaultStartVerificationInfoText">Enter the value and tap verify to being the registration process.</string>
-	<string name="tvCompleteVerificationInfoText">Enter the verification code you received.</string>
+	<string name="btnCompleteVerification">Verify</string>
+	<string name="tvDefaultStartVerificationInfoText">Enter your email and tap on \"Send Verification Code\" to continue. We will send you an email with a verification code.</string>
+	<string name="tvCompleteVerificationInfoText">Enter the verification code you received and tap on \"Verify\" to complete the process.</string>
 	<string name="attribute_verification_start_success">Attribute verification started&#8230;</string>
 	<string name="verification_success_tag">has been successfully verified</string>
 	<string name="missing_attribute_value_text">Attribute value appears to be incorrect. Please re-enter it.</string>
@@ -203,13 +203,13 @@
     <string name="enterPhoneRequestMsg">Please enter your phone number along with country code:</string>
     <string name="enterPhoneVerifyCodeMsg">Enter the verification code you received to finish the verification:</string>
     <string name="tvPhStep1Text">Step 1: Enter Phone Number Details</string>
-    <string name="tvPhStep2Text">Step 2: Start Verification</string>
-    <string name="tvPhStep3Text">Step 3: Complete Verification</string>
-    <string name="tvPhVerifyMethodText">Choose a verification method:</string>
-    <string name="enterPhVerifyCodeMsg">Enter the verification code received:</string>
+    <string name="tvPhStep2Text">Step 2:</string>
+    <string name="tvPhStep3Text">Step 3:</string>
+    <string name="tvPhVerifyMethodText">Choose a verification method and tap on \"Send Verification Code\" to continue:</string>
+    <string name="enterPhVerifyCodeMsg">Enter the verification code received and tap \"Verify\" to complete the verification process.</string>
     <string name="enterPhoneTypeMsg">Choose the type of phone number:</string>
-    <string name="btnStartPhVerification">Start Verification</string>
-	<string name="btnCompletePhVerification">Complete Verification</string>
+    <string name="btnStartPhVerification">Send Verification Code</string>
+	<string name="btnCompletePhVerification">Verify</string>
 	<string name="rdBtnSmsText">SMS</string>
 	<string name="rdBtnPhoneText">Phone Call</string>
     <string name="noAttributeSelectedLabel">No attribute selected</string>
@@ -258,7 +258,7 @@
 	<string name="help">Help</string>
 	<string name="aboutUs">About</string>
 	<string name="revokePermission">Revoke Consent</string>
-	<string name="aboutUsHeading">{open}MIDaaS</string>
+	<string name="aboutUsHeading">{Open}MIDaaS</string>
     <string name="openMIDaasFullForm">Mobile Identity as a Service</string>
     <string name="aboutUsText">
 		<![CDATA[
@@ -273,7 +273,7 @@
 		</html>
 		]]>
 	</string>
-	<string name="enterUrlDialog">Enter the URL as shown on your browser</string>
+	<string name="enterUrlDialog">Enter the URL as shown on your browser:</string>
 	<string name="enterUrlHint">https://</string>
 	<string name="openMIDaasUrl">http://openmidaas.org</string>
 	<string name="tabs">Tabs</string>

@@ -21,12 +21,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 public class EnterURLDialogFragment extends Fragment {
 	private Button btnPositive;
@@ -34,6 +38,7 @@ public class EnterURLDialogFragment extends Fragment {
 	private Activity mActivity;
 	private EditText edUrl;
 	InputMethodManager imgr;
+	ScrollView mParentScrollView;
 	
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,7 +50,9 @@ public class EnterURLDialogFragment extends Fragment {
         imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         edUrl = (EditText)view.findViewById(R.id.edDialogFragment);
         edUrl.requestFocus();
-        
+        mParentScrollView = (ScrollView)view.findViewById(R.id.svParentURLFragment);
+        onTapOutsideBehaviour(mParentScrollView);
+		
         btnPositive = (Button)view.findViewById(R.id.btnOkayDialogFragment);
         btnPositive.setOnClickListener(new OnClickListener() {
 			
@@ -63,13 +70,31 @@ public class EnterURLDialogFragment extends Fragment {
 			
 			@Override
 			public void onClick(View v) {
-				//Clear the text
+				//Clear the text to set it to default
 				View ed = getActivity().findViewById(R.id.edDialogFragment);
-		        ((EditText)ed).setText("");
+		        ((EditText)ed).setText(getResources().getString(R.string.enterUrlHint));
+		        ((EditText)ed).setSelection(((EditText)ed).getText().length());
 			}
 		});
         return view;
-        
-        
     }
+	
+	private static void hideSoftKeyboard(Activity activity) {
+	    InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+	    inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+	}
+	
+	private void onTapOutsideBehaviour(View view) {
+	    if(!(view instanceof EditText) || !(view instanceof LinearLayout)) {
+	        view.setOnTouchListener(new OnTouchListener() {
+	            public boolean onTouch(View v, MotionEvent event) {
+	                hideSoftKeyboard(getActivity());
+	                edUrl = (EditText)v.findViewById(R.id.edDialogFragment);
+	                edUrl.clearFocus();
+	                return false;
+	            }
+
+	        });
+	    }
+	}
 }
