@@ -337,15 +337,6 @@ public class Session implements VerifiedAttributeBundleCallback{
 						MIDaaS.getVerifiedAttributeBundle(mClientId, mState, null, Session.this);
 					}
 				}
-//				// if there is at least one verified attribute in the map, get the signed bundle from the server. 
-//				if(mVerifiedAttributeMap.size() >0) {
-//					Logger.debug(getClass(), "Bundling attibutes with AVS");
-//					MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, Session.this);
-//				} else if (mUnverifiedAttributeMap.size() > 0) { 
-//					getUnverifiedBundleAndReturnToRP();
-//				} else {
-//					returnDataToRp(mVerifiedResponse,mUnverifiedResponse, mOnDoneCallback);
-//				}
 			}
 			
 		}).start();
