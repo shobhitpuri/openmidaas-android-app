@@ -16,12 +16,11 @@
 
 package org.openmidaas.app.activities;
 
-import org.openmidaas.app.R;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Window;
 import android.widget.TextView;
 
 /**
@@ -31,27 +30,22 @@ import android.widget.TextView;
  *
  */
 public abstract class AbstractActivity extends Activity{
-	
-	private boolean isCustomTitleSupported;
-	
+
 	protected TextView mTitlebarText;
 	
 	protected ProgressDialog mProgressDialog;
 	
 	@Override
 	public void onCreate(Bundle savedState) {
-		isCustomTitleSupported = requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		super.onCreate(savedState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		setContentView(getLayoutResourceId());
 		mProgressDialog = new ProgressDialog(this);
 		mProgressDialog.setMessage("Please wait...");
 		mProgressDialog.setCanceledOnTouchOutside(false);
-		if(isCustomTitleSupported) {
-			getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.titlebar);
-			mTitlebarText = (TextView)findViewById(R.id.tvTitlebarText);	
-			mTitlebarText.setText(getTitlebarText());
-		}
+		ActionBar actionBar = getActionBar();
+		actionBar.setTitle(getTitlebarText());
+		actionBar.setDisplayHomeAsUpEnabled(true);
 	}
 	
 	/**
