@@ -66,6 +66,7 @@ public class EnterURLDialogFragment extends Fragment {
 				//Clear the text to set it to default
 				View ed = getActivity().findViewById(R.id.edDialogFragment);
 		        ((EditText)ed).setText(getResources().getString(R.string.enterUrlHint));
+		        ((EditText)ed).setSelection(((EditText)ed).getText().length());
 			}
 		});
         return view;
