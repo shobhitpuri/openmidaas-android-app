@@ -273,7 +273,7 @@
 		</html>
 		]]>
 	</string>
-	<string name="enterUrlDialog">Enter the URL as shown on your browser</string>
+	<string name="enterUrlDialog">Enter the URL as shown on your browser:</string>
 	<string name="enterUrlHint">https://</string>
 	<string name="openMIDaasUrl">http://openmidaas.org</string>
 	<string name="tabs">Tabs</string>
