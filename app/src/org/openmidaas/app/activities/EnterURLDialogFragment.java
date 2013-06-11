@@ -63,9 +63,9 @@ public class EnterURLDialogFragment extends Fragment {
 			
 			@Override
 			public void onClick(View v) {
-				//Clear the text
+				//Clear the text to set it to default
 				View ed = getActivity().findViewById(R.id.edDialogFragment);
-		        ((EditText)ed).setText("");
+		        ((EditText)ed).setText(getResources().getString(R.string.enterUrlHint));
 			}
 		});
         return view;
