@@ -330,12 +330,14 @@ public class Session implements VerifiedAttributeBundleCallback{
 						putAttributeInMap(attributeSet);
 					}
 				}
+
 				if(mAcrLevel == 1) {
 					if(mVerifiedAttributeMap.size() >0) {
 						MIDaaS.getVerifiedAttributeBundle(mClientId, mState, mVerifiedAttributeMap, Session.this);
 					} else {
 						MIDaaS.getVerifiedAttributeBundle(mClientId, mState, null, Session.this);
 					}
+
 				}
 			}
 			
