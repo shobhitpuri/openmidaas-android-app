@@ -137,22 +137,29 @@
 		           android:layout_weight="0.5"
 		           android:textColor="#000000"
 		           android:text="@string/rdBtnPhoneText" />
-		   </RadioGroup>
-	
-	       <Button
-	       android:id="@+id/btnPhoneStartVerify"
-	       android:layout_width="wrap_content"
-	       android:layout_height="wrap_content"
-	       android:layout_below="@+id/rgVerifyTypeRadio"
-	       android:layout_centerHorizontal="true"
-	       android:text="@string/btnStartPhVerification" />
-	
+		  </RadioGroup>
+		  
+	      <LinearLayout 
+	          android:id="@+id/llButonStart"
+	          android:layout_height="wrap_content"
+	          android:layout_width="match_parent"
+	          android:weightSum="1"
+	      	  android:layout_below="@+id/rgVerifyTypeRadio"
+		      android:gravity="center_horizontal">
+		      <Button
+			      android:id="@+id/btnPhoneStartVerify"
+			      android:layout_width="0dp"
+			      android:layout_weight="0.65"
+			      android:layout_height="wrap_content"
+		     	  android:text="@string/btnStartPhVerification" />
+	      </LinearLayout>
+	      	
 	      <TextView
 	          android:id="@+id/tvPhStep3"
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
 	          android:layout_alignParentLeft="true"
-	          android:layout_below="@id/btnPhoneStartVerify"
+	          android:layout_below="@id/llButonStart"
 	          android:padding="5dp"
 	          android:layout_marginTop="10dp"
 	          android:text="@string/tvPhStep3Text"
@@ -179,13 +186,22 @@
 	       	  android:ems="12"
 		      android:inputType="textNoSuggestions|textCapCharacters|textVisiblePassword"
 	          android:textColor="#000000" />
-	    
-		 <Button
+	     
+		 <LinearLayout 
+		     android:layout_height="wrap_content"
+		     android:layout_width="match_parent"
+		     android:orientation="horizontal"
+		     android:weightSum="1"
+		     android:layout_below="@+id/edPhVerifyCode"
+	         android:layout_centerHorizontal="true"
+	         android:gravity="center_horizontal">
+		 	<Button
 	       	  android:id="@+id/btnPhoneCompleteVerify"
-	          android:layout_width="wrap_content"
+	          android:layout_width="0dp"
+	          android:layout_weight="0.65"
 	          android:layout_height="wrap_content"
-	          android:layout_below="@+id/edPhVerifyCode"
-	          android:layout_centerHorizontal="true"
-	          android:text="@string/btnCompletePhVerification" />
+	          android:text="@string/btnCompletePhVerification" />    
+		 </LinearLayout>
+		 
 	 </RelativeLayout>
   </ScrollView>
