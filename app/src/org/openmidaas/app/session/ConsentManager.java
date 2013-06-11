@@ -173,7 +173,7 @@ public class ConsentManager {
 	}
 	
 	/**
-	 * Checks if an attribute has consent for the givent client id
+	 * Checks if an attribute has consent for the given client id
 	 * @param context
 	 * @param clientId
 	 * @param attribute
