@@ -24,11 +24,11 @@
 		        android:centerColor="#aeb9cc"
 		        android:endColor="#aeb9cc"
 		        android:angle="90"/>
-		    <padding android:left="3dp"
-		        android:top="1dp"
+			
+			<padding android:left="3dp"
+		        android:top="6dp"
 		        android:right="3dp"
 		        android:bottom="1dp" />
-		    
 		</shape> 
 		
     </item>
@@ -41,10 +41,10 @@
       			android:endColor="#C9CDD4"
       			android:angle="270" />
 		    <padding android:left="3dp"
-		        android:top="1dp"
+		        android:top="6dp"
 		        android:right="3dp"
-		        android:bottom="1dp" />		    
-		    
+		        android:bottom="1dp" />
+
 		</shape>
      </item>
 </selector>
