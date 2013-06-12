@@ -44,6 +44,7 @@ import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -96,7 +97,7 @@ public class MainTabActivity extends FragmentActivity {
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
         mTabHost.setup();
-        
+        mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         //initializing tabs
         initializeTab();
         checkForUpdates();
