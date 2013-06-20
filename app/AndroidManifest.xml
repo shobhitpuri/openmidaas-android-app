@@ -31,6 +31,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:name="App"
         android:allowBackup="true"
@@ -55,6 +56,8 @@
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
         <activity android:name=".activities.AuthorizationActivity"></activity>
         <activity android:name=".activities.ManageConsentActivity"></activity>
+        <activity android:name="com.google.zxing.client.android.CaptureActivity"></activity>
+        <activity android:name="com.google.zxing.client.android.HelpActivity"></activity>
         <activity android:name=".activities.MainTabActivity"
             android:screenOrientation="portrait"> </activity>
         <activity android:name=".activities.AboutUsActivity"

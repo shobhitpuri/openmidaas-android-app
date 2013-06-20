@@ -63,7 +63,8 @@ public class MainTabActivity extends FragmentActivity {
 	
 	AttributeListFragment mAttributeListFragment;
 	EnterURLDialogFragment mUrlInputFragment;
-	ScanFragment mScanFragment;
+	QRCodeScanFragment mScanFragment;
+	
 		
 	Intent intentScan;
 	private Activity mActivity;
@@ -92,7 +93,7 @@ public class MainTabActivity extends FragmentActivity {
         
 		mAttributeListFragment = new AttributeListFragment();
 		mUrlInputFragment = new EnterURLDialogFragment();
-		mScanFragment = new ScanFragment();
+		mScanFragment = new QRCodeScanFragment();
 		
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
