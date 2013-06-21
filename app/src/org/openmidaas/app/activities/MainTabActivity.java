@@ -24,7 +24,7 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.Logger;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -32,6 +32,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -69,7 +70,7 @@ public class MainTabActivity extends FragmentActivity {
 	Intent intentScan;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -227,11 +228,12 @@ public class MainTabActivity extends FragmentActivity {
 	    
 	    FragmentManager manager = getSupportFragmentManager();
 	    FragmentTransaction ft = manager.beginTransaction();
-	    ft.replace(android.R.id.tabcontent, fragment);
+	    ft.replace(android.R.id.tabcontent, fragment, tag);
 	    ft.commit();
 	}
 
 	void processUrl(String result) {
+		
 		try {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {
@@ -248,27 +250,52 @@ public class MainTabActivity extends FragmentActivity {
 							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 							startActivity(intent);
+							
 					    }	
 						@Override
 					    public void onFailure(Throwable e, String response) {
 							if(mProgressDialog.isShowing()) {
 								mProgressDialog.dismiss();
 							}
-					        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
-					        
+							DialogFragment newFragment = AlertDialogFragment
+					                .newInstance("Error", e.getMessage());
+							newFragment.show(getSupportFragmentManager(), "dialog");
 					    }
 					});
+					
 				} else {
-					DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURIType), result);
+					DialogFragment newFragment = AlertDialogFragment
+			                .newInstance(getResources().getString(R.string.invalidURIType), result);
+					newFragment.show(getSupportFragmentManager(), "dialog");
 				}
 			} else {
-				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.unknownURIFormat) + " " + result);
+				DialogFragment newFragment = AlertDialogFragment
+		                .newInstance(getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.unknownURIFormat) + " " + result);
+				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 		} catch (URISyntaxException e) {
-			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.invalidURI) + " " + result);
+			DialogFragment newFragment = AlertDialogFragment
+	                .newInstance(getResources().getString(R.string.invalidURI), getResources().getString(R.string.invalidURI) + " " + result);
+			newFragment.show(getSupportFragmentManager(), "dialog");
 		}
 	}
 	
+	public void doPositiveClick() {
+        // if current tab is QR code then scan
+		Logger.debug(getClass(), "Inside positive click");
+		
+		if (getSupportFragmentManager().findFragmentByTag(tabScan)!=null){
+			Fragment fragment = getSupportFragmentManager().findFragmentByTag(tabScan);
+			if(fragment.isVisible()){
+				Logger.debug(getClass(), "Inside fragment visible");
+				((QRCodeScanFragment)fragment).restartPreviewAfterDelay(10);
+			}
+		}
+		
+			
+    }
+
+
 	private void checkForCrashes() {
 		if(Settings.IS_HOCKEY_APP_ENABLED) {
 			CrashManager.register(this, Settings.HOCKEY_APP_ID);
@@ -285,11 +312,13 @@ public class MainTabActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		checkForCrashes();
+		
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
+		Logger.debug(getClass(), "Inside pause main act");
 		//Hide he keyboard while changing tabs
         InputMethodManager imgr = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imgr.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);

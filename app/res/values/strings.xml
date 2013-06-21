@@ -245,6 +245,7 @@
 	<string name="generalAttributeDialogCollectionTitle">Enter a name and value and tap save</string>
 	<string name="saveButtonText">Save</string>
 	<string name="okButtonText">OK</string>
+	<string name="tryAgainButtonText">Try Again</string>
 	<string name="verifyButtonText">Verify</string>
 	<string name="cancelButtonText">Cancel</string>
 	<string name="backButtonText">Back</string>
@@ -279,11 +280,12 @@
 	<string name="tabs">Tabs</string>
 	<string name="profileTabtext">Profile</string>
 	<string name="scanTabtext">Scan</string>
+	<string name="scanErrortext">Error in scanning</string>
 	<string name="urlTabtext">Enter URL</string>
 	<string name="attrSentSuccess">Attributes Successfully Sent.</string>
 	
 	<string name="invalidURIType">Non http/https URI type</string>
 	<string name="unknownURIFormat">Either relative URI or unknown format:</string>
 	<string name="invalidURI">Invalid URI</string>
-	
+	<string name="qrScanMessage">Please place the QR code in the center of the rectangle, at sufficient distance from the corners.</string>
 </resources>

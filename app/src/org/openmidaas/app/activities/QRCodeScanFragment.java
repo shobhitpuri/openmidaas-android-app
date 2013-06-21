@@ -1,16 +1,29 @@
+/*
+ * Copyright (C) 2008 ZXing authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.openmidaas.app.activities;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import org.openmidaas.app.R;
-import org.openmidaas.app.activities.barcodeSupport.BarCodeHandler;
-import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.activities.qrsupport.BarCodeHandler;
+import org.openmidaas.app.activities.qrsupport.ViewfinderView;
 import org.openmidaas.app.common.Logger;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -18,6 +31,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -25,8 +39,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.abhi.barcode.fragment.barcode.ViewfinderView;
-import com.abhi.barcode.fragment.dialogs.IDialogCreator;
 import com.abhi.barcode.fragment.interfaces.IConstants;
 import com.abhi.barcode.fragment.interfaces.IResultCallback;
 import com.google.zxing.BarcodeFormat;
@@ -34,8 +46,12 @@ import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
 
+/*
+ * Fragment containing Barcode Scanner. The base of this file has been taken from ZXing library. 
+ * CaptureActivity file has been modified to make the scanner available inside a fragment   
+ */
 public class QRCodeScanFragment extends Fragment implements
-		SurfaceHolder.Callback, IConstants, IDialogCreator {
+		SurfaceHolder.Callback, IConstants{
 
 	private Result lastResult;
 	
@@ -49,16 +65,48 @@ public class QRCodeScanFragment extends Fragment implements
 	private boolean runCamera = false;
 	private IResultCallback mCallBack;
 
-	public ViewfinderView getViewfinderView() {
-		return viewfinderView;
+	Boolean isVisible = false;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View c = View.inflate(getActivity(), R.layout.scan_frag_superimpose, null);
+		viewfinderView = (ViewfinderView) c.findViewById(R.id.viewFinder_View);
+		hasSurface = false;
+		runCamera = true;
+		return c;
 	}
-
-	public Handler getHandler() {
-		return handler;
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (runCamera && hasSurface) {
+			startCameraCapture();
+		} else if (runCamera) {
+			SurfaceView surfaceView = (SurfaceView) getView().findViewById(
+					R.id.cameraView);
+			SurfaceHolder surfaceHolder = surfaceView.getHolder();
+			surfaceHolder.addCallback(QRCodeScanFragment.this);
+			//Depreciated in API 11. Automatically set for versions above that
+			if(android.os.Build.VERSION.SDK_INT<11){
+				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+			}
+		}
+	}
+	
+	
+	@Override
+	public void onPause() {
+		if (runCamera) {
+			stopCameraCapture();
+		}
+		super.onPause();
 	}
 
 	@SuppressWarnings("deprecation")
-	public void startCameraCampure() {
+	public void startCameraCapture() {
+		Logger.debug(getClass(), "Camera Started");
 		cameraManager = new CameraManager(getActivity().getApplicationContext());
 		viewfinderView.setCameraManager(cameraManager);
 		handler = null;
@@ -72,7 +120,7 @@ public class QRCodeScanFragment extends Fragment implements
 			initCamera(surfaceHolder, viewfinderView);
 		} else {
 			surfaceHolder.addCallback(QRCodeScanFragment.this);
-			//Depreciated in API 11. Automaticaly set for versions above that
+			//Depreciated in API 11. Automatically set for versions above that
 			if(android.os.Build.VERSION.SDK_INT<11){
 				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 			}
@@ -82,6 +130,7 @@ public class QRCodeScanFragment extends Fragment implements
 	}
 
 	public void stopCameraCapture() {
+		Logger.debug(getClass(), "Camera Stopped");
 		if (handler != null) {
 			handler.quitSynchronously();
 			handler = null;
@@ -94,47 +143,20 @@ public class QRCodeScanFragment extends Fragment implements
 			surfaceHolder.removeCallback(QRCodeScanFragment.this);
 		}
 	}
+	
+	public ViewfinderView getViewfinderView() {
+		return viewfinderView;
+	}
+
+	public Handler getHandler() {
+		return handler;
+	}
 
 	public CameraManager getCameraManager() {
 		return cameraManager;
 	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View c = View.inflate(getActivity(), R.layout.superimposedcamera, null);
-		viewfinderView = (ViewfinderView) c.findViewById(R.id.viewFinder_View);
-		hasSurface = false;
-		runCamera = true;
-		return c;
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onResume() {
-		super.onResume();
-		if (runCamera && hasSurface) {
-			startCameraCampure();
-		} else if (runCamera) {
-			SurfaceView surfaceView = (SurfaceView) getView().findViewById(
-					R.id.cameraView);
-			SurfaceHolder surfaceHolder = surfaceView.getHolder();
-			surfaceHolder.addCallback(QRCodeScanFragment.this);
-			//Depreciated in API 11. Automatically set for versions above that
-			if(android.os.Build.VERSION.SDK_INT<11){
-				surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-			}
-		}
-	}
-
-	@Override
-	public void onPause() {
-		if (runCamera) {
-			stopCameraCapture();
-		}
-		super.onPause();
-	}
-
+	
+	
 	private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
 		// Bitmap isn't used yet -- will be used soon
 		if (handler == null) {
@@ -161,7 +183,7 @@ public class QRCodeScanFragment extends Fragment implements
 		if (!hasSurface) {
 			hasSurface = true;
 			if (runCamera)
-				startCameraCampure();
+				startCameraCapture();
 		}
 	}
 
@@ -175,7 +197,7 @@ public class QRCodeScanFragment extends Fragment implements
 			int height) {
 
 	}
-
+	
 	/**
 	 * A valid barcode has been found, so give an indication of success and show
 	 * the results.
@@ -184,14 +206,19 @@ public class QRCodeScanFragment extends Fragment implements
 	 * @param barcode : A greyscale bitmap of the camera data which was decoded.
 	 */
 	public void handleDecode(Result rawResult, Bitmap barcode) {
+
 		drawResultPoints(barcode, rawResult);
-		Logger.error(getClass(), "Value recived: " + rawResult.getText());
+		Logger.debug(getClass(), "Value recived: " + rawResult.getText());
 		lastResult = rawResult;
 		if (mCallBack != null) {
 			mCallBack.result(lastResult);
-			DialogUtils.showNeutralButtonDialog(getActivity(), "Error", "Error in scan");
+			DialogFragment newFragment = AlertDialogFragment
+	                .newInstance(getResources().getString(R.string.defaultErrorDialogTitle), getResources().getString(R.string.scanErrortext));
+			newFragment.show(getActivity().getSupportFragmentManager(), "dialog");
 		} else {
-			((MainTabActivity)getActivity()).processUrl(rawResult.getText());
+			//pass the result to be processes further
+			((MainTabActivity)getActivity()).processUrl(lastResult.getText());
+			
 		}
 	}
 
@@ -265,27 +292,6 @@ public class QRCodeScanFragment extends Fragment implements
 
 	public void drawViewfinder() {
 		viewfinderView.drawViewfinder();
-	}
-
-	@Override
-	public Dialog createDialog(int mWhat) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("QR Value");
-		builder.setMessage(lastResult.getText());
-		builder.setPositiveButton("Details",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// DO NOTHING
-					}
-				}).setNegativeButton("Scan Again",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						startCameraCampure();
-					}
-				});
-		return builder.create();
 	}
 
 	public IResultCallback getmCallBack() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openmidaas.app.activities.barcodeSupport;
+package org.openmidaas.app.activities.qrsupport;
 
 import java.util.ArrayList;
 import java.util.Collection;

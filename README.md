@@ -9,5 +9,9 @@ This app is a sample implementation of the openmidaas library. The app has the f
 
 For more information, visit http://openmidaas.org/
 
-
+Acknowledgements
+=====================
+This project uses other open-source libraries such as:
+* [ZXing](https://http://code.google.com/p/zxing/)
+* [barcodefragmentlib](https://code.google.com/p/barcodefragmentlib/)
 

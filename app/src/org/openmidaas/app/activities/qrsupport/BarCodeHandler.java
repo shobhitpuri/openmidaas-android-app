@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openmidaas.app.activities.barcodeSupport;
+package org.openmidaas.app.activities.qrsupport;
 
 import java.util.Collection;
 
@@ -26,7 +26,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import com.abhi.barcode.fragment.barcode.ViewfinderResultPointCallback;
+import org.openmidaas.app.activities.qrsupport.ViewfinderResultPointCallback;
+
 import com.abhi.barcode.fragment.interfaces.IConstants;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
@@ -89,6 +90,7 @@ public final class BarCodeHandler extends Handler implements IConstants {
         Bitmap barcode = bundle == null ? null :
             (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);
         activity.handleDecode((Result) message.obj, barcode);
+        
         break;
       case DECODE_FAILED:
         // We're decoding as fast as possible, so when one decode fails, start another.
