@@ -30,6 +30,7 @@ import org.openmidaas.library.MIDaaS;
 import org.openmidaas.library.model.core.InitializationCallback;
 import org.openmidaas.library.model.core.MIDaaSException;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -50,7 +51,8 @@ public class SplashActivity extends AbstractActivity {
 	public void onCreate(Bundle savedState) {
 		super.onCreate(savedState);
 		Logger.info(this.getClass(), "activity created");
-		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(false);
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistering);
 		
 		// register the app or check to see if already registered.

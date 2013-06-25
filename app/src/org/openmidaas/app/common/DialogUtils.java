@@ -90,8 +90,8 @@ public final class DialogUtils {
 				AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 				alert.setTitle("Missing information");
 				alert.setMessage(message);
-			    alert.setNegativeButton("Proceed",  proceedButtonListener);
-			    alert.setPositiveButton(activity.getString(R.string.backButtonText),  new DialogInterface.OnClickListener() {
+			    alert.setPositiveButton("Proceed",  proceedButtonListener);
+			    alert.setNegativeButton(activity.getString(R.string.backButtonText),  new DialogInterface.OnClickListener() {
 
 					@Override
 					public void onClick(DialogInterface arg0, int arg1) {}
