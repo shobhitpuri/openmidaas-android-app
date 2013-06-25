@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 /**
@@ -86,6 +87,16 @@ public abstract class AbstractActivity extends Activity{
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+            this.finish();
+            return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 }

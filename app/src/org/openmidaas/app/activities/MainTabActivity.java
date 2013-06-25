@@ -45,6 +45,7 @@ import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -84,7 +85,6 @@ public class MainTabActivity extends FragmentActivity {
 		//Enabling action bar
 		ActionBar actionBar = getActionBar();
         actionBar.setTitle(null);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST|ActionBar.DISPLAY_SHOW_TITLE);
         actionBar.show();
         getOverflowMenu();
@@ -99,7 +99,7 @@ public class MainTabActivity extends FragmentActivity {
 		mTabHost = (TabHost)findViewById(android.R.id.tabhost);
 		mTabHost.setOnTabChangedListener(listener);
         mTabHost.setup();
-        
+        mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         //initializing tabs
         initializeTab();
         //Check for updates
@@ -303,5 +303,13 @@ public class MainTabActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		checkForCrashes();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		//Hide he keyboard while changing tabs
+        InputMethodManager imgr = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imgr.hideSoftInputFromWindow(mTabHost.getApplicationWindowToken(), 0);
 	}
 }
