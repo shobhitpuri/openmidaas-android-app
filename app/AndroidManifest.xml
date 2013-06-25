@@ -22,6 +22,9 @@
         android:targetSdkVersion="17"
         android:minSdkVersion="15"
          />
+    <permission
+		android:name="org.openmidaas.app.permission.C2D_MESSAGE"
+		android:protectionLevel="signature"/>
 	<uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -31,7 +34,12 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <application
+    <uses-permission android:name="org.openmidaas.app.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/> 
+	<uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+	<uses-permission android:name="android.permission.WAKE_LOCK"/>    
+
+	<application
         android:name="App"
         android:allowBackup="true"
         android:launchMode="singleInstance"
@@ -40,7 +48,7 @@
         android:label="@string/appName"
         android:theme="@style/AppTheme"
         >        
-        <activity android:name=".activities.SplashActivity"
+        <activity android:name="org.openmidaas.app.activities.SplashActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,6 +67,17 @@
             android:screenOrientation="portrait"> </activity>
         <activity android:name=".activities.AboutUsActivity"
             android:screenOrientation="portrait"> </activity>
+        
+    	<receiver android:name=".services.GCMReceiver"
+			android:permission="com.google.android.c2dm.permission.SEND">
+			<intent-filter>
+				<action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+				<action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+				<category android:name="org.openmidaas.app"/>
+			</intent-filter>
+		</receiver>    
+		<service android:name="org.openmidaas.app.services.GCMIntentService"/>
+		
     </application>
-
+	
 </manifest>
