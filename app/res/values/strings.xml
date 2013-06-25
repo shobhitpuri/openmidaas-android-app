@@ -285,6 +285,6 @@
 	<string name="invalidURIType">Non http/https URI type</string>
 	<string name="unknownURIFormat">Either relative URI or unknown format:</string>
 	<string name="invalidURI">Invalid URI</string>
-	
+	<string name="gcm_service_class">org.openmidaas.app.services.GCMIntentService</string>
 	
 </resources>

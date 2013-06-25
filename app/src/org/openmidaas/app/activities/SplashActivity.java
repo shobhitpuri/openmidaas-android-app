@@ -36,12 +36,15 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gcm.GCMRegistrar;
+
 public class SplashActivity extends AbstractActivity {
 	
 	private TextView tvRegistrationStatus;
 	private ProgressBar pb;
 	Intent intent;
 	private TextView tvVersionNumber;
+	public static final String SENDER_ID="460588323003";
 	
 	@Override
 	public void onCreate(Bundle savedState) {
@@ -62,6 +65,28 @@ public class SplashActivity extends AbstractActivity {
 		tvVersionNumber = (TextView)findViewById(R.id.tvVersion);
 		tvVersionNumber.setText("Version: "+versionNumber);
         
+		/*Help to make sure the device is ready for using GCM,
+	    including whether or not it has the Google Services Framework*/
+	    try{
+	    	GCMRegistrar.checkDevice(this);
+	    }catch(RuntimeException e){
+	    	//Device incompatibility message
+		    Logger.debug(getClass(), e + " Device is incompatible for using GSM services.");
+	    	DialogUtils.showToast(this, "Unable to register to push message service. Device is incompatible for using GSM services.");
+	    }
+	    
+	    final String regId=GCMRegistrar.getRegistrationId(this);
+
+	    if (regId.length() == 0) {
+	    	/*Takes the sender ID you obtained earlier in this chapter and
+	    	registers your app to be able to receive messages sent by that sender. You
+	    	would only need to call this if getRegistrationId() returns the empty
+	    	string.*/
+	    	GCMRegistrar.register(this, SENDER_ID);
+	    } else {
+	    	Logger.debug(getClass(), "Existing registration: "+ regId);
+	    }
+	    
 		try {
 			MIDaaS.initialize(this, Settings.SERVER_URL,new InitializationCallbackImpl());
 		} catch (URISyntaxException e) {
