@@ -9,6 +9,7 @@ import org.openmidaas.app.common.Logger;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,10 +19,11 @@ import android.support.v4.app.Fragment;
 
 public class ScanFragment extends Fragment {
 	private final int SCAN_REQUEST = 65534;
-	
+	Context context;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		context = getActivity();
 		showQRCodeScanner();
 	}
 	
@@ -52,13 +54,15 @@ public class ScanFragment extends Fragment {
               public void onClick(DialogInterface dialog, int whichButton) {
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                                            Uri.parse(Constants.ZXING_MARKET));
+                AlertDialog aDialog = (AlertDialog )dialog;
                 try {
-                  startActivity(intent);
+                	
+                	aDialog.getContext().startActivity(intent);
                 }
                 catch (ActivityNotFoundException e) { 
-                  intent = new Intent(Intent.ACTION_VIEW,
+                	intent = new Intent(Intent.ACTION_VIEW,
                                       Uri.parse(Constants.ZXING_DIRECT));
-                  startActivity(intent);
+                	aDialog.getContext().startActivity(intent);
                 }
               }
             }
