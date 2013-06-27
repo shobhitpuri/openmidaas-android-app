@@ -275,6 +275,7 @@
 	</string>
 	<string name="enterUrlDialog">Enter the URL as shown on your browser:</string>
 	<string name="enterUrlHint">https://</string>
+	<string name="enterPhonePush">Enter the Phone Number to register for push notification service:</string>
 	<string name="openMIDaasUrl">http://openmidaas.org</string>
 	<string name="tabs">Tabs</string>
 	<string name="profileTabtext">Profile</string>
@@ -285,6 +286,7 @@
 	<string name="invalidURIType">Non http/https URI type</string>
 	<string name="unknownURIFormat">Either relative URI or unknown format:</string>
 	<string name="invalidURI">Invalid URI</string>
-	<string name="gcm_service_class">org.openmidaas.app.services.GCMIntentService</string>
+	<string name="gcmServiceClass">org.openmidaas.app.services.GCMIntentService</string>
+	<string name="registerPush">Push Registration</string>
 	
 </resources>

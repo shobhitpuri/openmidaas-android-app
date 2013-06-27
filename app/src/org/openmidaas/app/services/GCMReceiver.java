@@ -25,7 +25,7 @@ import com.google.android.gcm.GCMBroadcastReceiver;
 public class GCMReceiver extends GCMBroadcastReceiver {
 	@Override
 	protected String getGCMIntentServiceClassName(Context context) {
-		return context.getString(R.string.gcm_service_class);
+		return context.getString(R.string.gcmServiceClass);
 	}
 
 }

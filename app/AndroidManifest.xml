@@ -67,8 +67,11 @@
             android:screenOrientation="portrait"> </activity>
         <activity android:name=".activities.AboutUsActivity"
             android:screenOrientation="portrait"> </activity>
+        <activity android:name=".activities.PushNotificationActivity"
+            android:screenOrientation="portrait"> </activity>
         
-    	<receiver android:name=".services.GCMReceiver"
+        
+		<receiver android:name=".services.GCMReceiver"
 			android:permission="com.google.android.c2dm.permission.SEND">
 			<intent-filter>
 				<action android:name="com.google.android.c2dm.intent.RECEIVE"/>
@@ -77,7 +80,6 @@
 			</intent-filter>
 		</receiver>    
 		<service android:name="org.openmidaas.app.services.GCMIntentService"/>
-		
     </application>
 	
 </manifest>
