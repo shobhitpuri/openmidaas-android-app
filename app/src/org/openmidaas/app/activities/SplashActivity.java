@@ -63,15 +63,13 @@ public class SplashActivity extends AbstractActivity {
 		String versionNumber = Utils.getVersionNumber(getApplicationContext());
 		tvVersionNumber = (TextView)findViewById(R.id.tvVersion);
 		tvVersionNumber.setText("Version: "+versionNumber);
-        
-		try {
+		
+	    try {
 			MIDaaS.initialize(this, Settings.SERVER_URL,new InitializationCallbackImpl());
 		} catch (URISyntaxException e) {
 			DialogUtils.showNeutralButtonDialog(this, "Error", "Server URL appears to be invalid.");
 		}
 	}
-	
-	
 
 	private void registrationComplete() {
 		this.runOnUiThread(new Runnable() {

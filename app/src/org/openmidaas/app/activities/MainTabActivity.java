@@ -25,6 +25,7 @@ import net.hockeyapp.android.UpdateManager;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.Logger;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -68,7 +69,8 @@ public class MainTabActivity extends FragmentActivity {
 	Intent intentScan;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
-
+	public static final String ACTION_MSG_CUSTOM = "org.openmidaas.app.action.processURL";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,9 +102,25 @@ public class MainTabActivity extends FragmentActivity {
         mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         //initializing tabs
         initializeTab();
+        //Check for updates
         checkForUpdates();
+        //See if intent is coming from a service with message to process the URL
+        handleIntent(getIntent());
+        
 	}
 
+	private void handleIntent(Intent intent)
+	{
+	    Bundle extras = intent.getExtras();
+	    if (extras != null)
+	    {
+	    	if(intent.getAction().equals(ACTION_MSG_CUSTOM)){
+            	Logger.debug(getClass(), "Inside on revcieve message: Startting process url");
+            	processUrl(intent.getExtras().getString("url"));
+	    	}
+	    }
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -129,6 +147,13 @@ public class MainTabActivity extends FragmentActivity {
 		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		        startActivity(intent);
 				break;
+				
+			case R.id.register_push:
+				intent = new Intent(this, PushNotificationActivity.class);
+		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		        startActivity(intent);
+				break;
+				
 		}
 		return true;
 	}
