@@ -286,6 +286,7 @@
 	<string name="invalidURIType">Non http/https URI type</string>
 	<string name="unknownURIFormat">Either relative URI or unknown format:</string>
 	<string name="invalidURI">Invalid URI</string>
+	<string name="emptyURI">URI cannot be empty/null.</string>
 	<string name="gcmServiceClass">org.openmidaas.app.services.GCMIntentService</string>
 	<string name="registerPush">Push Registration</string>
 	

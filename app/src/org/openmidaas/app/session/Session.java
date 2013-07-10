@@ -80,7 +80,7 @@ public class Session implements VerifiedAttributeBundleCallback{
 	
 	private OnDoneCallback mOnDoneCallback = null;
 	
-	public Session() {
+	protected Session() {
 		mAttributeListSet = new ArrayList<AbstractAttributeSet>();
 		mVerifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();
 		mUnverifiedAttributeMap = new HashMap<String, AbstractAttribute<?>>();

@@ -21,6 +21,7 @@ import org.openmidaas.app.activities.MainTabActivity;
 import org.openmidaas.app.activities.PushNotificationActivity;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.session.SessionManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -121,6 +122,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(TAG,"Received push message");
 		Bundle extras=message.getExtras();
 	    for (String key : extras.keySet()) {
+	    	Logger.debug(getClass(), "Received key: " +key +" and value as: "+extras.getString(key));
 	    	if (key.equals("url")){
 	    		Log.d(TAG,"Received key as url and value as "+extras.getString(key));
 	    		Intent intent = new Intent(getBaseContext(), MainTabActivity.class);
@@ -129,7 +131,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    		intent.setAction(MainTabActivity.ACTION_MSG_CUSTOM);
 	    		intent.addCategory(Intent.CATEGORY_DEFAULT);
 	    		intent.putExtra("url", extras.getString(key));
-	    		getApplication().startActivity(intent);
+	    		//Check for the lock before continuing
+	    		if (SessionManager.busy == false)
+	    			getApplication().startActivity(intent);
 	    	}
 	    }
 	    

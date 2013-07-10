@@ -29,6 +29,8 @@ import org.openmidaas.app.session.ConsentManager;
 import org.openmidaas.app.session.EssentialAttributeMissingException;
 import org.openmidaas.app.session.Session;
 import org.openmidaas.app.session.Session.OnDoneCallback;
+import org.openmidaas.app.session.SessionCreationException;
+import org.openmidaas.app.session.SessionManager;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
@@ -186,12 +188,14 @@ public class AuthorizationActivity extends AbstractActivity{
 			public void onDone(String message) {
 				dismissDialog();
 				DialogUtils.showToast(mActivity, getResources().getString(R.string.attrSentSuccess));
+				SessionManager.busy = false;
 				mActivity.finish();
 			}
 
 			@Override
 			public void onError(Exception e) {
 				dismissDialog();
+				SessionManager.busy = false;
 				DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 			}
 			
@@ -232,18 +236,25 @@ public class AuthorizationActivity extends AbstractActivity{
 
 			@Override
 			public void run() {
-				mSession = new Session();
-				Message message = Message.obtain();
+				SessionManager mSessionManager  = new SessionManager();
 				try {
-					fetchAttributeSet(message, requestData);
-				} catch (AttributeFetchException e) {
-					Logger.error(getClass(), e.getMessage());
-					// re-try fetching the attribute set from the persistence store again. 
+					mSession = mSessionManager.createSession();
+					SessionManager.busy = true;
+					Message message = Message.obtain();
+					// Try to fetch the attributes only when create session is successful 
 					try {
 						fetchAttributeSet(message, requestData);
-					} catch (AttributeFetchException e1) {
-						Logger.error(getClass(), e1.getMessage());
-					} 
+					} catch (AttributeFetchException e) {
+						Logger.error(getClass(), e.getMessage());
+						// re-try fetching the attribute set from the persistence store again. 
+						try {
+							fetchAttributeSet(message, requestData);
+						} catch (AttributeFetchException e1) {
+							Logger.error(getClass(), e1.getMessage());
+						} 
+					}
+				} catch (SessionCreationException e2) {
+					Logger.error(getClass(), e2.getMessage());
 				}
 			}
 		}).start();
@@ -259,6 +270,7 @@ public class AuthorizationActivity extends AbstractActivity{
 		StringBuilder builder = new StringBuilder();
 		String prefix = "";
 		try {
+			
 			boolean noConsentPresent = false;
 			//1 set the request data
 			mSession.setRequestData(requestData);
@@ -328,7 +340,9 @@ public class AuthorizationActivity extends AbstractActivity{
 		
 		@Override
 		public boolean handleMessage(Message msg) {
-			mProgressDialog.dismiss();
+			if (mProgressDialog.isShowing())
+				mProgressDialog.dismiss();
+			
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
 					if(mSession.getClientId()!= null) {
@@ -373,5 +387,22 @@ public class AuthorizationActivity extends AbstractActivity{
 		cbUserConsent.setVisibility(View.VISIBLE);
 		btnAuthorize.setVisibility(View.VISIBLE);
 		tvAuthInfo.setVisibility(View.VISIBLE);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		//Free the lock if back is pressed on the authorization activity
+		SessionManager.busy = false;
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		/* 
+		 * If somebody presses the home button or by some reason the activity is no longer visible,
+		 * free the lock on session manager 
+		 */
+		SessionManager.busy = false;
 	}
 }

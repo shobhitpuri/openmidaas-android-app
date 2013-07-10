@@ -26,6 +26,7 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.session.SessionManager;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -260,36 +261,43 @@ public class MainTabActivity extends FragmentActivity {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {
 				if(uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
-					AsyncHttpClient client = new AsyncHttpClient();
-					mProgressDialog.setMessage("Loading...");
-					mProgressDialog.show();
-					client.get(uri.toString(), new AsyncHttpResponseHandler() {
-						@Override
-					    public void onSuccess(String response) {
-							if(mProgressDialog.isShowing()) {
-								mProgressDialog.dismiss();
-							}
-							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
-							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
-							startActivity(intent);
-					    }	
-						@Override
-					    public void onFailure(Throwable e, String response) {
-							if(mProgressDialog.isShowing()) {
-								mProgressDialog.dismiss();
-							}
-					        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
-					        
-					    }
-					});
+					//Check for the lock before starting to process
+					if (SessionManager.busy == false){
+						AsyncHttpClient client = new AsyncHttpClient();
+						mProgressDialog.setMessage("Loading...");
+						mProgressDialog.show();
+						client.get(uri.toString(), new AsyncHttpResponseHandler() {
+							@Override
+						    public void onSuccess(String response) {
+								if(mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
+								Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+								intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
+								startActivity(intent);
+								//Free the lock if success
+								SessionManager.busy = false;
+							}	
+							@Override
+						    public void onFailure(Throwable e, String response) {
+								if(mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
+								//Free the lock on failure
+								SessionManager.busy = false;
+						        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+						        
+						    }
+						});
+					}
 				} else {
 					DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURIType), result);
 				}
 			} else {
-				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.unknownURIFormat) + " " + result);
+				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), getResources().getString(R.string.unknownURIFormat) + " " + result);
 			}
 		} catch (URISyntaxException e) {
-			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.invalidURI) + " " + result);
+			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI),  getResources().getString(R.string.invalidURI) + " " + result);
 		}
 	}
 	
