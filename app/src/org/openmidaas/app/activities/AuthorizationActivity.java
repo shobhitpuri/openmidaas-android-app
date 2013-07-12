@@ -35,11 +35,16 @@ import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -112,6 +117,7 @@ public class AuthorizationActivity extends AbstractActivity{
 				performAuthorization(false);
 			}
 		});
+        
 	}
 
 	private void performAuthorization(boolean savedConsentPresent) {
@@ -188,14 +194,15 @@ public class AuthorizationActivity extends AbstractActivity{
 			public void onDone(String message) {
 				dismissDialog();
 				DialogUtils.showToast(mActivity, getResources().getString(R.string.attrSentSuccess));
-				SessionManager.busy = false;
+				//Release the session lock on sucess
+				Logger.debug(getClass(), " Session authorization successful. Session lock released");
+				SessionManager.setBusyness(false);
 				mActivity.finish();
 			}
 
 			@Override
 			public void onError(Exception e) {
 				dismissDialog();
-				SessionManager.busy = false;
 				DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 			}
 			
@@ -236,25 +243,33 @@ public class AuthorizationActivity extends AbstractActivity{
 
 			@Override
 			public void run() {
-				SessionManager mSessionManager  = new SessionManager();
+				//Get a session and lock it. 
+				//State the manager as busy so that it cannot create a new one until specifically made free.
+				Message message = Message.obtain();
 				try {
-					mSession = mSessionManager.createSession();
-					SessionManager.busy = true;
-					Message message = Message.obtain();
-					// Try to fetch the attributes only when create session is successful 
-					try {
-						fetchAttributeSet(message, requestData);
-					} catch (AttributeFetchException e) {
-						Logger.error(getClass(), e.getMessage());
-						// re-try fetching the attribute set from the persistence store again. 
-						try {
-							fetchAttributeSet(message, requestData);
-						} catch (AttributeFetchException e1) {
-							Logger.error(getClass(), e1.getMessage());
-						} 
-					}
+					mSession = SessionManager.createSession();
+					Logger.debug(getClass(), "Session created and locked.");
+					SessionManager.setBusyness(true);
+				
 				} catch (SessionCreationException e2) {
 					Logger.error(getClass(), e2.getMessage());
+				}
+				// Try to fetch the attributes
+				try {
+					Logger.debug(getClass(), "message: "+message);
+					Logger.debug(getClass(), "request: "+requestData);
+					fetchAttributeSet(message, requestData);
+				} catch (AttributeFetchException e) {
+					Logger.error(getClass(), e.getMessage());
+					// re-try fetching the attribute set from the persistence store again. 
+					try {
+						fetchAttributeSet(message, requestData);
+					} catch (AttributeFetchException e1) {
+						Logger.error(getClass(), e1.getMessage());
+						DialogUtils.showNeutralButtonDialog(AuthorizationActivity.this, "Error", e1.getMessage());
+						if (mProgressDialog.isShowing())
+							mProgressDialog.dismiss();
+					}
 				}
 			}
 		}).start();
@@ -390,19 +405,51 @@ public class AuthorizationActivity extends AbstractActivity{
 	}
 	
 	@Override
-	public void onBackPressed() {
-		super.onBackPressed();
-		//Free the lock if back is pressed on the authorization activity
-		SessionManager.busy = false;
+	public void onPause() {
+		// Home Key Pressed ( See if the app has been sent to background from this activity)
+		if (isApplicationSentToBackground(this)){
+			SessionManager.setBusyness(false);
+			Logger.debug(getClass(), "Home Key Pressed. "+"Session lock released");
+		}
+		super.onPause();
+	}
+
+	//Function to check if app went at background from here
+	public boolean isApplicationSentToBackground(final Context context) {
+	    ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+	    List<RunningTaskInfo> tasks = am.getRunningTasks(1);
+	    if (!tasks.isEmpty()) {
+	        ComponentName topActivity = tasks.get(0).topActivity;
+	        if (!topActivity.getPackageName().equals(context.getPackageName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+		
+	@Override
+	public void onResume() {
+		super.onResume();
 	}
 	
+	//Free the lock when back pressed on top action bar
 	@Override
-	protected void onStop() {
-		super.onStop();
-		/* 
-		 * If somebody presses the home button or by some reason the activity is no longer visible,
-		 * free the lock on session manager 
-		 */
-		SessionManager.busy = false;
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+        	Logger.debug(getClass(), "Back pressed on Action Bar. "+"Session lock released.");
+        	SessionManager.setBusyness(false);
+            this.finish();
+            return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+		
+	//Free the lock when back button pressed
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Logger.debug(getClass(), "Back button pressed. "+"Session lock released.");
+		SessionManager.setBusyness(false);
 	}
 }

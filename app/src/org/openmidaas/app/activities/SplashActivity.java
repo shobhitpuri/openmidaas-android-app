@@ -43,6 +43,9 @@ public class SplashActivity extends AbstractActivity {
 	private ProgressBar pb;
 	Intent intent;
 	private TextView tvVersionNumber;
+	Boolean startedByPush;
+	String url;
+	public static final String ACTION_MSG_CUSTOM = "org.openmidaas.app.action.processURL";
 	
 	@Override
 	public void onCreate(Bundle savedState) {
@@ -51,7 +54,8 @@ public class SplashActivity extends AbstractActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(false);
 		tvRegistrationStatus = (TextView)findViewById(R.id.tvRegistering);
-		
+		startedByPush = false;
+		url="";
 		// register the app or check to see if already registered.
 		MIDaaS.setLoggingLevel(Settings.LIBRARY_LOG_LEVEL);
 		
@@ -64,6 +68,9 @@ public class SplashActivity extends AbstractActivity {
 		tvVersionNumber = (TextView)findViewById(R.id.tvVersion);
 		tvVersionNumber.setText("Version: "+versionNumber);
 		
+		//See if intent is coming from a service with message to process the URL
+	    handleIntent(getIntent());
+	    
 	    try {
 			MIDaaS.initialize(this, Settings.SERVER_URL,new InitializationCallbackImpl());
 		} catch (URISyntaxException e) {
@@ -71,6 +78,18 @@ public class SplashActivity extends AbstractActivity {
 		}
 	}
 
+	private void handleIntent(Intent intent)
+	{
+	    Bundle extras = intent.getExtras();
+	    if (extras != null)
+	    {
+	    	if(intent.getAction().equals(ACTION_MSG_CUSTOM)){
+	    		//Flag would be used pass extra parameters to process the URL in MainActivity
+            	startedByPush = true;
+            	url = extras.getString("url");
+	    	}
+	    }
+	}
 	private void registrationComplete() {
 		this.runOnUiThread(new Runnable() {
 
@@ -78,7 +97,19 @@ public class SplashActivity extends AbstractActivity {
 			public void run() {
 				tvRegistrationStatus.setText("");
 				pb.setVisibility(View.GONE);
-				startActivity(new Intent(SplashActivity.this, MainTabActivity.class));
+				Intent intent = new Intent(SplashActivity.this, MainTabActivity.class);
+				if (startedByPush){
+					//To detect if MainActivity would need to process the extra parameters
+		    		intent.setAction(SplashActivity.ACTION_MSG_CUSTOM);
+		    		//Takes care of the scenario if activity is background. 
+		    		//Instead of starting another on top of it, it starts a new one. 
+		    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		    		intent.putExtra("url", url);
+		    		startActivity(intent);
+				}else{
+					startActivity(intent);	
+				}
 				SplashActivity.this.finish();
 			}
 		});

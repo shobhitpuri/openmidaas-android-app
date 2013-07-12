@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.view.View;
@@ -42,6 +41,9 @@ public class PushNotificationActivity extends AbstractActivity {
 	private Button btnPositive;
 	private Button btnClear;
 	String phoneNumber;
+	public static ProgressDialog dialog;
+	public static final String ACTION_MSG = "org.openmidaas.app.action.receivedMessageGCM";
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,13 +73,36 @@ public class PushNotificationActivity extends AbstractActivity {
 					SharedPreferences.Editor editor = getSharedPreferences("phone", MODE_PRIVATE).edit();
 					editor.putString("phoneNumberPush", phoneNumber);
 					editor.commit();
-					
-					//Get the registration ID in backround thread
-					new GetRegistrationID().execute();
-					
+
 					//Hide the keyboard
 					InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
 					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+					
+					//Dialog started here and would be dismissed when its registered on server 
+					dialog = new ProgressDialog(PushNotificationActivity.this);
+					dialog.setTitle("Please Wait");
+					dialog.setMessage("Registering your number for GCM Push...");
+			        dialog.show();
+			        
+			        /*Help to make sure the device is ready for using GCM,
+				    including whether or not it has the Google Services Framework*/
+				    try{
+				    	GCMRegistrar.checkDevice(PushNotificationActivity.this);
+				    }catch(RuntimeException e){
+				    	//Device incompatibility message
+					    Logger.debug(getClass(), e + " Device is incompatible for using GCM services.");
+					    DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GSM services.");
+					   
+				    }
+				    
+				    // Check internet connection
+				    if (isNetworkAvailable() == false){
+				    	Logger.debug(getClass(), "Not connected to internet. Failed Registration.");
+				    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
+				    	
+				    }
+				    //Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
+				    GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
 				}
 			}
 		});
@@ -95,7 +120,14 @@ public class PushNotificationActivity extends AbstractActivity {
         
 		
 	}
-
+	
+	private boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager 
+	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
+	
 	private String getPhoneNumberFromSIM(){
 		TelephonyManager mTelephonyMgr;  
 		mTelephonyMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);   
@@ -112,53 +144,4 @@ public class PushNotificationActivity extends AbstractActivity {
 	protected int getLayoutResourceId() {
 		return (R.layout.push_register);
 	}
-	
-	private class GetRegistrationID extends AsyncTask<Void, Void, Void> {
-		
-		ProgressDialog dialog = new ProgressDialog(PushNotificationActivity.this);
-		
-		@Override
-        protected void onPreExecute() {
-			 dialog.setTitle("Getting your ID from Google...");
-	         dialog.show();
-        }
-
-		private boolean isNetworkAvailable() {
-		    ConnectivityManager connectivityManager 
-		          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-		}
-		
-        @Override
-        protected Void doInBackground(Void... params) {
-        	/*Help to make sure the device is ready for using GCM,
-		    including whether or not it has the Google Services Framework*/
-		    try{
-		    	GCMRegistrar.checkDevice(PushNotificationActivity.this);
-		    }catch(RuntimeException e){
-		    	//Device incompatibility message
-			    Logger.debug(getClass(), e + " Device is incompatible for using GSM services.");
-			    DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GSM services.");
-			   
-		    }
-		    
-		    // Check internet connection
-		    if (isNetworkAvailable() == false){
-		    	Logger.debug(getClass(), "Not connected to internet. Failed Registration.");
-		    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
-		    	
-		    }
-		    //Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
-		    GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
-		    return null;
-        }      
-
-        @Override
-        protected void onPostExecute(Void result) {
-        	if (dialog.isShowing())
-        		dialog.dismiss();
-        }
-
-  }   
 }

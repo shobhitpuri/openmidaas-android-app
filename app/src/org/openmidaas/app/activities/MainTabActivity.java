@@ -25,7 +25,6 @@ import net.hockeyapp.android.UpdateManager;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
-import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
 
 import android.app.ActionBar;
@@ -70,7 +69,6 @@ public class MainTabActivity extends FragmentActivity {
 	Intent intentScan;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
-	public static final String ACTION_MSG_CUSTOM = "org.openmidaas.app.action.processURL";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,21 +103,13 @@ public class MainTabActivity extends FragmentActivity {
         initializeTab();
         //Check for updates
         checkForUpdates();
-        //See if intent is coming from a service with message to process the URL
-        handleIntent(getIntent());
-        
-	}
-
-	private void handleIntent(Intent intent)
-	{
-	    Bundle extras = intent.getExtras();
-	    if (extras != null)
-	    {
-	    	if(intent.getAction().equals(ACTION_MSG_CUSTOM)){
-            	Logger.debug(getClass(), "Inside on revcieve message: Startting process url");
-            	processUrl(intent.getExtras().getString("url"));
-	    	}
-	    }
+        //See if its being called to process URL from push message. 
+        //MainAcivity not being killed to be consistent with what happens when the URL taken via QR code etc.
+        if((getIntent().getExtras()!=null) && !getIntent().getExtras().isEmpty()){
+        	if(getIntent().getAction().equals(SplashActivity.ACTION_MSG_CUSTOM)){
+        		processUrl(getIntent().getExtras().getString("url"));
+        	}
+        }
 	}
 	
 	@Override
@@ -262,7 +252,7 @@ public class MainTabActivity extends FragmentActivity {
 			if(uri.isAbsolute()) {
 				if(uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
 					//Check for the lock before starting to process
-					if (SessionManager.busy == false){
+					if (SessionManager.getBusyness() == false){
 						AsyncHttpClient client = new AsyncHttpClient();
 						mProgressDialog.setMessage("Loading...");
 						mProgressDialog.show();
@@ -275,16 +265,12 @@ public class MainTabActivity extends FragmentActivity {
 								Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 								intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 								startActivity(intent);
-								//Free the lock if success
-								SessionManager.busy = false;
 							}	
 							@Override
 						    public void onFailure(Throwable e, String response) {
 								if(mProgressDialog.isShowing()) {
 									mProgressDialog.dismiss();
 								}
-								//Free the lock on failure
-								SessionManager.busy = false;
 						        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 						        
 						    }

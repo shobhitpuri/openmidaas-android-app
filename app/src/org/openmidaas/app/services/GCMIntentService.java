@@ -17,8 +17,8 @@
 package org.openmidaas.app.services;
 
 import org.openmidaas.app.Settings;
-import org.openmidaas.app.activities.MainTabActivity;
 import org.openmidaas.app.activities.PushNotificationActivity;
+import org.openmidaas.app.activities.SplashActivity;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
@@ -41,7 +41,7 @@ import com.loopj.android.http.RequestParams;
  */
 
 public class GCMIntentService extends GCMBaseIntentService {
-	
+
 	Handler mMainThreadHandler = null;
 	public GCMIntentService() {
 		super(PushNotificationActivity.SENDER_ID);
@@ -59,11 +59,15 @@ public class GCMIntentService extends GCMBaseIntentService {
 		SharedPreferences prefs = getApplicationContext().getSharedPreferences("phone", MODE_PRIVATE); 
 		String phone = prefs.getString("phoneNumberPush", "");
 		Logger.debug(getClass(), "Phone Number which would be registered on Server: "+phone);
-		if (!phone.isEmpty()) 
-		{
-			// call a Web service here probably to send the Registration ID 
+		// call a Web service here probably to send the Registration ID 
+		if(!phone.isEmpty()){
 			sendToServer(phone, regId);
+		}else{
+			Log.d(TAG, "Phone Number is Empty. Not registering on server. ");
+			if(PushNotificationActivity.dialog.isShowing())
+		    	PushNotificationActivity.dialog.dismiss();
 		}
+		
 	}
 	
 	//Send the number and ID to server
@@ -84,21 +88,22 @@ public class GCMIntentService extends GCMBaseIntentService {
         		    @Override
         		    public void onSuccess(int statusCode, String content) {
         		        super.onSuccess(statusCode, content);
+        		        if(PushNotificationActivity.dialog.isShowing())
+        			    	PushNotificationActivity.dialog.dismiss();
         		        Logger.debug(getClass(), "Registration ID Successfully send to 3rd party server");
         		        DialogUtils.showToastUsingHandler(GCMIntentService.this, "Registration Successsful");
- 
         		    }
         		      
         		    @Override
         		    public void onFailure(Throwable error, String content) {
         			    super.onFailure(error, content);
-        			    Logger.error(getClass(), error + ". Error in sending Registration ID to 3rd party server. ");
+        			    if(PushNotificationActivity.dialog.isShowing())
+        			    	PushNotificationActivity.dialog.dismiss();
+        			    Log.e(TAG, error + ". Error in sending Registration ID to 3rd party server. ");
         			    DialogUtils.showToastUsingHandler(GCMIntentService.this, "Server Error: Error in sending Registration ID to 3rd party server");  
         			}
 
         		});
-
-        		
             }
         });
 		
@@ -117,23 +122,39 @@ public class GCMIntentService extends GCMBaseIntentService {
 	that your server declares to be the message will arrive as Intent extras on
 	that Intent.*/
 
-	
+	@Override
 	protected void onMessage(Context context, Intent message) {
 		Log.d(TAG,"Received push message");
 		Bundle extras=message.getExtras();
 	    for (String key : extras.keySet()) {
 	    	Logger.debug(getClass(), "Received key: " +key +" and value as: "+extras.getString(key));
 	    	if (key.equals("url")){
-	    		Log.d(TAG,"Received key as url and value as "+extras.getString(key));
-	    		Intent intent = new Intent(getBaseContext(), MainTabActivity.class);
-	    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    		intent.setAction(MainTabActivity.ACTION_MSG_CUSTOM);
-	    		intent.addCategory(Intent.CATEGORY_DEFAULT);
-	    		intent.putExtra("url", extras.getString(key));
-	    		//Check for the lock before continuing
-	    		if (SessionManager.busy == false)
-	    			getApplication().startActivity(intent);
+	    		if (!extras.getString(key).isEmpty() && extras.getString(key)!=null){
+	    			Log.d(TAG,"Received key as 'url' and value as "+extras.getString(key));
+	    			final String val = extras.getString(key);
+	    			
+	    			new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+				    		Intent intent = new Intent(getBaseContext(), SplashActivity.class);
+				    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				    		intent.setAction(SplashActivity.ACTION_MSG_CUSTOM);
+				    		intent.addCategory(Intent.CATEGORY_DEFAULT);
+				    		intent.putExtra("url", val);
+				    		//Check for the lock before continuing
+					    	if (SessionManager.getBusyness() == false){
+					    		getApplication().startActivity(intent);
+					    	}else{
+					    		Log.d(TAG,"Received push message but won't process the URL as session is locked.");
+					    	}
+						}
+					}).start();
+		    		
+	    		}else{
+	    			Log.d(TAG,"Received push message but vaue of key:\"url\" is empty or null. ");
+	    		}
 	    	}
 	    }
 	    
@@ -153,6 +174,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected boolean onRecoverableError(Context ctxt, String errorMsg) {
 		Logger.debug(getClass(), "onRecoverableError: " + errorMsg);
+		Log.d(TAG, "onRecoverableError: " + errorMsg);
 	    return(true);
 	}
 }
