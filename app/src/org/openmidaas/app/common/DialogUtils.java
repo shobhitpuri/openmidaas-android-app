@@ -28,9 +28,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.View;
@@ -199,6 +201,23 @@ public final class DialogUtils {
 			}
 		});
 	}
+	
+	/**
+	 * Displays a toast notification using context. 
+	 * @param activity the activity displaying the notification 
+	 * @param message the message to be displayed
+	 */
+	public static void showToastUsingHandler(final Context context, final String message) {
+		Handler mHandler = new Handler();
+		mHandler.post(new Runnable() {            
+		        @Override
+		        public void run() {
+		            Toast.makeText(context, message, Toast.LENGTH_LONG).show();                
+		        }
+		});	 
+		
+	}
+	
 	
 	/**
 	 * Displays the attribute details
