@@ -29,15 +29,22 @@ import org.openmidaas.app.session.ConsentManager;
 import org.openmidaas.app.session.EssentialAttributeMissingException;
 import org.openmidaas.app.session.Session;
 import org.openmidaas.app.session.Session.OnDoneCallback;
+import org.openmidaas.app.session.SessionCreationException;
+import org.openmidaas.app.session.SessionManager;
 import org.openmidaas.app.session.attributeset.AbstractAttributeSet;
 import org.openmidaas.library.model.core.AbstractAttribute;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -110,6 +117,7 @@ public class AuthorizationActivity extends AbstractActivity{
 				performAuthorization(false);
 			}
 		});
+        
 	}
 
 	private void performAuthorization(boolean savedConsentPresent) {
@@ -186,6 +194,9 @@ public class AuthorizationActivity extends AbstractActivity{
 			public void onDone(String message) {
 				dismissDialog();
 				DialogUtils.showToast(mActivity, getResources().getString(R.string.attrSentSuccess));
+				//Release the session lock on sucess
+				Logger.debug(getClass(), " Session authorization successful. Session lock released");
+				SessionManager.setBusyness(false);
 				mActivity.finish();
 			}
 
@@ -232,9 +243,21 @@ public class AuthorizationActivity extends AbstractActivity{
 
 			@Override
 			public void run() {
-				mSession = new Session();
+				//Get a session and lock it. 
+				//State the manager as busy so that it cannot create a new one until specifically made free.
 				Message message = Message.obtain();
 				try {
+					mSession = SessionManager.createSession();
+					Logger.debug(getClass(), "Session created and locked.");
+					SessionManager.setBusyness(true);
+				
+				} catch (SessionCreationException e2) {
+					Logger.error(getClass(), e2.getMessage());
+				}
+				// Try to fetch the attributes
+				try {
+					Logger.debug(getClass(), "message: "+message);
+					Logger.debug(getClass(), "request: "+requestData);
 					fetchAttributeSet(message, requestData);
 				} catch (AttributeFetchException e) {
 					Logger.error(getClass(), e.getMessage());
@@ -243,7 +266,10 @@ public class AuthorizationActivity extends AbstractActivity{
 						fetchAttributeSet(message, requestData);
 					} catch (AttributeFetchException e1) {
 						Logger.error(getClass(), e1.getMessage());
-					} 
+						DialogUtils.showNeutralButtonDialog(AuthorizationActivity.this, "Error", e1.getMessage());
+						if (mProgressDialog.isShowing())
+							mProgressDialog.dismiss();
+					}
 				}
 			}
 		}).start();
@@ -259,6 +285,7 @@ public class AuthorizationActivity extends AbstractActivity{
 		StringBuilder builder = new StringBuilder();
 		String prefix = "";
 		try {
+			
 			boolean noConsentPresent = false;
 			//1 set the request data
 			mSession.setRequestData(requestData);
@@ -328,7 +355,9 @@ public class AuthorizationActivity extends AbstractActivity{
 		
 		@Override
 		public boolean handleMessage(Message msg) {
-			mProgressDialog.dismiss();
+			if (mProgressDialog.isShowing())
+				mProgressDialog.dismiss();
+			
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
 					if(mSession.getClientId()!= null) {
@@ -373,5 +402,54 @@ public class AuthorizationActivity extends AbstractActivity{
 		cbUserConsent.setVisibility(View.VISIBLE);
 		btnAuthorize.setVisibility(View.VISIBLE);
 		tvAuthInfo.setVisibility(View.VISIBLE);
+	}
+	
+	@Override
+	public void onPause() {
+		// Home Key Pressed ( See if the app has been sent to background from this activity)
+		if (isApplicationSentToBackground(this)){
+			SessionManager.setBusyness(false);
+			Logger.debug(getClass(), "Home Key Pressed. "+"Session lock released");
+		}
+		super.onPause();
+	}
+
+	//Function to check if app went at background from here
+	public boolean isApplicationSentToBackground(final Context context) {
+	    ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+	    List<RunningTaskInfo> tasks = am.getRunningTasks(1);
+	    if (!tasks.isEmpty()) {
+	        ComponentName topActivity = tasks.get(0).topActivity;
+	        if (!topActivity.getPackageName().equals(context.getPackageName())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+		
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+	
+	//Free the lock when back pressed on top action bar
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+        	Logger.debug(getClass(), "Back pressed on Action Bar. "+"Session lock released.");
+        	SessionManager.setBusyness(false);
+            this.finish();
+            return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+		
+	//Free the lock when back button pressed
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Logger.debug(getClass(), "Back button pressed. "+"Session lock released.");
+		SessionManager.setBusyness(false);
 	}
 }

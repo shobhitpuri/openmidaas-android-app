@@ -25,6 +25,7 @@ import net.hockeyapp.android.UpdateManager;
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.session.SessionManager;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -68,7 +69,7 @@ public class MainTabActivity extends FragmentActivity {
 	Intent intentScan;
 	private Activity mActivity;
 	ProgressDialog mProgressDialog;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,9 +101,17 @@ public class MainTabActivity extends FragmentActivity {
         mTabHost.getTabWidget().setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         //initializing tabs
         initializeTab();
+        //Check for updates
         checkForUpdates();
+        //See if its being called to process URL from push message. 
+        //MainAcivity not being killed to be consistent with what happens when the URL taken via QR code etc.
+        if((getIntent().getExtras()!=null) && !getIntent().getExtras().isEmpty()){
+        	if(getIntent().getAction().equals(SplashActivity.ACTION_MSG_CUSTOM)){
+        		processUrl(getIntent().getExtras().getString("url"));
+        	}
+        }
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -129,6 +138,13 @@ public class MainTabActivity extends FragmentActivity {
 		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		        startActivity(intent);
 				break;
+				
+			case R.id.register_push:
+				intent = new Intent(this, PushNotificationActivity.class);
+		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		        startActivity(intent);
+				break;
+				
 		}
 		return true;
 	}
@@ -235,36 +251,39 @@ public class MainTabActivity extends FragmentActivity {
 			URI uri = new URI(result);
 			if(uri.isAbsolute()) {
 				if(uri.getScheme().equals("http") || uri.getScheme().equals("https")) {
-					AsyncHttpClient client = new AsyncHttpClient();
-					mProgressDialog.setMessage("Loading...");
-					mProgressDialog.show();
-					client.get(uri.toString(), new AsyncHttpResponseHandler() {
-						@Override
-					    public void onSuccess(String response) {
-							if(mProgressDialog.isShowing()) {
-								mProgressDialog.dismiss();
-							}
-							Intent intent = new Intent(mActivity, AuthorizationActivity.class);
-							intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
-							startActivity(intent);
-					    }	
-						@Override
-					    public void onFailure(Throwable e, String response) {
-							if(mProgressDialog.isShowing()) {
-								mProgressDialog.dismiss();
-							}
-					        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
-					        
-					    }
-					});
+					//Check for the lock before starting to process
+					if (SessionManager.getBusyness() == false){
+						AsyncHttpClient client = new AsyncHttpClient();
+						mProgressDialog.setMessage("Loading...");
+						mProgressDialog.show();
+						client.get(uri.toString(), new AsyncHttpResponseHandler() {
+							@Override
+						    public void onSuccess(String response) {
+								if(mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
+								Intent intent = new Intent(mActivity, AuthorizationActivity.class);
+								intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
+								startActivity(intent);
+							}	
+							@Override
+						    public void onFailure(Throwable e, String response) {
+								if(mProgressDialog.isShowing()) {
+									mProgressDialog.dismiss();
+								}
+						        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
+						        
+						    }
+						});
+					}
 				} else {
 					DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURIType), result);
 				}
 			} else {
-				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.unknownURIFormat) + " " + result);
+				DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), getResources().getString(R.string.unknownURIFormat) + " " + result);
 			}
 		} catch (URISyntaxException e) {
-			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI), " " + getResources().getString(R.string.invalidURI) + " " + result);
+			DialogUtils.showNeutralButtonDialog(mActivity, getResources().getString(R.string.invalidURI),  getResources().getString(R.string.invalidURI) + " " + result);
 		}
 	}
 	
