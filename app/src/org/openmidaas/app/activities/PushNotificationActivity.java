@@ -49,16 +49,16 @@ public class PushNotificationActivity extends AbstractActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.push_register);
 		
-        //Get number from the SIM card if present
-        phoneNumber = getPhoneNumberFromSIM(); 
-        //Set it to EditText if not null
+        	//Get number from the SIM card if present
+       		phoneNumber = getPhoneNumberFromSIM(); 
+        	//Set it to EditText if not null
 		if (phoneNumber!=null){
 			View tv = findViewById(R.id.edPushActivity);
 			((EditText)tv).setText(phoneNumber);
 		}
 		
 		btnPositive = (Button)findViewById(R.id.btnOkayPushPhone);
-        btnPositive.setOnClickListener(new OnClickListener() {
+        	btnPositive.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -84,8 +84,8 @@ public class PushNotificationActivity extends AbstractActivity {
 				    	GCMRegistrar.checkDevice(PushNotificationActivity.this);
 				    }catch(RuntimeException e){
 				    	//Device incompatibility message
-					    Logger.debug(getClass(), e + " Device is incompatible for using GCM services.");
-					    DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GSM services.");
+					Logger.debug(getClass(), e + " Device is incompatible for using GCM services.");
+					DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GSM services.");
 					   
 				    }
 				    
@@ -96,11 +96,10 @@ public class PushNotificationActivity extends AbstractActivity {
 				    	
 				    }else{
 				    	//Dialog started here and would be dismissed when its registered on server or there is an error.
-						dialog = new ProgressDialog(PushNotificationActivity.this);
-						dialog.setTitle("Please Wait");
-						dialog.setMessage("Registering your number for GCM Push...");
+					dialog = new ProgressDialog(PushNotificationActivity.this);
+					dialog.setTitle("Please Wait");
+					dialog.setMessage("Registering your number for GCM Push...");
 				        dialog.show();
-				        
 				    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
 				    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
 				    }
@@ -108,8 +107,8 @@ public class PushNotificationActivity extends AbstractActivity {
 			}
 		});
         
-        btnClear = (Button)findViewById(R.id.btnClearPushPhone);
-        btnClear.setOnClickListener(new OnClickListener() {
+       		btnClear = (Button)findViewById(R.id.btnClearPushPhone);
+        	btnClear.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
