@@ -208,7 +208,7 @@ public final class DialogUtils {
 	 * @param message the message to be displayed
 	 */
 	public static void showToastUsingHandler(final Context context, final String message) {
-		Handler mHandler = new Handler();
+		Handler mHandler = new Handler(context.getMainLooper());
 		mHandler.post(new Runnable() {            
 		        @Override
 		        public void run() {

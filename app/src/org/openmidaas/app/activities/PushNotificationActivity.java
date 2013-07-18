@@ -78,13 +78,7 @@ public class PushNotificationActivity extends AbstractActivity {
 					InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
 					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 					
-					//Dialog started here and would be dismissed when its registered on server 
-					dialog = new ProgressDialog(PushNotificationActivity.this);
-					dialog.setTitle("Please Wait");
-					dialog.setMessage("Registering your number for GCM Push...");
-			        dialog.show();
-			        
-			        /*Help to make sure the device is ready for using GCM,
+					/*Help to make sure the device is ready for using GCM,
 				    including whether or not it has the Google Services Framework*/
 				    try{
 				    	GCMRegistrar.checkDevice(PushNotificationActivity.this);
@@ -100,9 +94,16 @@ public class PushNotificationActivity extends AbstractActivity {
 				    	Logger.debug(getClass(), "Not connected to internet. Failed Registration.");
 				    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
 				    	
+				    }else{
+				    	//Dialog started here and would be dismissed when its registered on server or there is an error.
+						dialog = new ProgressDialog(PushNotificationActivity.this);
+						dialog.setTitle("Please Wait");
+						dialog.setMessage("Registering your number for GCM Push...");
+				        dialog.show();
+				        
+				    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
+				    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
 				    }
-				    //Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
-				    GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
 				}
 			}
 		});

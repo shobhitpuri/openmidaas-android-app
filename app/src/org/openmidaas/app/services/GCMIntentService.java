@@ -27,7 +27,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -41,11 +40,8 @@ import com.loopj.android.http.RequestParams;
  */
 
 public class GCMIntentService extends GCMBaseIntentService {
-
-	Handler mMainThreadHandler = null;
 	public GCMIntentService() {
 		super(PushNotificationActivity.SENDER_ID);
-		mMainThreadHandler = new Handler();
 	}
 	
 	/*called when a registration request that was kicked
@@ -76,12 +72,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 		param.put("mobile_no", phone);
         param.put("gcm_id", regId);
         
-		mMainThreadHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-            	
-        		AsyncHttpClient clientPost = new AsyncHttpClient();
+        new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				AsyncHttpClient clientPost = new AsyncHttpClient();
         		clientPost.addHeader("Content-Type", "application/x-www-urlform-encoded");
         		
         		clientPost.post(Settings.PUSH_REGISTRATION_SERVER_URL, param, new AsyncHttpResponseHandler(){
@@ -104,10 +99,10 @@ public class GCMIntentService extends GCMBaseIntentService {
         			}
 
         		});
-            }
-        });
-		
-	}
+				
+			}
+		}).start();
+    }
 	
 	/*called sometime after you call unregister() on
 	GCMRegistrar to indicate that your app no longer wishes to receive GCM
@@ -131,26 +126,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    	if (key.equals("url")){
 	    		if (!extras.getString(key).isEmpty() && extras.getString(key)!=null){
 	    			Log.d(TAG,"Received key as 'url' and value as "+extras.getString(key));
-	    			final String val = extras.getString(key);
-	    			
-	    			new Thread(new Runnable() {
-						
-						@Override
-						public void run() {
-				    		Intent intent = new Intent(getBaseContext(), SplashActivity.class);
-				    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				    		intent.setAction(SplashActivity.ACTION_MSG_CUSTOM);
-				    		intent.addCategory(Intent.CATEGORY_DEFAULT);
-				    		intent.putExtra("url", val);
-				    		//Check for the lock before continuing
-					    	if (SessionManager.getBusyness() == false){
-					    		getApplication().startActivity(intent);
-					    	}else{
-					    		Log.d(TAG,"Received push message but won't process the URL as session is locked.");
-					    	}
-						}
-					}).start();
+	    			Intent intent = new Intent(getBaseContext(), SplashActivity.class);
+		    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		    		intent.setAction(SplashActivity.ACTION_MSG_CUSTOM);
+		    		intent.addCategory(Intent.CATEGORY_DEFAULT);
+		    		intent.putExtra("url", extras.getString(key));
+		    		//Check for the lock before continuing
+			    	if (SessionManager.getBusyness() == false){
+			    		getApplication().startActivity(intent);
+			    	}else{
+			    		Log.d(TAG,"Received push message but won't process the URL as session is locked.");
+			    	}
 		    		
 	    		}else{
 	    			Log.d(TAG,"Received push message but vaue of key:\"url\" is empty or null. ");
@@ -167,6 +154,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected void onError(Context ctxt, String errorMsg) {
 		Logger.debug(getClass(), "onError: " + errorMsg);
 		Log.d(TAG, errorMsg);
+		if(PushNotificationActivity.dialog.isShowing())
+	    	PushNotificationActivity.dialog.dismiss();
+		DialogUtils.showToastUsingHandler(GCMIntentService.this, "Error: "+errorMsg);
 	}
 	
 	/*Called if there is some problem that GCM will 
@@ -175,6 +165,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected boolean onRecoverableError(Context ctxt, String errorMsg) {
 		Logger.debug(getClass(), "onRecoverableError: " + errorMsg);
 		Log.d(TAG, "onRecoverableError: " + errorMsg);
+		if(PushNotificationActivity.dialog.isShowing())
+	    	PushNotificationActivity.dialog.dismiss();
+		DialogUtils.showToastUsingHandler(GCMIntentService.this, "Error: "+errorMsg);
 	    return(true);
 	}
 }

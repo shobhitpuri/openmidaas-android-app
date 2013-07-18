@@ -17,19 +17,28 @@ package org.openmidaas.app.session;
 
 public class SessionManager{
 	private static boolean busy = false;
-	public static synchronized Session createSession() throws SessionCreationException {
-		if (!busy){
-			Session session = new Session();
-			return session;
-		}else{
-			throw new SessionCreationException("Cannot create a new request. A request is already in progress.");
+	private static final Object OBJ_LOCK = new Object();
+	
+	public static Session createSession() throws SessionCreationException {
+		synchronized (OBJ_LOCK) {
+			if (!busy){
+				Session session = new Session();
+				return session;
+			}else{
+				throw new SessionCreationException("Cannot create a new request. A request is already in progress.");
+			}	
 		}	
 	}
 	
-	public synchronized static boolean getBusyness(){
-		return busy;
+	public static boolean getBusyness(){
+		synchronized (OBJ_LOCK) {
+			return busy;
+		}
 	}
-	public synchronized static void setBusyness(boolean status){
-		busy = status;
+	
+	public static void setBusyness(boolean status){
+		synchronized (OBJ_LOCK) {
+			busy = status;	
+		}
 	}
 }

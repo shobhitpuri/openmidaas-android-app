@@ -105,6 +105,7 @@ public class SplashActivity extends AbstractActivity {
 		    		//Instead of starting another on top of it, it starts a new one. 
 		    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		    		intent.addCategory(Intent.CATEGORY_DEFAULT);
 		    		intent.putExtra("url", url);
 		    		startActivity(intent);
 				}else{
