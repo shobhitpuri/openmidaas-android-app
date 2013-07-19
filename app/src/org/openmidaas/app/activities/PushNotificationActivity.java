@@ -35,6 +35,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gcm.GCMRegistrar;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 public class PushNotificationActivity extends AbstractActivity {
 	public static final String SENDER_ID= Settings.GCM_SENDER_ID;
@@ -44,10 +47,15 @@ public class PushNotificationActivity extends AbstractActivity {
 	public static ProgressDialog dialog;
 	public static final String ACTION_MSG = "org.openmidaas.app.action.receivedMessageGCM";
 	
+	PhoneNumberUtil phoneUtil;
+	PhoneNumber phoneParsedNumber;
+	Boolean isPhoneValid;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.push_register);
+		isPhoneValid = false;
 		
         //Get number from the SIM card if present
         phoneNumber = getPhoneNumberFromSIM(); 
@@ -69,41 +77,56 @@ public class PushNotificationActivity extends AbstractActivity {
 				if ((phoneNumber==null) || (phoneNumber.isEmpty())){
 					DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Error", "Phone Number cannot be empty.");
 				}else{
-					// save phone number in shared preference
-					SharedPreferences.Editor editor = getSharedPreferences("phone", MODE_PRIVATE).edit();
-					editor.putString("phoneNumberPush", phoneNumber);
-					editor.commit();
-
 					//Hide the keyboard
 					InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
 					inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 					
-					/*Help to make sure the device is ready for using GCM,
-				    including whether or not it has the Google Services Framework*/
-				    try{
-				    	GCMRegistrar.checkDevice(PushNotificationActivity.this);
-				    }catch(RuntimeException e){
-				    	//Device incompatibility message
-					    Logger.debug(getClass(), e + " Device is incompatible for using GCM services.");
-					    DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GSM services.");
-					   
-				    }
+					//parse the number to check the validity
+					phoneUtil = PhoneNumberUtil.getInstance();
+					try {
+						phoneParsedNumber = phoneUtil.parse(phoneNumber, null);
+						isPhoneValid = phoneUtil.isValidNumber(phoneParsedNumber); // returns true or false
+					} catch (NumberParseException e) {
+						Logger.debug(getClass(), "NumberParseException was thrown: " + e.toString());
+					}
+					
+					if(isPhoneValid == true){ //valid phone
+					
+						// save phone number in shared preference
+						SharedPreferences.Editor editor = getSharedPreferences("phone", MODE_PRIVATE).edit();
+						editor.putString("phoneNumberPush", phoneNumber);
+						editor.commit();
+						
+						try{
+							/*Help to make sure the device is ready for using GCM,
+							including whether or not it has the Google Services Framework*/
+							GCMRegistrar.checkDevice(PushNotificationActivity.this);
+							// Check internet connection
+							if (isNetworkAvailable() == false){
+						    	Logger.debug(getClass(), "Not connected to internet. Failed Registration.");
+						    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
+						    	
+						    }else{
+						    	//Dialog started here and would be dismissed when its registered on server or there is an error.
+						    	dialog = new ProgressDialog(PushNotificationActivity.this);
+						    	dialog.setTitle("Please Wait");
+						    	dialog.setMessage("Registering your number for GCM Push...");
+						    	dialog.show();
+						    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
+						    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
+						    }
+					    }catch(RuntimeException e){
+					    	//Device incompatibility message
+					    	Logger.debug(getClass(), e + " Device is incompatible for using GCM services.");
+					    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Unable to register to push message service. Device is incompatible for using GCM services.");			   
+					    }
+						
+					}else{
+						//Invalid phone number message
+						Logger.debug(getClass(), "Invalid phone number entered for push registration.");
+						DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Invalid Phone Number", "Please enter a valid phone number in international(E-164) format, which is \"+\" sign followed by your country code and phone number.");
+					}
 				    
-				    // Check internet connection
-				    if (isNetworkAvailable() == false){
-				    	Logger.debug(getClass(), "Not connected to internet. Failed Registration.");
-				    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
-				    	
-				    }else{
-				    	//Dialog started here and would be dismissed when its registered on server or there is an error.
-						dialog = new ProgressDialog(PushNotificationActivity.this);
-						dialog.setTitle("Please Wait");
-						dialog.setMessage("Registering your number for GCM Push...");
-				        dialog.show();
-				        
-				    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
-				    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
-				    }
 				}
 			}
 		});
