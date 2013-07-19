@@ -57,16 +57,16 @@ public class PushNotificationActivity extends AbstractActivity {
 		setContentView(R.layout.push_register);
 		isPhoneValid = false;
 		
-        //Get number from the SIM card if present
-        phoneNumber = getPhoneNumberFromSIM(); 
-        //Set it to EditText if not null
+		//Get number from the SIM card if present
+		phoneNumber = getPhoneNumberFromSIM(); 
+		//Set it to EditText if not null
 		if (phoneNumber!=null){
 			View tv = findViewById(R.id.edPushActivity);
 			((EditText)tv).setText(phoneNumber);
 		}
 		
 		btnPositive = (Button)findViewById(R.id.btnOkayPushPhone);
-        btnPositive.setOnClickListener(new OnClickListener() {
+		btnPositive.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -131,8 +131,8 @@ public class PushNotificationActivity extends AbstractActivity {
 			}
 		});
         
-        btnClear = (Button)findViewById(R.id.btnClearPushPhone);
-        btnClear.setOnClickListener(new OnClickListener() {
+		btnClear = (Button)findViewById(R.id.btnClearPushPhone);
+		btnClear.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
