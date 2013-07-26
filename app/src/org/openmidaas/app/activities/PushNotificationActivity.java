@@ -118,7 +118,7 @@ public class PushNotificationActivity extends AbstractActivity {
 						    	//Dialog started here and would be dismissed when its registered on server or there is an error.
 						    	dialog = new ProgressDialog(PushNotificationActivity.this);
 						    	dialog.setTitle("Please Wait");
-						    	dialog.setMessage("Registering your number for GCM Push...");
+						    	dialog.setMessage("Registering your number for push notification service...");
 						    	dialog.show();
 						    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
 						    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);

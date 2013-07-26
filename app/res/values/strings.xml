@@ -275,7 +275,7 @@
 	</string>
 	<string name="enterUrlDialog">Enter the URL as shown on your browser:</string>
 	<string name="enterUrlHint">https://</string>
-	<string name="enterPhonePush">Please enter a phone number(along with country code) to register for push notification service:</string>
+	<string name="enterPhonePush">Please enter your phone number along with the country code to register for push notification service:</string>
 	<string name="openMIDaasUrl">http://openmidaas.org</string>
 	<string name="tabs">Tabs</string>
 	<string name="profileTabtext">Profile</string>
