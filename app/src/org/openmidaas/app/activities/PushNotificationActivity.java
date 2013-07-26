@@ -61,6 +61,7 @@ public class PushNotificationActivity extends AbstractActivity {
 		phoneNumber = getPhoneNumberFromSIM(); 
 		//Set it to EditText if not null
 		if (phoneNumber!=null){
+			phoneNumber = phoneNumber.replace("+", "");
 			View tv = findViewById(R.id.edPushActivity);
 			((EditText)tv).setText(phoneNumber);
 		}
@@ -70,6 +71,7 @@ public class PushNotificationActivity extends AbstractActivity {
 			
 			@Override
 			public void onClick(View v) {
+				isPhoneValid = false;
 				//Get the Number on click from EditText
 				View tv = findViewById(R.id.edPushActivity);
 				phoneNumber = ((EditText)tv).getText().toString();
@@ -84,7 +86,13 @@ public class PushNotificationActivity extends AbstractActivity {
 					//parse the number to check the validity
 					phoneUtil = PhoneNumberUtil.getInstance();
 					try {
-						phoneParsedNumber = phoneUtil.parse(phoneNumber, null);
+						String phoneTest;
+						if (phoneNumber.contains("+")){
+							phoneTest = phoneNumber;
+						}else{
+							phoneTest = "+"+phoneNumber;
+						}
+						phoneParsedNumber = phoneUtil.parse(phoneTest, null);
 						isPhoneValid = phoneUtil.isValidNumber(phoneParsedNumber); // returns true or false
 					} catch (NumberParseException e) {
 						Logger.debug(getClass(), "NumberParseException was thrown: " + e.toString());
@@ -124,7 +132,7 @@ public class PushNotificationActivity extends AbstractActivity {
 					}else{
 						//Invalid phone number message
 						Logger.debug(getClass(), "Invalid phone number entered for push registration.");
-						DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Invalid Phone Number", "Please enter a valid phone number in international(E-164) format, which is \"+\" sign followed by your country code and phone number.");
+						DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Invalid Phone Number", "Please enter a valid international phone number. Make sure you've entered the country code followed by phone number.");
 					}
 				    
 				}

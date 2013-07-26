@@ -133,18 +133,17 @@ public class MainTabActivity extends FragmentActivity {
 		        this.startActivity(intent);
 		        break;
 		        
-			case R.id.about_us:
-				intent = new Intent(this, AboutUsActivity.class);
-		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		        startActivity(intent);
-				break;
-				
 			case R.id.register_push:
 				intent = new Intent(this, PushNotificationActivity.class);
 		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		        startActivity(intent);
 				break;
 				
+			case R.id.about_us:
+				intent = new Intent(this, AboutUsActivity.class);
+		        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		        startActivity(intent);
+				break;
 		}
 		return true;
 	}
