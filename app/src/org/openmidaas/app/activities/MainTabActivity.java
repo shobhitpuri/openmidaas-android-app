@@ -24,7 +24,9 @@ import net.hockeyapp.android.UpdateManager;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
+import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
 
 import android.app.ActionBar;
@@ -106,7 +108,7 @@ public class MainTabActivity extends FragmentActivity {
         //See if its being called to process URL from push message. 
         //MainAcivity not being killed to be consistent with what happens when the URL taken via QR code etc.
         if((getIntent().getExtras()!=null) && !getIntent().getExtras().isEmpty()){
-        	if(getIntent().getAction().equals(SplashActivity.ACTION_MSG_CUSTOM)){
+        	if(getIntent().getAction().equals(Constants.IntentActionMessages.PROCESS_URL)){
         		processUrl(getIntent().getExtras().getString("url"));
         	}
         }
@@ -258,18 +260,30 @@ public class MainTabActivity extends FragmentActivity {
 						client.get(uri.toString(), new AsyncHttpResponseHandler() {
 							@Override
 						    public void onSuccess(String response) {
-								if(mProgressDialog.isShowing()) {
-									mProgressDialog.dismiss();
-								}
+								mActivity.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										if (mProgressDialog.isShowing()) {
+											Logger.debug(getClass(), "Dismissing Dialog... ");
+											mProgressDialog.dismiss();
+										}
+									}
+								});
 								Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 								intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 								startActivity(intent);
-							}	
+							}
 							@Override
 						    public void onFailure(Throwable e, String response) {
-								if(mProgressDialog.isShowing()) {
-									mProgressDialog.dismiss();
-								}
+								mActivity.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										if (mProgressDialog.isShowing()) {
+											Logger.debug(getClass(), "Dismissing Dialog: ");
+											mProgressDialog.dismiss();
+										}
+									}
+								});
 						        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 						        
 						    }

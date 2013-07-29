@@ -19,6 +19,7 @@ package org.openmidaas.app.services;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.activities.PushNotificationActivity;
 import org.openmidaas.app.activities.SplashActivity;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
 
@@ -41,8 +42,6 @@ import com.loopj.android.http.RequestParams;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	
-	public static final String ACTION_MSG_FROM_GCM_BROADCAST = "org.openmidaas.app.action.gcm.somemessage";
-	
 	public GCMIntentService() {
 		super(PushNotificationActivity.SENDER_ID);
 	}
@@ -55,7 +54,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Logger.debug(getClass(), "onRegistered: " + regId);
 		Log.d(TAG, "Device registered: regId= " + regId);
 		// Get phone number from preferences
-		SharedPreferences prefs = getApplicationContext().getSharedPreferences("phone", MODE_PRIVATE); 
+		SharedPreferences prefs = getApplicationContext().getSharedPreferences(Constants.SharedPreferenceNames.PHONE_NUMBER_PUSH_SERVICE, MODE_PRIVATE); 
 		String phone = prefs.getString("phoneNumberPush", "");
 		Logger.debug(getClass(), "Phone Number which would be registered on Server: "+phone);
 		// call a Web service here probably to send the Registration ID 
@@ -125,7 +124,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	    			Intent intent = new Intent(getBaseContext(), SplashActivity.class);
 		    		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		    		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		    		intent.setAction(SplashActivity.ACTION_MSG_CUSTOM);
+		    		intent.setAction(Constants.IntentActionMessages.PROCESS_URL);
 		    		intent.addCategory(Intent.CATEGORY_DEFAULT);
 		    		intent.putExtra("url", extras.getString(key));
 		    		//Check for the lock before continuing
@@ -170,7 +169,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	// be received by the ReceiverActivity.
 	private void sendLocalBroadcastMessage(String message) {
 	  Logger.debug(getClass(), " Broadcasting message: "+message);
-	  Intent intent = new Intent(ACTION_MSG_FROM_GCM_BROADCAST );
+	  Intent intent = new Intent(Constants.IntentActionMessages.LOCAL_BROADCAST_GCM_MESSAGE);
 	  intent.putExtra("message", message);
 	  LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}

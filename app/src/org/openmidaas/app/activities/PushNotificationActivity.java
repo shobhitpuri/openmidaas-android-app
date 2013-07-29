@@ -18,9 +18,9 @@ package org.openmidaas.app.activities;
 
 import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
+import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
-import org.openmidaas.app.services.GCMIntentService;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,7 +48,6 @@ public class PushNotificationActivity extends AbstractActivity {
 	private Button btnPositive;
 	private Button btnClear;
 	String phoneNumber;
-	public static final String ACTION_MSG = "org.openmidaas.app.action.receivedMessageGCM";
 	
 	PhoneNumberUtil phoneUtil;
 	PhoneNumber phoneParsedNumber;
@@ -104,7 +103,7 @@ public class PushNotificationActivity extends AbstractActivity {
 					if(isPhoneValid == true){ //valid phone
 					
 						// save phone number in shared preference
-						SharedPreferences.Editor editor = getSharedPreferences("phone", MODE_PRIVATE).edit();
+						SharedPreferences.Editor editor = getSharedPreferences(Constants.SharedPreferenceNames.PHONE_NUMBER_PUSH_SERVICE, MODE_PRIVATE).edit();
 						editor.putString("phoneNumberPush", phoneNumber);
 						editor.commit();
 						
@@ -124,7 +123,7 @@ public class PushNotificationActivity extends AbstractActivity {
 						    	// with actions named "custom-event-name".
 						    	Logger.debug(getClass(), "Registering the receiver");
 						    	LocalBroadcastManager.getInstance(PushNotificationActivity.this).registerReceiver(mMessageReceiver,
-					    	      new IntentFilter(GCMIntentService.ACTION_MSG_FROM_GCM_BROADCAST));
+					    	      new IntentFilter(Constants.IntentActionMessages.LOCAL_BROADCAST_GCM_MESSAGE));
 						    	
 						    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
 						    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
@@ -173,10 +172,17 @@ public class PushNotificationActivity extends AbstractActivity {
 	  public void onReceive(Context context, Intent intent) {
 		  Bundle extras = intent.getExtras();
 		  if (extras != null){
-			  if(intent.getAction().equals(GCMIntentService.ACTION_MSG_FROM_GCM_BROADCAST)){
+			  if(intent.getAction().equals(Constants.IntentActionMessages.LOCAL_BROADCAST_GCM_MESSAGE)){
 				  //Dismiss the dialog if showing
-				  if (mProgressDialog.isShowing())
-					  mProgressDialog.dismiss();
+				  PushNotificationActivity.this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if (mProgressDialog.isShowing()) {
+								Logger.debug(getClass(), "Dismissing Dialog... ");
+								mProgressDialog.dismiss();
+							}
+						}
+					});
 				  //Unregister the receiver
 				  Logger.debug(getClass(), "Unregistering the receiver for local broadcast");
 				  LocalBroadcastManager.getInstance(PushNotificationActivity.this).unregisterReceiver(mMessageReceiver);
