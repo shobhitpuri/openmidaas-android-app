@@ -63,7 +63,6 @@ public class PushNotificationActivity extends AbstractActivity {
 		phoneNumber = getPhoneNumberFromSIM(); 
 		//Set it to EditText if not null
 		if (phoneNumber!=null){
-			phoneNumber = phoneNumber.replace("+", "");
 			View tv = findViewById(R.id.edPushActivity);
 			((EditText)tv).setText(phoneNumber);
 		}
