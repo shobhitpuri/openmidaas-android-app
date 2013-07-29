@@ -20,13 +20,17 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
+import org.openmidaas.app.services.GCMIntentService;
 
-import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,7 +48,6 @@ public class PushNotificationActivity extends AbstractActivity {
 	private Button btnPositive;
 	private Button btnClear;
 	String phoneNumber;
-	public static ProgressDialog dialog;
 	public static final String ACTION_MSG = "org.openmidaas.app.action.receivedMessageGCM";
 	
 	PhoneNumberUtil phoneUtil;
@@ -115,13 +118,23 @@ public class PushNotificationActivity extends AbstractActivity {
 						    	DialogUtils.showNeutralButtonDialog(PushNotificationActivity.this, "Registration Failed", "Active internet connection is required for registering.");
 						    	
 						    }else{
-						    	//Dialog started here and would be dismissed when its registered on server or there is an error.
-						    	dialog = new ProgressDialog(PushNotificationActivity.this);
-						    	dialog.setTitle("Please Wait");
-						    	dialog.setMessage("Registering your number for push notification service...");
-						    	dialog.show();
+
+						    	// Register Local Broadcast Listener to receive messages.
+						    	// We are registering an observer (mMessageReceiver) to receive Intents
+						    	// with actions named "custom-event-name".
+						    	Logger.debug(getClass(), "Registering the receiver");
+						    	LocalBroadcastManager.getInstance(PushNotificationActivity.this).registerReceiver(mMessageReceiver,
+					    	      new IntentFilter(GCMIntentService.ACTION_MSG_FROM_GCM_BROADCAST));
+						    	
 						    	//Takes the sender ID and registers app to be able to receive messages sent by that sender. ID received in a callback in BroadCastReceiver
 						    	GCMRegistrar.register(PushNotificationActivity.this, SENDER_ID);
+						    	
+						    	//Dialog started here and would be dismissed when its registered on server or there is an error.
+						    	mProgressDialog.setTitle("Please Wait");
+						    	mProgressDialog.setMessage("Registering your number for push notification service...");
+						    	mProgressDialog.setCancelable(false);
+						    	mProgressDialog.show();
+						    	
 						    }
 					    }catch(RuntimeException e){
 					    	//Device incompatibility message
@@ -153,6 +166,28 @@ public class PushNotificationActivity extends AbstractActivity {
 		
 	}
 	
+	// Handler for received Intents. This will be called whenever an Intent
+	// with specified action names is broadcasted.
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+	  @Override
+	  public void onReceive(Context context, Intent intent) {
+		  Bundle extras = intent.getExtras();
+		  if (extras != null){
+			  if(intent.getAction().equals(GCMIntentService.ACTION_MSG_FROM_GCM_BROADCAST)){
+				  //Dismiss the dialog if showing
+				  if (mProgressDialog.isShowing())
+					  mProgressDialog.dismiss();
+				  //Unregister the receiver
+				  Logger.debug(getClass(), "Unregistering the receiver for local broadcast");
+				  LocalBroadcastManager.getInstance(PushNotificationActivity.this).unregisterReceiver(mMessageReceiver);
+				  Logger.debug(getClass(), "Got message through Local Broadcast : " + extras.getString("message"));
+				  //Show TOAST with message
+				  DialogUtils.showToast(PushNotificationActivity.this, extras.getString("message"));
+			  }
+		  }
+	  }
+	};
+	
 	private boolean isNetworkAvailable() {
 	    ConnectivityManager connectivityManager 
 	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -176,4 +211,5 @@ public class PushNotificationActivity extends AbstractActivity {
 	protected int getLayoutResourceId() {
 		return (R.layout.push_register);
 	}
+	
 }

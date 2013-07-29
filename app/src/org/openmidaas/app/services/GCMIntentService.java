@@ -19,7 +19,6 @@ package org.openmidaas.app.services;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.activities.PushNotificationActivity;
 import org.openmidaas.app.activities.SplashActivity;
-import org.openmidaas.app.common.DialogUtils;
 import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
 
@@ -27,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -40,6 +40,9 @@ import com.loopj.android.http.RequestParams;
  */
 
 public class GCMIntentService extends GCMBaseIntentService {
+	
+	public static final String ACTION_MSG_FROM_GCM_BROADCAST = "org.openmidaas.app.action.gcm.somemessage";
+	
 	public GCMIntentService() {
 		super(PushNotificationActivity.SENDER_ID);
 	}
@@ -58,10 +61,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// call a Web service here probably to send the Registration ID 
 		if(!phone.isEmpty()){
 			sendToServer(phone, regId);
-		}else{
-			Log.d(TAG, "Phone Number is Empty. Not registering on server. ");
-			if(PushNotificationActivity.dialog.isShowing())
-		    	PushNotificationActivity.dialog.dismiss();
 		}
 		
 	}
@@ -83,19 +82,16 @@ public class GCMIntentService extends GCMBaseIntentService {
         		    @Override
         		    public void onSuccess(int statusCode, String content) {
         		        super.onSuccess(statusCode, content);
-        		        if(PushNotificationActivity.dialog.isShowing())
-        			    	PushNotificationActivity.dialog.dismiss();
+        		        // Send a Local BroadCast 
+        		        GCMIntentService.this.sendLocalBroadcastMessage("Registration Successsful");
         		        Logger.debug(getClass(), "Registration ID Successfully send to 3rd party server");
-        		        DialogUtils.showToastUsingHandler(GCMIntentService.this, "Registration Successsful");
         		    }
         		      
         		    @Override
         		    public void onFailure(Throwable error, String content) {
         			    super.onFailure(error, content);
-        			    if(PushNotificationActivity.dialog.isShowing())
-        			    	PushNotificationActivity.dialog.dismiss();
+        			    GCMIntentService.this.sendLocalBroadcastMessage("Server Error: Error in sending Registration ID to 3rd party server");
         			    Log.e(TAG, error + ". Error in sending Registration ID to 3rd party server. ");
-        			    DialogUtils.showToastUsingHandler(GCMIntentService.this, "Server Error: Error in sending Registration ID to 3rd party server");  
         			}
 
         		});
@@ -149,25 +145,33 @@ public class GCMIntentService extends GCMBaseIntentService {
 	
 	/*called if there is some unrecoverable error. You are passed
 	a String that is the error message, that you can log somewhere, or put in a
-	Notification, or whatever makes sense*/
+	Notification.*/
 	@Override
 	protected void onError(Context ctxt, String errorMsg) {
-		Logger.debug(getClass(), "onError: " + errorMsg);
-		Log.d(TAG, errorMsg);
-		if(PushNotificationActivity.dialog.isShowing())
-	    	PushNotificationActivity.dialog.dismiss();
-		DialogUtils.showToastUsingHandler(GCMIntentService.this, "Error: "+errorMsg);
+		Logger.error(getClass(), "onError: " + errorMsg);
+		Log.e(TAG, errorMsg);
+		//Send a Local Broadcast to tell about the error 
+		sendLocalBroadcastMessage(errorMsg);
 	}
 	
-	/*Called if there is some problem that GCM will 
-	automatically handle (e.g., network connectivity  problem).*/
+	/*Called if there is some problem that GCM will automatically handle (e.g., network connectivity  problem).
+	 *If onRecoverableError() returns true, it means Android is welcome to retry the operation as it sees fit. 
+	 */
 	@Override
 	protected boolean onRecoverableError(Context ctxt, String errorMsg) {
-		Logger.debug(getClass(), "onRecoverableError: " + errorMsg);
-		Log.d(TAG, "onRecoverableError: " + errorMsg);
-		if(PushNotificationActivity.dialog.isShowing())
-	    	PushNotificationActivity.dialog.dismiss();
-		DialogUtils.showToastUsingHandler(GCMIntentService.this, "Error: "+errorMsg);
+		Logger.error(getClass(), "onRecoverableError: " + errorMsg);
+		Log.e(TAG, "onRecoverableError: " + errorMsg);
+		//Send a Local Broadcast to tell about the error
+		sendLocalBroadcastMessage(errorMsg);
 	    return(true);
+	}
+	
+	// Send an Intent with an action named "custom-event-name". The Intent sent should 
+	// be received by the ReceiverActivity.
+	private void sendLocalBroadcastMessage(String message) {
+	  Logger.debug(getClass(), " Broadcasting message: "+message);
+	  Intent intent = new Intent(ACTION_MSG_FROM_GCM_BROADCAST );
+	  intent.putExtra("message", message);
+	  LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 }
