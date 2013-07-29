@@ -267,8 +267,7 @@ public class AuthorizationActivity extends AbstractActivity{
 					} catch (AttributeFetchException e1) {
 						Logger.error(getClass(), e1.getMessage());
 						DialogUtils.showNeutralButtonDialog(AuthorizationActivity.this, "Error", e1.getMessage());
-						if (mProgressDialog.isShowing())
-							mProgressDialog.dismiss();
+						dismissDialog();
 					}
 				}
 			}
@@ -355,9 +354,7 @@ public class AuthorizationActivity extends AbstractActivity{
 		
 		@Override
 		public boolean handleMessage(Message msg) {
-			if (mProgressDialog.isShowing())
-				mProgressDialog.dismiss();
-			
+			dismissDialog();
 			switch(msg.what) {
 				case ATTRIBUTE_SET_PARSE_SUCCESS:
 					if(mSession.getClientId()!= null) {

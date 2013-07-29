@@ -26,7 +26,6 @@ import org.openmidaas.app.R;
 import org.openmidaas.app.Settings;
 import org.openmidaas.app.common.Constants;
 import org.openmidaas.app.common.DialogUtils;
-import org.openmidaas.app.common.Logger;
 import org.openmidaas.app.session.SessionManager;
 
 import android.app.ActionBar;
@@ -260,30 +259,14 @@ public class MainTabActivity extends FragmentActivity {
 						client.get(uri.toString(), new AsyncHttpResponseHandler() {
 							@Override
 						    public void onSuccess(String response) {
-								mActivity.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										if (mProgressDialog.isShowing()) {
-											Logger.debug(getClass(), "Dismissing Dialog... ");
-											mProgressDialog.dismiss();
-										}
-									}
-								});
+								cancelCurrentProgressDialog();
 								Intent intent = new Intent(mActivity, AuthorizationActivity.class);
 								intent.putExtra(AuthorizationActivity.REQUEST_BUNDLE_KEY, response);
 								startActivity(intent);
 							}
 							@Override
 						    public void onFailure(Throwable e, String response) {
-								mActivity.runOnUiThread(new Runnable() {
-									@Override
-									public void run() {
-										if (mProgressDialog.isShowing()) {
-											Logger.debug(getClass(), "Dismissing Dialog: ");
-											mProgressDialog.dismiss();
-										}
-									}
-								});
+								cancelCurrentProgressDialog();
 						        DialogUtils.showNeutralButtonDialog(mActivity, "Error", e.getMessage());
 						        
 						    }
@@ -310,6 +293,21 @@ public class MainTabActivity extends FragmentActivity {
 		if(Settings.IS_HOCKEY_APP_ENABLED) {
 			UpdateManager.register(this, Settings.HOCKEY_APP_ID);
 		}
+	}
+	
+	protected void cancelCurrentProgressDialog() {
+		this.runOnUiThread(new Runnable() {
+			
+
+			@Override
+			public void run() {
+				if (mProgressDialog != null) {
+					if (mProgressDialog.isShowing()) {
+						mProgressDialog.dismiss();
+					}
+				}
+			}
+		});
 	}
 	
 	@Override
